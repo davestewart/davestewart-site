@@ -1,0 +1,74 @@
+@use '../variables' as *;
+@use './mixins' as *;
+
+// ---------------------------------------------------------------------------------------------------------------------
+// HIDE (HIDES THESE BREAKPOINTS)
+// ---------------------------------------------------------------------------------------------------------------------
+
+.hide-sm {
+  @include sm {
+    display: none !important;
+  }
+}
+
+.hide-md-down {
+  @include md-down {
+    display: none !important;
+  }
+}
+
+.hide-md {
+  @include md {
+    display: none !important;
+  }
+}
+
+.hide-md-up {
+  @include md-up {
+    display: none !important;
+  }
+}
+
+.hide-lg {
+  @include lg {
+    display: none !important;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// ONLY (HIDES OTHER BREAKPOINTS)
+// ---------------------------------------------------------------------------------------------------------------------
+
+.only-sm {
+  @include md-up {
+    display: none !important;
+  }
+}
+
+.only-md-down {
+  @include lg {
+    display: none !important;
+  }
+}
+
+.only-md {
+  @include sm {
+    display: none !important;
+  }
+
+  @include lg {
+    display: none !important;
+  }
+}
+
+.only-md-up {
+  @include sm {
+    display: none !important;
+  }
+}
+
+.only-lg {
+  @include md-down {
+    display: none !important;
+  }
+}

@@ -1,0 +1,387 @@
+@use 'sass:color';
+@use "../variables" as *;
+@use "../layout/mixins" as *;
+
+:root {
+  --theme: #{$accentColor};
+}
+
+body {
+  font-family: $bodyFont;
+  //font-size: 16px; // Palanquin
+  font-size: 15px; // Open Sans
+  font-weight: 400;
+  color: $textColor;
+
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: color.adjust($grey-lightest, $alpha: -0.5);
+
+  @include sm {
+    // font-size: 18px;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// HEADINGS
+// ---------------------------------------------------------------------------------------------------------------------
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 2rem 0 1rem;
+  font-family: $titleFont;
+  font-weight: 600;
+
+  @include sm {
+    margin: 1.5rem 0 1rem;
+  }
+}
+
+h1 {
+  margin-top: .5rem;
+  font-size: 2.2rem;
+}
+
+p.description {
+  font-family: $titleFont;
+  margin-top: -.25em;
+  margin-bottom: 2rem;
+  font-size: 1.2em;
+  color: $grey;
+}
+
+strong {
+  font-weight: 600;
+}
+
+small {
+  font-size: .85em;
+
+  br+& {
+    vertical-align: top;
+  }
+}
+
+em {
+  font-style: italic;
+}
+
+em strong {
+  color: $accentColor;
+  font-style: normal;
+
+  a {
+    text-decoration: underline !important;
+  }
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// TEXT
+// ---------------------------------------------------------------------------------------------------------------------
+
+.pageContent {
+
+  margin-bottom: 2rem;
+  line-height: 1.7; // Open Sans
+
+  &--bottom {
+    margin-top: 3rem;
+  }
+
+  h1,
+  h2 {
+    margin-bottom: .3em;
+  }
+
+  h2 {
+    border-bottom: 1px solid $borderColor;
+    margin-left: -.5em;
+    margin-right: -.5em;
+    padding-left: .5em;
+    padding-right: .5em;
+    font-size: 1.9rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    font-size: 1.3em;
+  }
+
+  h5 {
+    font-size: 1.1em;
+    margin-bottom: 0.5em;
+
+    &+p {
+      margin-top: 0;
+    }
+  }
+
+  h1+h2,
+  h2+h3,
+  h2+h4,
+  h3+h4,
+  h4+h5 {
+    margin-top: 0;
+  }
+
+  p {
+    margin: 1em 0;
+  }
+
+  ol,
+  ul {
+    margin: .5rem 0 .5rem 2rem;
+    padding-left: 0;
+  }
+
+  li {
+    margin-bottom: .25em;
+
+    p {
+      margin: .25em 0;
+    }
+  }
+
+  ul li {
+    list-style: square;
+  }
+
+  ol li {
+    list-style: decimal;
+  }
+
+  // top-level lists with nested content
+  >ul>li>p:first-child {
+    margin-top: 1rem;
+  }
+
+  li ul {
+    margin-top: 0.5rem;
+  }
+
+  hr {
+    margin: 3rem -1rem;
+    border: none;
+    background: $borderColor;
+    height: 1px;
+  }
+
+  svg.siteIcon {
+    margin-top: 0.5rem;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// MEDIA
+// ---------------------------------------------------------------------------------------------------------------------
+
+.pageContent {
+
+  video,
+  iframe,
+  img {
+    max-width: 100%;
+    width: auto;
+    margin: auto;
+  }
+
+  video,
+  p>video,
+  p>img {
+    display: block;
+    margin: 2rem auto;
+
+    @include sm {
+      margin: .5rem auto;
+    }
+  }
+
+  .medium {
+    max-width: 70%;
+
+    @include sm {
+      max-width: 100%;
+    }
+  }
+
+  .mediaGallery {
+    margin-bottom: 2rem;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// ELEMENTS
+// ---------------------------------------------------------------------------------------------------------------------
+
+iframe,
+img {
+  border-radius: 4px;
+}
+
+video {
+  display: block;
+  margin: auto;
+  width: 100%;
+}
+
+table {
+  margin: 2rem 1rem;
+  width: 100%;
+
+  @include sm {
+    margin: 2rem 0;
+  }
+
+  thead {
+    border-bottom: 1px solid $grey-lightest;
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: .25em .5em;
+  }
+
+  th {
+    font-weight: 700;
+    font-family: $titleFont;
+    color: $accentColor;
+    vertical-align: middle;
+  }
+
+  td:first-child {
+    white-space: nowrap;
+  }
+
+  td a:has(code) {
+    white-space: nowrap;
+  }
+}
+
+// the class modifier is to pick up on markdown
+blockquote:not([class]) {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 4px;
+  background: $codeBg;
+  border-left: 5px solid $grey-lighter;
+
+  h3,
+  h4,
+  h5 {
+    margin-top: 0;
+  }
+
+  >p:first-child {
+    margin-top: 0;
+  }
+
+  >p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// LINKS
+// ---------------------------------------------------------------------------------------------------------------------
+
+a,
+a:link,
+a:visited {
+  color: var(--theme);
+}
+
+a:link {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a span {
+  display: inline-block;
+  transform: translateY(-1px);
+  margin-left: 2px;
+}
+
+// hide external link indicators by switch
+.no-external a span {
+  display: none;
+}
+
+// hide external link indicators for images
+a img+span {
+  display: none;
+}
+
+.dimmed,
+a.dimmed {
+  color: $grey-light;
+}
+
+a.dimmed:hover {
+  color: $accentColor;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// SPECIAL
+// ---------------------------------------------------------------------------------------------------------------------
+
+@include lg {
+  .centered {
+    max-width: 80%;
+    margin: 2rem auto;
+  }
+}
+
+.accent {
+  color: $accentColor;
+  fill: $accentColor;
+}
+
+.swatch {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  margin-right: .5em;
+  vertical-align: text-bottom;
+  border-radius: 4px;
+  background: #CCCCCC;
+}
+
+.debug,
+.debug * {
+  outline: 1px dashed rgba(255, 0, 0, .1);
+}
+
+.clear {
+  clear: both;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// PRINT
+// ---------------------------------------------------------------------------------------------------------------------
+
+@media print {
+
+  .body,
+  .pageMain,
+  .layout__inner {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .siteHeader,
+  .siteFooter,
+  .search__clear,
+  .searchControls {
+    display: none !important;
+  }
+}

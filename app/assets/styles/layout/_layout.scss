@@ -1,0 +1,55 @@
+@use "../variables" as *;
+
+// body
+body {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  min-height: 100vh;
+  margin: 0;
+  scroll-padding-top: 48px;
+}
+
+#app {
+  padding-top: 48px;
+}
+
+// header and footer
+.siteHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  border-bottom: 1px solid $borderColor;
+  background: white;
+  // see component for animation regarding box shadow + opacity
+}
+
+.siteFooter {
+  min-height: 80px;
+  background: $footerBg;
+}
+
+// calculate main content height
+.siteMain {
+  min-height: calc(100vh - 45px - 80px - 100px);
+  position: relative;
+  padding-top: 40px;
+}
+
+// horizontal layout - header
+.siteHeader,
+.siteFooter {
+  .layout__inner {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+// horizontal layout - content
+.layout__inner {
+  position: relative;
+  max-width: $widthPage;
+  margin: 0 auto;
+  padding: 1rem;
+}

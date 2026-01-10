@@ -1,0 +1,77 @@
+@use "../variables" as *;
+@use "../layout/mixins" as *;
+
+// ---------------------------------------------------------------------------------------------------------------------
+// animation
+// ---------------------------------------------------------------------------------------------------------------------
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// plugins
+// ---------------------------------------------------------------------------------------------------------------------
+
+a.gumroad-button {
+  margin: 1rem;
+  min-width: 280px;
+  background: black;
+  color: white;
+  text-decoration: none;
+
+  &:active {
+    background: inherit;
+    color: inherit;
+  }
+
+  @include sm {
+    min-width: unset;
+    width: calc(100% - 4rem);
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// status
+// ---------------------------------------------------------------------------------------------------------------------
+
+[data-status]:after {
+  padding: 0.4em 0.6em;
+  font-size: 0.6rem;
+  line-height: 1em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: .25rem;
+  background: #CCC;
+  z-index: 1;
+  color: white;
+  box-shadow: 0 .2rem .5rem rgba(0, 0, 30, .2);
+  content: attr(data-status);
+  font-family: $bodyFont;
+}
+
+[data-status="draft"]:after {
+  background: $grey-light;
+}
+
+[data-status="unlisted"]:after {
+  background: #f5b922;
+}
+
+[data-status="preview"]:after {
+  background: #abd725;
+}
+
+[data-status="new"]:after {
+  background: #f52424;
+}
+
+[data-status="scheduled"]:after {
+  background: #25a8d7;
+}

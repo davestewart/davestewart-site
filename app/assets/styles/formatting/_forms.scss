@@ -1,0 +1,60 @@
+@use "../variables" as *;
+
+.btn {
+  display: flex;
+  border: none;
+  vertical-align: middle;
+  text-decoration: none;
+  padding: .3em .5em;
+
+  &-text {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: $textColor;
+
+    &:hover {
+      color: $accentColor;
+    }
+  }
+
+  &-clear {
+    font-size: 1.5rem;
+    position: relative;
+    top: 1px;
+  }
+}
+
+a[disabled],
+button[disabled] {
+  color: $grey-lighter;
+  pointer-events: none;
+}
+
+a,
+input,
+button {
+  outline-color: $grey-lightest;
+}
+
+input[type="text"],
+textarea {
+  padding: 4px 8px;
+  border: 1px solid $borderColor;
+  border-radius: 2px;
+
+  line-height: 20px;
+  font-size: 14px;
+  text-indent: 1px;
+
+  outline: none;
+  caret-color: $accentColor;
+
+  &:focus {
+    box-shadow: 0 0 0 2px $grey-lightest;
+  }
+
+  &::placeholder {
+    color: $grey-light;
+  }
+}

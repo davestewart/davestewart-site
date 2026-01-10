@@ -1,0 +1,105 @@
+@use "layout/mixins" as *;
+
+// ---------------------------------------------------------------------------------------------------------------------
+// VARIABLES
+// ---------------------------------------------------------------------------------------------------------------------
+
+// colors
+$accentColor: #EA4848;
+$secondaryColor: #0D5C9B;
+$textColor: #2C3E50;
+//$textColor: #414244;
+$borderColor: #EAECEF;
+$codeBg: #F5F5F8;
+$footerBg: #F8F9FA;
+
+// colors
+$grey: #969FA8;
+$grey-light: #C1C5C6;
+$grey-lighter: #DCDFE4;
+$grey-lightest: #EAECEF;
+
+// layout
+//$widthPage: 720px;
+$widthPage: 840px;
+$widthHome: 940px;
+
+// $font
+$titleFont: europa, sans;
+$bodyFont: 'Open Sans', Roboto, 'SF Pro', sans-serif;
+$codeFont: 'Roboto Mono', monospaced;
+$quoteFont: Sanchez, Garamond, Times, serif;
+
+// ---------------------------------------------------------------------------------------------------------------------
+// MIXINS
+// ---------------------------------------------------------------------------------------------------------------------
+
+@mixin fit {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+@function stripes ($fg, $bg) {
+  @return linear-gradient(135deg, $fg 16.67%, $bg 16.67%, $bg 50%, $fg 50%, $fg 66.67%, $bg 66.67%, $bg 100%);
+}
+
+@mixin striped ($fg, $bg, $size: 8.49px) {
+  background-image: stripes($fg, $bg);
+  background-size: $size $size;
+}
+
+@mixin hover {
+  transition: .5s background-color, .5s fill, .5s color, .5s opacity;
+
+  &:hover,
+  &:focus {
+    transition: .1s background-color, .1s fill, .1s color, .1s opacity;
+  }
+}
+
+@mixin shadow-md {
+  box-shadow:
+    0 0px 4px rgba(0, 0, 30, .04),
+    0 5px 8px rgba(0, 0, 60, 0.02),
+    0 15px 12px rgba(20, 60, 120, .02)
+}
+
+@mixin shadow-lg {
+  box-shadow:
+    0 10px 16px rgba(0, 0, 60, 0.02),
+    0 30px 30px -20px rgba(20, 60, 120, .2)
+}
+
+@mixin shadow-popover {
+  box-shadow: 0 5px 10px rgba(0, 0, 60, 5%), 0 10px 30px -10px rgba(20, 60, 120, 15%);
+}
+
+@mixin shadow-thumb {
+  box-shadow: 0 0 4px rgba(0, 0, 30, .04),
+    0 5px 8px rgba(0, 0, 60, 0.02),
+    0 10px 16px -10px rgba(30, 0, 50, 0.02),
+    0 25px 18px -15px rgba(20, 20, 80, .04);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// BREAKPOINTS
+// ---------------------------------------------------------------------------------------------------------------------
+
+@mixin full {
+  @media screen and (min-width: calc(#{$widthPage} + 20px)) {
+    @content
+  }
+}
+
+@mixin introText {
+  font-size: 1.7rem;
+  line-height: 1.4em !important;
+  font-family: $titleFont !important;
+  font-weight: 500;
+
+  @include sm {
+    font-size: 1.4rem;
+  }
+}
