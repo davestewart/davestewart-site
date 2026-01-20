@@ -1,8 +1,8 @@
 <template>
-  <nav class="pageSiblings">
+  <nav class="navSurround">
     <div v-if="prev || next" class="layout__inner">
       <!-- prev -->
-      <div v-if="prev" class="pageSiblings__prev">
+      <div v-if="prev" class="navSurround__prev">
         <span class="arrow"></span>
         <NuxtLink :to="prev.path">
           {{ getTitle(prev) }}
@@ -11,7 +11,7 @@
       <span v-else></span>
 
       <!-- next -->
-      <div v-if="next" class="pageSiblings__next">
+      <div v-if="next" class="navSurround__next">
         <NuxtLink :to="next.path">
           {{ getTitle(next) }}
         </NuxtLink>
@@ -27,21 +27,13 @@ import { useRoute, useRouter } from '#app'
 import { onKeyStroke } from '@vueuse/core'
 import { getTitle } from '~/utils/content'
 
+
 const route = useRoute()
 const router = useRouter()
+const { surround: posts } = storeToRefs(useContentStore())
 
-const posts = ref<(NavPage | undefined)[]>([])
-
-await useAsyncData('siblings-' + route.path, async () => {
-  const items = await getNavSurround(route.path)
-  // add delay, otherwise the navigation changes before the page has scrolled
-  setTimeout(() => posts.value = items, 100)
-}, {
-  watch: [route],
-})
-
-const prev = computed(() => posts.value?.at(0))
-const next = computed(() => posts.value?.at(1))
+const prev = computed(() => posts?.value.at(0))
+const next = computed(() => posts?.value.at(1))
 
 // Keyboard navigation
 onKeyStroke('ArrowLeft', (e) => {
@@ -67,7 +59,7 @@ onKeyStroke('ArrowUp', (e) => {
   background: url('~/assets/breadcrumb-arrow.svg') no-repeat;
 }
 
-.pageSiblings {
+.navSurround {
 
   line-height: 1.4em;
   vertical-align: top;

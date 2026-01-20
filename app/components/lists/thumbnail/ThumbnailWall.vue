@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 defineProps<{
-  pages: NavPage[]
+  pages: ContentPage[]
 }>()
 </script>
 

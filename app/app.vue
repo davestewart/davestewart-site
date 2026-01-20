@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes" :data-path="path">
+  <div id="app" :class="classes" :data-path="path">
     <!-- header -->
     <SiteHeader />
 
@@ -31,19 +31,19 @@
     </div>
 
     <!-- preview modal -->
-    <Preview />
+    <Preview ref="preview" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from '#app'
 import { useWindowScroll } from '@vueuse/core'
+import { setupPreview } from '~/composables/usePreview'
 
-// Logic ported from Global.vue
-const route = useRoute()
 const { y } = useWindowScroll()
 
+const route = useRoute()
 const path = computed(() => route.path)
 
 const layout = ref('page')
@@ -52,32 +52,13 @@ const classes = computed(() => ({
   [`layout__${layout.value}`]: true,
 }))
 
-const updateHeader = () => {
-  if (import.meta.server) return
-  const app = document.querySelector('#app')
-  const header = document.querySelector('.siteHeader') as HTMLElement
-  if (header) {
-    const offset = header.offsetHeight + 'px'
-    document.body.style.scrollPaddingTop = offset
-    if (app) (app as HTMLElement).style.paddingTop = offset
-  }
-}
+const preview = setupPreview()
 
-watch(path, () => {
-  nextTick(() => updateHeader())
-})
-
-onMounted(() => {
-  window.addEventListener('resize', updateHeader)
-  nextTick(() => updateHeader())
-  updateHeader()
-})
-
-// Scroll effect
 watch(y, (scrollY) => {
-  if (import.meta.server) return
-  const scrollBottom = document.body.offsetHeight - scrollY - window.innerHeight
-  document.body.classList.toggle('is-scrolled', scrollY > 60)
-  document.body.classList.toggle('is-at-end', scrollBottom < 100)
+  if (import.meta.client) {
+    const scrollBottom = document.body.offsetHeight - scrollY - window.innerHeight
+    document.body.classList.toggle('is-scrolled', scrollY > 60)
+    document.body.classList.toggle('is-at-end', scrollBottom < 100)
+  }
 })
 </script>

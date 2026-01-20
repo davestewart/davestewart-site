@@ -1,13 +1,16 @@
 <template>
   <div class="page-search">
-    <Search />
+    <SearchView />
   </div>
 </template>
 
 <script setup lang="ts">
-import Search from '~/components/views/Search.vue'
+import SearchView from '~/components/views/SearchView.vue'
 
-useHead({
-  title: 'Search | Dave Stewart',
+definePageMeta({
+  title: 'Search',
+  description: 'Search results',
 })
+
+usePageSeo()
 </script>

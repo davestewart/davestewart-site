@@ -25,6 +25,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { getItems } from '#imports'
 
 defineProps<{
   headers?: boolean
@@ -40,9 +41,8 @@ const paths = computed(() => {
   )
 })
 
-// Fetch all pages data
-const { data: allPages } = useAsyncData('nav-sections-pages', async () => {
-  const items = await getItems()
+const allPages = computed(() => {
+  const items = getItems()
   return items.filter(item => paths.value.includes(item.path))
 })
 

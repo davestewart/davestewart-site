@@ -10,8 +10,8 @@
         ref="img"
         class="shield__image"
         :src="src"
-        :alt="repo"
-        :title="repo"
+        :alt="github"
+        :title="github"
         @load="onLoad"
       />
     </a>
@@ -23,20 +23,20 @@ import { storage } from '../../utils/storage.js'
 
 export default {
   props: {
-    repo: String,
+    github: String,
   },
 
   computed: {
     src () {
-      return `https://img.shields.io/github/stars/${this.repo}?style=flat&color=%23ea4848&label=Stars%3A&logo=github`
+      return `https://img.shields.io/github/stars/${this.github}?style=flat&color=%23ea4848&label=Stars%3A&logo=github`
     },
 
     href () {
-      return `https://github.com/${this.repo}#readme`
+      return `https://github.com/${this.github}#readme`
     },
 
     key () {
-      return `badges/${this.repo}`
+      return `badges/${this.github}`
     },
   },
 

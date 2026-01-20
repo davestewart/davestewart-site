@@ -1,15 +1,20 @@
 <script lang="ts" setup>
-import { queryItems, getItems, getNavSurround, getNavParents, getNavSiblings, getNavTree } from '~/composables/useNavigation'
+import {
+  getContentParents,
+  getContentSiblings,
+  getContentSurround,
+  getContentTree,
+  getItems,
+} from '~/stores/content'
 
 const methods = {
-  'Raw Items': queryItems,
-  'Items': getItems,
-  'Siblings': getNavSiblings,
-  'Surround': getNavSurround,
-  'Parents': getNavParents,
-  'Tree': getNavTree,
+  Items: getItems,
+  Siblings: getContentSiblings,
+  Surround: getContentSurround,
+  Parents: getContentParents,
+  Tree: getContentTree,
 }
-const method = ref<keyof typeof methods>('Raw Items')
+const method = ref<keyof typeof methods>('Items')
 
 const paths = [
   '/',
@@ -23,14 +28,10 @@ const paths = [
 ] as const
 const path = ref(paths[0])
 
-async function getData () {
+const data = computed(() => {
   const key = method.value as keyof typeof methods
   const fn = methods[key]
   return fn(path.value)
-}
-
-const { data } = await useAsyncData(() => `nav-${path.value}`, getData, {
-  watch: [method, path],
 })
 </script>
 

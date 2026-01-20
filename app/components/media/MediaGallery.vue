@@ -2,15 +2,15 @@
   <div
     ref="rootEl"
     class="mediaGallery"
-    :style="slideContainerStyle"
+    :style="widthStyle"
     :class="{ loading }"
   >
     <!-- slides -->
-    <div class="mediaGallery__slidesContainer" :style="slideContainerStyle">
+    <div class="mediaGallery__slidesContainer" :style="containerStyle">
       <div class="mediaGallery__slides">
         <div
           v-for="(image, i) in images"
-          :key="image.src"
+          :key="image?.src"
           class="mediaGallery__slide"
         >
           <MediaImage
@@ -21,9 +21,9 @@
         </div>
       </div>
       <div class="mediaGallery__slidesNav">
-        <div class="mediaGallery__slidesPrev" @click="prev"></div>
-        <div v-if="scale" class="mediaGallery__slidesView" @click="view"></div>
-        <div class="mediaGallery__slidesNext" @click="next"></div>
+        <div class="mediaGallery__slidesPrev" @click="prev" />
+        <div v-if="scale" class="mediaGallery__slidesView" @click="view" />
+        <div class="mediaGallery__slidesNext" @click="next" />
       </div>
     </div>
 
@@ -44,7 +44,7 @@
           class="mediaGallery__page"
           @click.prevent="index = i"
         >
-          <span class="mediaGallery__dot"></span>
+          <span class="mediaGallery__dot" />
         </a>
       </div>
 
@@ -66,58 +66,51 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
-import { useMedia } from '~/composables/useMedia'
-import type { MediaSource } from '~/composables/useMedia'
-import { usePage } from '~/composables/usePage'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { type MediaItem, type MediaSource, resolveMedia, useMedia } from '~/composables/useMedia'
 import { getKeys, isNotModifier, stopEvent } from '~/utils/events'
 import { offset } from '~/utils/array'
 import { storage } from '~/utils/storage'
-import MediaImage from './MediaImage'
+import { usePreview } from '~/composables/usePreview'
+import MediaImage from './MediaImage.vue'
 
 interface Props {
-  /**
-   * Points at a frontmatter media key
-   */
+  // media props
   media?: string
-  page?: ContentItem
-  src?: string
-  height?: string | number
-  scale?: boolean
-  caption?: string
+  sources?: Array<MediaSource | string>
 
   // Gallery props
-  keepAlive?: boolean
   wrap?: number | boolean
-  width?: string | number
+  scale?: boolean
+  width?: string
   captions?: number | boolean
+  keepAlive?: boolean
   prevText?: string
   nextText?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   media: 'gallery',
-  scale: false,
   wrap: true,
+  captions: true,
   prevText: 'Prev',
   nextText: 'Next',
 })
 
-const page: ContentItem = props.page ?? usePage()
+const media = props.sources
+  ? props.sources!
+  : resolveMedia(props.media ?? 'gallery')
 
-const images = useMedia(props, 'gallery')
-const { $preview } = useNuxtApp() // Assuming preview plugin exists/migrated
+const images = useMedia(media) as MediaItem[]
 
 const index = ref(0)
 const loaded = ref<number[]>([])
 const loading = ref(props.keepAlive)
 
-// Computed
 const hasCaption = computed(() => {
-  const imgs = Array.isArray(images) ? images : []
   return props.captions === false || props.captions === 0
     ? false
-    : imgs.some((image: MediaSource) => image.text)
+    : images.some((image: MediaItem) => image.text)
 })
 
 const currentImage = computed(() => {
@@ -128,18 +121,26 @@ const currentImage = computed(() => {
 const captionText = computed(() => currentImage.value?.text)
 const captionLink = computed(() => currentImage.value?.href)
 
-const slideContainerStyle = computed(() => {
-  return images[0]?.style
+const containerStyle = computed(() => {
+  const image = images.at(-1)!
+  return `${image?.style}`
 })
+
+const widthStyle = computed(() => {
+  const maxWidth = props.width
+    ? props.width
+    : images.at(-1)?.width + 'px'
+  return maxWidth
+    ? `max-width: ${maxWidth}; margin: inherit auto;`
+    : ''
+})
+
+const route = useRoute()
 
 const storageKey = computed(() => {
-  const { page } = usePage()
-  const p = props.page || page.value
-  if (!p) return ''
-  return `gallery[${p._path || p.path}]:${props.media}`
+  return `gallery[${route.path}]:${props.media}`
 })
 
-// Watch
 watch(index, (value) => {
   if (props.keepAlive && storageKey.value) {
     storage.set(storageKey.value, value)
@@ -155,22 +156,16 @@ function renderImage (i: number) {
 }
 
 function next () {
-  index.value = offset(index.value, 1, images, props.wrap)
+  index.value = offset(index.value, 1, images, !!props.wrap)
 }
 
 function prev () {
-  index.value = offset(index.value, -1, images, props.wrap)
+  index.value = offset(index.value, -1, images, !!props.wrap)
 }
 
-function view (event: Event) {
-  const imgs = Array.isArray(images) ? images : []
-  if (!imgs.length) return
-  const { width, height } = imgs[0]
-  // Need the root element. In script setup we can get the element reference if bound or use even.target parent?
-  // Original used this.$el. Here we can use a ref on root div.
-  // We need to implement ref="rootEl".
-  if ($preview && rootEl.value) {
-    $preview.show(rootEl.value, width, height)
+function view () {
+  if (images.length && rootEl.value) {
+    usePreview().show(rootEl.value)
   }
 }
 
@@ -219,6 +214,7 @@ $colorHover: #888;
 
   // loading for keep-alive
   transition: .3s opacity;
+
   &.loading {
     opacity: 0;
   }

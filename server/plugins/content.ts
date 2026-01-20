@@ -1,4 +1,4 @@
-import { Status } from '~/store/config/status'
+import { PostStatus } from '~/stores/config/status'
 import { isWithinDays } from '~/utils/time'
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -55,26 +55,26 @@ function setStatus (file: any) {
 
   // add status to posts (files without layout)
   if (!layout) {
-    if (visibility === Status.HIDDEN) {
-      file.status = Status.HIDDEN
+    if (visibility === PostStatus.HIDDEN) {
+      file.status = PostStatus.HIDDEN
     }
-    else if (visibility === Status.UNLISTED) {
-      file.status = Status.UNLISTED
+    else if (visibility === PostStatus.UNLISTED) {
+      file.status = PostStatus.UNLISTED
     }
-    else if (visibility === Status.PREVIEW) {
-      file.status = Status.PREVIEW
+    else if (visibility === PostStatus.PREVIEW) {
+      file.status = PostStatus.PREVIEW
       file.date = today.replace('T00', 'T01')
     }
     else if (date) {
       if (date > today) {
-        file.status = Status.SCHEDULED
+        file.status = PostStatus.SCHEDULED
       }
       else if (isWithinDays(file.date, 90)) {
-        file.status = Status.NEW
+        file.status = PostStatus.NEW
       }
     }
     else {
-      file.status = Status.DRAFT
+      file.status = PostStatus.DRAFT
     }
   }
 }

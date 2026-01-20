@@ -17,13 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
-
-const { data: links } = await useAsyncData('breadcrumbs', () => getNavParents(route.path), {
-  watch: [route],
-})
+const { breadcrumbs: links } = storeToRefs(useContentStore())
 </script>
 
 <style lang="scss">

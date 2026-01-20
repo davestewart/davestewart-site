@@ -39,7 +39,7 @@ export default {
     // elements
     Object.assign(elements, {
       footerOuter: document.querySelector('.siteFooter'),
-      footerInner: document.querySelector('.pageSiblings'),
+      footerInner: document.querySelector('.navSiblings'),
       target: document.querySelector('.scrollTop__inner'),
     })
 
@@ -68,7 +68,7 @@ export default {
         const b = elements.footerOuter.offsetTop
 
         // height of the footer navigation
-        const h = elements.footerInner.offsetHeight
+        const h = elements.footerInner?.offsetHeight ?? 40
 
         // y value of limiting element
         const yMax = isNarrow

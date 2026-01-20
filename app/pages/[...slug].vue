@@ -1,16 +1,25 @@
 <template>
-  <component :is="getViewComponent(doc)" :doc="doc" />
+  <component
+    :is="getViewComponent(data)"
+    v-if="data"
+    :page="data"
+  />
 </template>
 
 <script setup lang="ts">
-import Folder from '~/components/views/Folder.vue'
-import Page from '~/components/views/Page.vue'
-import NotFound from '~/components/views/NotFound.vue'
+import PageView from '~/components/views/PageView.vue'
+import FolderView from '~/components/views/FolderView.vue'
+import NotFound from '~/components/views/404View.vue'
+import type { ParsedPage } from '#shared/types/content'
 
 const route = useRoute()
 
-const { data: doc } = await useAsyncData(`page-${route.path}`, () => {
-  return queryContent()
+/**
+ * All content pages
+ */
+const { data } = await useAsyncData(`page-${route.path}`, () => {
+  // @see https://v2.content.nuxt.com/usage/typescript#type-augmentation
+  return queryContent<ParsedPage>()
     .where({
       $or: [
         { _path: route.path },
@@ -20,23 +29,20 @@ const { data: doc } = await useAsyncData(`page-${route.path}`, () => {
     .findOne()
 })
 
-provideContent(doc)
+provideContent(data)
+usePageSeo(data)
 
-const getViewComponent = (doc: any) => {
-  // If no doc found, show 404
-  if (!doc) {
+const getViewComponent = (data: ParsedPage | undefined) => {
+  if (!data) {
     return NotFound
   }
 
-  const layout = doc.layout || doc.meta?.layout || (doc.home ? 'home' : 'page')
-
-  // Views are strictly standard layouts
-  switch (layout.toLowerCase()) {
+  switch (data.type) {
     case 'folder':
-      return Folder
-    case 'page':
+      return FolderView
+    case 'post':
     default:
-      return Page
+      return PageView
   }
 }
 </script>

@@ -14,20 +14,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { getPosts } from '~/composables/useNavigation'
+import { computed, ref } from 'vue'
+
+import { getPosts } from '~/stores/content'
 
 const key = ref(0)
 const random = useState('random', () => false)
-
-const { data: pages } = useAsyncData('home-thumbs', () => {
+const pages = computed(() => {
   return getPosts({
-    limit: 6,
-    random: random.value,
-    sorted: !random.value,
+    sort: random.value ? 'random' : 'date',
   })
-}, {
-  watch: [key, random],
+    .filter(item => item.media?.thumbnail)
+    .filter(item => !item.path.startsWith('/archive/'))
+    .filter(item => !item.path.startsWith('/blog/'))
+    .slice(0, 6)
 })
 </script>
 

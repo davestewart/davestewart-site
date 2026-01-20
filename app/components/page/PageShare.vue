@@ -1,6 +1,6 @@
 <template>
   <div class="pageShare" unselectable="on">
-    <a class="pageShare__toggle" @click="show">
+    <a ref="toggle" class="pageShare__toggle" @click="show">
       <svg
         width="30px"
         height="30px"
@@ -43,11 +43,13 @@
           target="_blank"
           title="Share on Reddit"
         ><img alt="Share on Reddit" src="./sharing/reddit.svg" /></a>
+        <!--
         <a
           :href="`https://getpocket.com/save?url=${url}&title=${title}&tags=${hashtags}`"
           target="_blank"
           title="Add to Pocket"
         ><img alt="Add to Pocket" src="./sharing/pocket.svg" /></a>
+        -->
         <a
           :href="`mailto:?subject=${title}&body=${description}%0A%0A${url}`"
           target="_blank"
@@ -62,16 +64,16 @@
 import { ref, computed, nextTick } from 'vue'
 
 const props = defineProps<{
-  page: ContentItem
+  page: ParsedPage
 }>()
 
 const popup = ref(false)
 const links = ref<HTMLElement | null>(null)
 const toggle = ref<HTMLElement | null>(null)
 
-const title = computed(() => encodeURIComponent(props.page.title))
+const title = computed(() => encodeURIComponent(props.page.title!))
 const description = computed(() => encodeURIComponent(props.page.description ?? ''))
-const url = computed(() => `https://davestewart.co.uk${props.page.path}`)
+const url = computed(() => `https://davestewart.co.uk${props.page._path}`)
 const hashtags = computed(() => {
   const tags = props.page.tags || []
   return tags.join(',')
@@ -81,16 +83,12 @@ const hide = () => {
   popup.value = false
 }
 
-const show = (event: MouseEvent) => {
-  const target = event.target as HTMLElement
+const show = () => {
   setTimeout(() => {
     popup.value = true
     nextTick(() => {
-      if (links.value && target) {
-        // Calculate position relative to the toggle button (approximate logic from original)
-        // Or just reset logic as original
-        // Original: this.$refs.links.style.marginLeft = (this.$el.offsetLeft - 1) + 'px'
-        // In script setup we don't have this.$el easily, assuming standard flow
+      if (links.value && toggle.value) {
+        links.value.style.marginLeft = (toggle.value.offsetLeft - 10) + 'px'
       }
     })
 

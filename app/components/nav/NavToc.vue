@@ -4,7 +4,7 @@
     class="navToc"
     :data-depth="computedDepth"
     v-html="html"
-  ></div>
+  />
 </template>
 
 <script setup lang="ts">

@@ -1,23 +1,24 @@
 <template>
   <div class="mediaEmbed">
-    <iframe :src="source.src" :style="source.style" @load="onLoad"></iframe>
+    <iframe :src="source.src" :style="source.style" @load="onLoad" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useMedia } from '~/composables/useMedia'
+import { type MediaBase, resolveMedia, useMedia } from '~/composables/useMedia'
 
-const props = defineProps({
-  media: { type: String, default: 'featured' },
-  src: String,
-  width: [String, Number],
-  height: [String, Number],
-  scale: { type: Boolean, default: false },
-  caption: String,
-  page: Object,
-})
+// Either a media key, or base media properties
+type MediaEmbedProps =
+  | { media: MediaKey, src?: never, width?: never, height?: never }
+  | { media?: never } & MediaBase
 
-const source = useMedia(props, 'featured')
+const props = defineProps<MediaEmbedProps>()
+
+const media = props.src
+  ? { src: props.src!, width: props.width, height: props.height }
+  : resolveMedia(props.media ?? 'embed')
+
+const source = useMedia(media) as MediaItem
 
 function onLoad (event: Event) {
   (event.target as HTMLElement).style.opacity = '1'

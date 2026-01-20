@@ -1,6 +1,8 @@
 import { isDev } from '../../utils/config'
 
-export const Status = {
+export type PostVisibility = 'public' | 'preview' | 'unlisted'
+
+export const PostStatus = {
   // has a date, is published, and within 30 days of being published
   NEW: 'new',
 
@@ -20,21 +22,25 @@ export const Status = {
   HIDDEN: 'hidden',
 } as const
 
-export type StatusType = typeof Status[keyof typeof Status]
+export type StatusType = typeof PostStatus[keyof typeof PostStatus]
 
 export interface PageWithStatus {
   status?: StatusType
 }
 
 export function isPublished (page: PageWithStatus): boolean {
-  const unpublishedStatuses = [Status.DRAFT, Status.HIDDEN, Status.SCHEDULED] as readonly StatusType[]
+  const unpublishedStatuses = [PostStatus.DRAFT, PostStatus.HIDDEN, PostStatus.SCHEDULED] as readonly StatusType[]
   return !unpublishedStatuses.includes(page.status!)
 }
 
 export function isListed (page: PageWithStatus): boolean {
-  return page.status !== Status.UNLISTED || isDev
+  return page.status !== PostStatus.UNLISTED || isDev
 }
 
 export function isVisible (page: PageWithStatus): boolean {
   return isPublished(page) && isListed(page)
+}
+
+export function isPreview (page: PageWithStatus): boolean {
+  return page?.status === PostStatus.PREVIEW
 }

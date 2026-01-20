@@ -1,6 +1,6 @@
-import { Status } from '~/store/config/status'
+import { PostStatus } from '~/stores/config/status'
 
-const { HIDDEN, UNLISTED } = Status
+const { HIDDEN, UNLISTED } = PostStatus
 
 /**
  * Composable for applying consistent content filtering across the application.

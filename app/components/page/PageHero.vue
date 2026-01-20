@@ -2,9 +2,10 @@
   <div v-if="component" class="pageHero">
     <component
       :is="component"
-      :page="page"
-      scale
+      :media="preferred"
       :captions="false"
+      width="100%"
+      scale
     />
   </div>
 </template>
@@ -17,35 +18,48 @@ import MediaGallery from '../media/MediaGallery.vue'
 import MediaFeatured from '../media/MediaFeatured.vue'
 import { isImage, isPlainObject, isVideo } from '~/utils/assert'
 
-const props = withDefaults(defineProps<{
-  page: ContentItem
-  media?: string
-}>(), {
-  media: 'gallery',
-})
+const props = defineProps<{
+  page: ParsedPage
+}>()
 
 // Computed
 const preferred = computed(() => {
   const { media, hero } = props.page
   if (media) {
-    return media[hero] || media[props.media] || media.gallery || media.video || media.featured
+    if (hero && media[hero]) {
+      return hero
+    }
+    if (media.featured) {
+      return 'featured'
+    }
+    if (media.gallery) {
+      return 'gallery'
+    }
+    if (media.video) {
+      return 'video'
+    }
   }
-  return null
+  return ''
 })
 
 const component = computed(() => {
-  const source = preferred.value
-  if (!source) {
+  // key
+  const key = preferred.value
+  if (!key) {
     return null
   }
 
+  // source
+  const source = props.page.media?.[key]
+
+  // gallery
   if (Array.isArray(source)) {
     return MediaGallery
   }
 
   // single type
   const src = isPlainObject(source)
-    ? source.src || source.path
+    ? source.src
     : typeof source === 'string'
       ? source
       : ''

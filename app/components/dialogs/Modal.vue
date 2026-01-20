@@ -2,7 +2,7 @@
   <div class="modal" :class="classes">
     <div class="modal__background"></div>
     <div ref="container" class="modal__container">
-      <slot></slot>
+      <slot />
     </div>
   </div>
 </template>

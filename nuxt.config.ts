@@ -1,9 +1,30 @@
+import { fileURLToPath } from 'node:url'
+import ViteYaml from '@modyfi/vite-plugin-yaml'
+
+function resolve (path: string) {
+  return fileURLToPath(new URL(path, import.meta.url))
+}
+
+const source = {
+  local: {
+    driver: 'fs',
+    base: resolve('../davestewart-content/content/'),
+    name: 'content',
+  },
+  github: {
+    driver: 'github',
+    repo: 'davestewart/davestewart-content',
+    dir: 'content',
+  },
+}
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: [
     'nuxt-content-assets',
     '@nuxt/content',
     '@nuxt/eslint',
+    '@pinia/nuxt',
   ],
 
   components: {
@@ -26,6 +47,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'Dave Stewart',
+      titleTemplate: '%s | Dave Stewart',
       meta: [
         { name: 'theme-color', content: '#ea4848' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
@@ -46,6 +68,7 @@ export default defineNuxtConfig({
   ],
 
   experimental: {
+    appManifest: false,
     defaults: {
       nuxtLink: {
         trailingSlash: 'append',
@@ -54,6 +77,11 @@ export default defineNuxtConfig({
   },
 
   content: {
+    sources: {
+      content: process.env.NODE_ENV === 'production'
+        ? source.github
+        : source.local,
+    },
     navigation: {
       fields: [
         'title', 'description',
@@ -65,26 +93,19 @@ export default defineNuxtConfig({
         'remark-reading-time',
       ],
     },
-  },
-
-  experimental: {
-    appManifest: false,
-  },
-
-  vite: {
-    css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: `
-          @use "~/assets/styles/_variables.scss" as *;
-          @use "~/assets/styles/layout/_mixins.scss" as *;
-          `,
-        },
-      },
+    highlight: {
+      theme: 'min-light',
+      langs: [
+        'bash',
+        'ts', 'js',
+        'json', 'yaml',
+        'html', 'css', 'scss',
+        'vue', 'vue-html',
+        'xml', 'python', 'dotenv',
+      ],
     },
   },
 
-  // https://github.com/davestewart/nuxt-content-assets/#configuration
   contentAssets: {
     // add image size hints
     imageSize: 'style src',
@@ -96,6 +117,22 @@ export default defineNuxtConfig({
   eslint: {
     config: {
       stylistic: true,
+    },
+  },
+
+  vite: {
+    plugins: [
+      ViteYaml(),
+    ],
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: `
+          @use "~/assets/styles/_variables.scss" as *;
+          @use "~/assets/styles/layout/_mixins.scss" as *;
+          `,
+        },
+      },
     },
   },
 })

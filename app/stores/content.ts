@@ -1,13 +1,14 @@
+import { getParentPath, normalizePath } from '~/utils/content'
+import { computed } from 'vue'
+
 // ---------------------------------------------------------------------------------------------------------------------
 // types
 // ---------------------------------------------------------------------------------------------------------------------
 
-import { getParentPath, normalizePath } from '~/utils/content'
-
 /**
  * Raw data from Content API
  */
-interface NavItemRaw {
+interface ContentItemRaw {
   _path?: string
   type: 'folder' | 'post'
   // parentPath: string
@@ -27,66 +28,125 @@ interface NavItemRaw {
 /**
  * Filtered data for either folder or post item
  */
-export type NavItem = NavFolder | NavPage
+export type ContentItem = ContentFolder | ContentPage
 
 /**
  * Filtered data for folder item
  */
-export interface NavFolder {
+export interface ContentFolder {
   type: 'folder'
   path: string
   title: string
   description?: string
-  pages: NavItem[]
+  items: ContentItem[]
 }
 
 /**
  * Filtered data for post item
  */
-export interface NavPage {
+export interface ContentPage {
   type: 'post'
+  date: string
   path: string
   permalink?: string
   title: string
   shortTitle?: string
   description?: string
+  status?: string
+  github?: string
+  tags: string[]
   media: {
     thumbnail?: string
   }
-  date: string
-  status: string
-  tags: string[]
 }
 
 /**
  * Breadcrumbs for a given path
  */
-type NavBreadcrumb = {
+type ContentBreadcrumb = {
   path: string
   title: string
   description?: string
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// store
+// ---------------------------------------------------------------------------------------------------------------------
+
+export const useContentStore = defineStore('content', () => {
+  // variables
+  const route = useRoute()
+
+  const currentPath = ref('/')
+
+  const items = ref<ContentItem[]>([])
+
+  // track page data
+  const { title } = usePage()
+
+  // computed
+  const breadcrumbs = computed(() => {
+    return getContentParents(currentPath.value, title.value)
+  })
+
+  const siblings = computed(() => {
+    return getContentSiblings(currentPath.value)
+  })
+
+  const surround = computed(() => {
+    return getContentSurround(currentPath.value)
+  })
+
+  // Computed getters for your navigation functions
+  const getItems = computed(() => (path = '/') => {
+    return items.value?.filter(item => item.path.startsWith(path)) ?? []
+  })
+
+  const getPosts = computed(() => (options = {}) => {
+    // Your existing logic
+  })
+
+  // initializers
+  async function initServer () {
+    currentPath.value = route.path
+    items.value = await queryItems()
+  }
+
+  function initClient () {
+    const nuxtApp = useNuxtApp()
+    nuxtApp.hook('page:finish', () => {
+      currentPath.value = route.path
+    })
+  }
+
+  return {
+    // variables
+    currentPath,
+
+    // items
+    items,
+    breadcrumbs,
+    siblings,
+    surround,
+
+    // methods
+    getItems,
+    getPosts,
+
+    // initializers
+    initServer,
+    initClient,
+  }
+})
 
 // ---------------------------------------------------------------------------------------------------------------------
 // main state and query function
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
- * Global reactive state for all navigation items.
- */
-function useNavItems () {
-  return useState<NavItem[] | null>('nav-items', () => null)
-}
-
-/**
  * Makes the required query to the api via queryContent
  */
-export async function queryItems (): Promise<(NavItem[])> {
-  const items = useNavItems()
-  if (items.value) {
-    return items.value
-  }
-
+export async function queryItems (): Promise<(ContentItem[])> {
   const pages = await queryContent()
     .only([
       '_path',
@@ -101,6 +161,7 @@ export async function queryItems (): Promise<(NavItem[])> {
       'status',
       'tags',
       'media',
+      'github',
     ])
     .where({
       _extension: 'md',
@@ -109,12 +170,38 @@ export async function queryItems (): Promise<(NavItem[])> {
     .catch((err) => {
       console.error('[useFolder] Error:', err)
       return []
-    }) satisfies NavItemRaw[]
+    }) satisfies ContentItemRaw[]
+
+  // TODO add a sort by section helper
+  const sections = {
+    bio: 1,
+    products: 2,
+    projects: 3,
+    work: 4,
+    archive: 5,
+    blog: 6,
+  } as const
+
+  function sortSections (a: ContentItemRaw, b: ContentItemRaw) {
+    const aSection = a._path?.split('/')[1] || ''
+    const bSection = b._path?.split('/')[1] || ''
+    // @ts-ignore
+    const aIndex = sections[aSection] ?? 0
+    // @ts-ignore
+    const bIndex = sections[bSection] ?? 0
+    return aIndex - bIndex
+  }
+
+  // TODO sort by date for everything
+  // sort by section ONLY in surround?
 
   // build items
-  const mapped = pages
+  return pages
     // if an order is defined, sort by order, otherwise, sort by date
-    .sort((a: any, b: any) => {
+    // .sort((a, b) => {
+    //   return a._path!.localeCompare(b._path!)
+    // })
+    .sort((a, b) => {
       const orderA = a.order ?? 9999
       const orderB = b.order ?? 9999
       if (orderA !== orderB) {
@@ -134,9 +221,7 @@ export async function queryItems (): Promise<(NavItem[])> {
     //   const dateB = new Date(b.date || 0).getTime()
     //   return dateB - dateA
     // })
-    // .sort((a, b) => {
-    //   return a.parentPath.localeCompare(b.parentPath)
-    // })
+    .sort(sortSections)
 
     // convert pages to items
     .map((page) => {
@@ -148,8 +233,8 @@ export async function queryItems (): Promise<(NavItem[])> {
           title: page.title ?? '',
           description: page.description ?? '',
           order: page.order,
-          pages: [],
-        } as NavFolder
+          items: [],
+        } as ContentFolder
       }
       return {
         path: page._path!,
@@ -162,30 +247,35 @@ export async function queryItems (): Promise<(NavItem[])> {
         media: {
           thumbnail: page.media?.thumbnail,
         },
+        github: page.github,
         order: page.order,
         date: page.date,
         status: page.status,
         tags: page.tags,
-      } as NavPage
+      } as ContentPage
     })
-
-  items.value = mapped
-  return mapped
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // item functions
 // ---------------------------------------------------------------------------------------------------------------------
 
-interface NavItemOptions {
+interface ContentItemOptions {
   limit?: number
-  random?: boolean
-  sorted?: boolean
+  sort?: 'date' | 'path' | 'random'
 }
 
-export async function getItems (path = '/'): Promise<NavItem[]> {
+function filterVisible (items: ContentPage[]) {
+  return items
+    .filter(item => item.status !== 'draft')
+    .filter(item => item.status !== 'unlisted')
+    .filter(item => item.status !== 'hidden')
+    .filter(item => item.date)
+}
+
+export function getItems (path = '/'): ContentItem[] {
   // if items not loaded yet, load them
-  const items = await queryItems()
+  const { items } = useContentStore()
 
   // normalise path
   // const normalizedPath = path.endsWith('/') && path !== '/'
@@ -197,33 +287,35 @@ export async function getItems (path = '/'): Promise<NavItem[]> {
   return items.filter(item => item.path.startsWith(normalizedPath))
 }
 
-export async function getPosts (options: NavItemOptions = {}): Promise<NavPage[]> {
+export function getPosts (options: ContentItemOptions = {}): ContentPage[] {
+  // options
+  const sort = options.sort
+  const limit = options.limit
+
   // initial posts
-  let items = await getItems()
-  items = items
+  let items: ContentPage[] = getItems()
     .filter(item => item.type === 'post')
-    .filter(item => item.date)
-    .filter(item => item.status !== 'draft')
-    .filter(item => item.status !== 'unlisted')
-    .filter(item => item.media?.thumbnail)
-    .filter(item => !item.path.startsWith('/archive/'))
-    .filter(item => !item.path.startsWith('/blog/'))
+
+  // filter to visible
+  items = filterVisible(items)
 
   // options
-  if (options.sorted) {
-    items = items.sort((a, b) => {
-      const aDate = ('date' in a) ? new Date(a.date) : 0
-      const bDate = ('date' in b) ? new Date(b.date) : 0
-      return aDate < bDate ? 1 : -1
-    })
+  if (sort) {
+    if (sort === 'date' || sort === 'path') {
+      items = items.sort((a, b) => {
+        const aValue = (sort in a) ? a[sort] : 0
+        const bValue = (sort in b) ? b[sort] : 0
+        return aValue < bValue ? 1 : -1
+      })
+    }
+    else if (sort === 'random') {
+      items = items.sort(() => Math.random() > 0.5 ? 1 : -1)
+    }
   }
-  if (options.random) {
-    items = items.sort(() => Math.random() > 0.5 ? 1 : -1)
+  if (limit) {
+    items = items.slice(0, limit)
   }
-  if (options.limit) {
-    items = items.slice(0, options.limit)
-  }
-  return items as NavPage[]
+  return items as ContentPage[]
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -233,10 +325,10 @@ export async function getPosts (options: NavItemOptions = {}): Promise<NavPage[]
 /**
  * items from root to current page
  */
-export async function getNavParents (path: string): Promise<NavBreadcrumb[]> {
+export function getContentParents (path: string, fallbackTitle: string): ContentBreadcrumb[] {
   // variables
-  const items = await getItems('/')
-  const parents: NavBreadcrumb[] = [{ title: 'Home', path: '/' }]
+  const items = getItems('/')
+  const parents: ContentBreadcrumb[] = [{ title: 'Home', path: '/' }]
   let currentPath = '/'
 
   // build segments
@@ -262,8 +354,8 @@ export async function getNavParents (path: string): Promise<NavBreadcrumb[]> {
     // 404
     else {
       return [
-        parents[0] as NavBreadcrumb,
-        { title: '404' } as NavBreadcrumb,
+        parents[0] as ContentBreadcrumb,
+        { title: fallbackTitle } as ContentBreadcrumb,
       ]
     }
   }
@@ -275,17 +367,17 @@ export async function getNavParents (path: string): Promise<NavBreadcrumb[]> {
 /**
  * items at the same level as current page
  */
-export async function getNavSiblings (path: string): Promise<NavItem[]> {
+export function getContentSiblings (path: string): ContentItem[] {
   const parentPath = getParentPath(path)
-  const items = await getItems(parentPath)
+  const items = getItems(parentPath)
   return items.filter(p => getParentPath(p.path) === parentPath)
 }
 
 /**
  * items before and after current page
  */
-export async function getNavSurround (path: string): Promise<Array<NavPage | undefined>> {
-  const items = await getPosts()
+export function getContentSurround (path: string): Array<ContentPage | undefined> {
+  const items = getPosts()
   const index = items.findIndex((p: any) => p.path === path)
   if (index > -1) {
     return [
@@ -299,8 +391,8 @@ export async function getNavSurround (path: string): Promise<Array<NavPage | und
 /**
  * items from the target path down
  */
-export async function getNavTree (path: string) {
-  const items = await getItems(path)
+export function getContentTree (path: string) {
+  const items = getItems(path)
   const tree = makeTree(items, path)
 
   // Build headers for TOC (folder structure)
@@ -349,25 +441,25 @@ export function makeHeaders (tree: any[], rootTitle: string) {
  * @param pages
  * @param rootPath
  */
-export function makeTree (pages: (NavFolder | NavPage)[], rootPath: string): NavItem[] {
+export function makeTree (pages: (ContentFolder | ContentPage)[], rootPath: string): ContentItem[] {
   // Deep copy to allow mutation (nesting)
   // v3 items have 'stem', 'extension', 'meta', 'body', etc. mapped to top level properties usually
   // v2 items have path
   const nodes = pages.map((p) => {
-    return { ...p }
+    return clone(p)
   })
 
   const validNodes = nodes.filter(n => n.path !== rootPath && n.path.startsWith(rootPath))
 
   // Create a map for lookup
-  const map: Record<string, NavItem> = {}
+  const map: Record<string, ContentItem> = {}
   for (const n of validNodes) {
     map[n.path] = n
   }
 
-  const tree: NavItem[] = []
+  const tree: ContentItem[] = []
 
-  validNodes.forEach((node: NavItem) => {
+  validNodes.forEach((node: ContentItem) => {
     // Find parent logic
     const parentPath = getParentPath(node.path)
 
@@ -377,11 +469,11 @@ export function makeTree (pages: (NavFolder | NavPage)[], rootPath: string): Nav
     }
     else {
       if (map[parentPath]) {
-        const parent = map[parentPath] as NavFolder
-        if (!parent.pages) {
-          parent.pages = []
+        const parent = map[parentPath] as ContentFolder
+        if (!parent.items) {
+          parent.items = []
         }
-        parent.pages.push(node)
+        parent.items.push(node)
         // Auto-promote to folder if it has children
         if (map[parentPath].type !== 'folder') {
           // map[parentPath].type = 'folder'
@@ -390,5 +482,18 @@ export function makeTree (pages: (NavFolder | NavPage)[], rootPath: string): Nav
     }
   })
 
-  return tree
+  // depth-first search where we remove folders with no items
+  function pruneEmptyFolders (nodes: ContentItem[]): ContentItem[] {
+    return nodes
+      .filter((node: ContentItem) => {
+        if (node.type === 'folder') {
+          const folder = node as ContentFolder
+          folder.items = pruneEmptyFolders(folder.items)
+          return folder.items.length > 0
+        }
+        return true
+      })
+  }
+
+  return pruneEmptyFolders(tree)
 }

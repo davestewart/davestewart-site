@@ -8,16 +8,20 @@
 </template>
 
 <script setup lang="ts">
-import { useMedia } from '~/composables/useMedia'
-import MediaImage from './MediaImage'
+import { type MediaBase, resolveMedia, useMedia } from '~/composables/useMedia'
 
-const props = withDefaults(defineProps<{
-  page: ContentItem
-  media?: 'featured' | 'gallery' | 'video'
-}>(), {
-  media: 'featured',
-})
-const source = useMedia(props, 'featured')
+// Either a media key, or base media properties
+type MediaFeaturedProps =
+  | { media: MediaKey, src?: never, width?: never, height?: never, text?: never }
+  | { media?: never } & MediaBase & { text: string }
+
+const props = defineProps<MediaFeaturedProps>()
+
+const media = props.src
+  ? { src: props.src!, width: props.width, height: props.height }
+  : resolveMedia(props.media ?? 'featured')
+
+const source = useMedia(media) as MediaItem
 </script>
 
 <style lang="scss">

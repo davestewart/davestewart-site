@@ -1,56 +1,30 @@
 <template>
   <div v-if="date" class="pageDate">
-    <a
+    <NuxtLink
       class="pageDate__text"
-      :href="href"
+      :href="`/search/?year=${year}`"
       :title="relative"
-      @click.exact.prevent="onClick"
-    ><span class="only-sm">{{ dateShort }}</span><span class="only-md-up">{{ dateLong }}</span></a>
+    >
+      {{ dateShort }}
+    </NuxtLink>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
 import { format, formatDistance } from 'date-fns'
 
-export default {
-  props: {
-    date: {
-      type: String,
-    },
-  },
+const props = defineProps<{
+  date?: string
+}>()
 
-  computed: {
-    dateObject () {
-      return new Date(this.date)
-    },
+const dateObject = computed(() => (props.date ? new Date(props.date) : new Date()))
 
-    relative () {
-      return formatDistance(this.dateObject, new Date())
-    },
+const relative = computed(() => formatDistance(dateObject.value, new Date()))
 
-    dateShort () {
-      return format(this.dateObject, 'MMM yyyy')
-    },
+const dateShort = computed(() => format(dateObject.value, 'MMM yyyy'))
 
-    dateLong () {
-      return format(this.dateObject, 'MMMM yyyy')
-    },
-
-    year () {
-      return this.date.substr(0, 4)
-    },
-
-    href () {
-      return `/search/?year=${this.year}`
-    },
-  },
-
-  methods: {
-    onClick () {
-      this.$emit('click', this.href, this.date)
-    },
-  },
-}
+const year = computed(() => props.date?.slice(0, 4) || '')
 </script>
 
 <style lang="scss">
@@ -59,5 +33,9 @@ export default {
   padding: .3em .5em;
   white-space: nowrap;
   color: black !important;
+
+  &:hover span {
+    text-decoration: underline;
+  }
 }
 </style>

@@ -12,17 +12,22 @@
   },
   "dependencies": {
     "@cloudfour/simple-svg-placeholder": "^1.1.0",
+    "@hyvor/hyvor-talk-vue": "^1.0.1",
     "@nuxt/content": "^2.13.0",
     "@nuxt/eslint": "1.12.1",
+    "@pinia/nuxt": "0.11.3",
     "date-fns": "^4.1.0",
     "image-size": "^2.0.2",
     "nuxt": "^4.2.2",
     "nuxt-content-assets": "^1.8.0",
+    "pinia": "^3.0.4",
     "remark-reading-time": "^2.0.2",
     "rss": "^1.2.2",
-    "throttle-debounce": "^5.0.2"
+    "throttle-debounce": "^5.0.2",
+    "yaml": "^2.8.2"
   },
   "devDependencies": {
+    "@modyfi/vite-plugin-yaml": "^1.1.1",
     "@nuxt/kit": "^4.2.2",
     "@nuxt/schema": "^4.2.2",
     "@types/node": "^25.0.2",

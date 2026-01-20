@@ -28,12 +28,12 @@
 
     <div v-if="folders.length" class="pageTree__folders">
       <PageTree
-        v-for="page in folders"
-        :key="page.path"
-        :title="page.title"
-        :path="page.path"
-        :desc="page.desc || page.description"
-        :items="page.pages"
+        v-for="item in folders"
+        :key="item.path"
+        :title="item.title"
+        :path="item.path"
+        :desc="item.description"
+        :items="item.items"
         :format="format"
         :depth="(depth || 0) + 1"
       />
@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import PageItem from './PageItem.vue'
-import { isVisible } from '~/store/config/status'
+import { isVisible } from '~/stores/config/status'
 // We filtered in useFolder, so we might not need isVisible here if data is already clean.
 // But let's assume items passed might need filtering?
 // Actually useFolder filtered them.
@@ -81,7 +81,7 @@ const id = computed(() => props.title ? slugify(props.title) : '')
 // Let's stick to simple ID for now.
 
 const folders = computed(() => props.items.filter(item => item.type === 'folder'))
-const pages = computed(() => props.items.filter(item => item.type !== 'folder')) // assume already filtered for visibility
+const pages = computed(() => props.items.filter(item => item.type === 'post')) // assume already filtered for visibility
 
 // Heading component replacement
 // Use <component :is="h..." />
@@ -91,19 +91,16 @@ const headingTag = computed(() => `h${props.depth + 1}`)
 <style lang="scss">
 .pageTree {
   margin-bottom: .5em;
+  line-height: 1;
 
   // HEADER
 
   &__header {
-    //margin: 1rem -1rem .5rem;
-    //padding: .5rem 1rem;
-    //border-bottom: 1px dashed $borderColor;
-    margin: .5rem 0;
     padding: .5rem 0;
   }
 
   &__title {
-    margin: 0;
+    margin: 0 !important;
     font-size: 1.3rem;
 
     a {

@@ -4,13 +4,13 @@
       <Splash />
     </NuxtLink>
     <h1>I'm Dave,</h1>
-    <ContentRenderer id="content" :value="doc" class="pageContent" />
+    <ContentRenderer id="content" :value="page" class="pageContent" />
   </div>
 </template>
 
 <script setup lang="ts">
 defineProps<{
-  doc: any
+  page: ParsedPage
 }>()
 </script>
 

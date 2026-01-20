@@ -1,24 +1,20 @@
 <template>
   <UiControls class="pageInfo">
-    <PageDate v-if="doc.date" :date="doc.date" @click="search" />
-    <PageStats v-if="doc.duration" v-bind="doc.duration" />
-    <PageShare v-if="doc.isVisible" :page="doc" />
-    <Shield v-if="doc.repo" :repo="doc.repo" class="only-md-up" />
-    <TagList v-if="doc.tags" :tags="doc.tags" @click="search" />
+    <PageDate v-if="page.date" :date="page.date"/>
+    <PageStats v-if="page._path.startsWith('/blog/') && page.readingTime" v-bind="page.readingTime" />
+    <PageShare v-if="isVisible(page)" :page="page" />
+    <Shield v-if="page.github" :github="page.github" class="only-md-up" />
+    <TagList v-if="page.tags" :tags="page.tags" />
   </UiControls>
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-
 defineProps<{
-  doc: ContentItem
+  page: ParsedPage
 }>()
 
-const router = useRouter()
-
-const search = (href: string) => {
-  router.push(href)
+function isVisible (post: ParsedPage) {
+  return !!post
 }
 </script>
 

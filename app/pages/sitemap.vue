@@ -1,13 +1,14 @@
 <template>
   <div class="page-sitemap">
-    <Sitemap />
+    <h1>Sitemap</h1>
+    <PageTree :items="data?.tree" format="text" :depth="0" />
   </div>
 </template>
 
 <script setup lang="ts">
-import Sitemap from '~/components/views/Sitemap.vue'
-
-useHead({
-  title: 'Sitemap | Dave Stewart',
+definePageMeta({
+  title: 'Sitemap',
 })
+
+const data = computed(() => getContentTree('/'))
 </script>

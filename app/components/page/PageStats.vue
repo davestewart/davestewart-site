@@ -1,20 +1,17 @@
 <template>
-  <div v-if="minutes" class="pageStats">
-    <span class="pageStats__text" :title="`${words} words`">{{ Math.ceil(minutes) }} minute read</span>
+  <div v-if="text" class="pageStats">
+    <span
+      class="pageStats__text"
+      :title="`${words} words`"
+    >{{ text }}</span>
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    minutes: {
-      type: Number,
-    },
-    words: {
-      type: Number,
-    },
-  },
-}
+<script setup lang="ts">
+defineProps<{
+  text?: string
+  words?: number
+}>()
 </script>
 
 <style lang="scss">

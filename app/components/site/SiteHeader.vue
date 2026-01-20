@@ -1,48 +1,93 @@
 <template>
-  <transition name="fade">
-    <header v-if="scroll < 50 ? true : delta <= 0" class="siteHeader">
-      <div class="siteHeader__background">
-        <div class="layout__inner">
-          <div class="siteHeader__left">
-            <NavSite />
-            <NavBreadcrumbs />
-          </div>
-          <div class="siteHeader__right">
-            <NavSearch />
+  <header ref="el" class="siteHeader">
+    <transition name="fade">
+      <div v-if="scroll < 50 ? true : delta <= 0" class="siteHeader__el">
+        <div class="siteHeader__background">
+          <div class="layout__inner">
+            <div class="siteHeader__left">
+              <NavSite />
+              <NavBreadcrumbs />
+            </div>
+            <div class="siteHeader__right">
+              <NavSearch />
+            </div>
           </div>
         </div>
       </div>
-    </header>
-  </transition>
+    </transition>
+  </header>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
-import { useWindowScroll } from '@vueuse/core'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useWindowScroll, useWindowSize } from '@vueuse/core'
 
-const { y: scrollY } = useWindowScroll()
+const el = ref<HTMLElement | null>(null)
+const router = useRouter()
+
+// show or hide the header depending on the scroll direction
 const scroll = ref(0)
 const delta = ref(0)
-
-watch(scrollY, (val) => {
-  delta.value = val - scroll.value
-  scroll.value = val
+const { y: scrollY } = useWindowScroll({
+  onScroll: () => {
+    delta.value = scrollY.value - scroll.value
+    scroll.value = scrollY.value
+  },
 })
 
-// Initial set
+// pad the body and app scrolling depending on the header height
+const offset = ref(40)
+useHead({
+  style: computed(() => {
+    const value = `${offset.value}px`
+    return [`
+      body {
+        scroll-padding-top: ${value};
+      }
+      #app {
+        padding-top: ${value};
+      }
+    `]
+  }),
+})
+
+function updateHeader () {
+  offset.value = el.value?.offsetHeight || 40
+}
+
+const { width } = useWindowSize()
+watch(width, updateHeader)
+
+router.afterEach(updateHeader)
+
 onMounted(() => {
-  scroll.value = window.scrollY
+  updateHeader()
+  nextTick(() => updateHeader())
 })
-
-// Logic from template: scroll < 50 ? true : delta <= 0
-// However, the original had a v-if on the header.
-// It seems it hides the header when scrolling down, shows when scrolling up.
 </script>
 
 <style lang="scss">
+#app {
+  padding-top: 40px;
+}
+
+// header and footer
+.siteHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
 .siteHeader {
   font-family: $titleFont;
   user-select: none;
+
+  &__el {
+    border-bottom: 1px solid $borderColor;
+    background: white;
+  }
 
   // used to give all items reasonable outline padding
   a, .breadcrumb__text {
@@ -80,12 +125,8 @@ onMounted(() => {
 
 // animation
 .siteHeader {
-  opacity: 1;
-  transition: .6s opacity; // slow-out
-  transition-delay: .2s;
-
   // opacity
-  body.modal-raised & {
+  body.modal-raised &__el {
     opacity: 0;
     transition: .2s opacity; // fast-in
   }
@@ -95,7 +136,7 @@ onMounted(() => {
     transition: 1s box-shadow; // slow-out
   }
 
-  body.is-scrolled & .siteHeader__background{
+  body.is-scrolled & .siteHeader__background {
     box-shadow: 0 0 20px rgba(black, 0.07);
     transition: .3s box-shadow; // fast-in
   }

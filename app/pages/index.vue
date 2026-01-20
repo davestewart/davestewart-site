@@ -1,19 +1,17 @@
 <template>
   <div class="page-home">
-    <Home v-if="doc" :doc="doc" />
+    <HomeView v-if="data" :page="data" />
   </div>
 </template>
 
 <script setup lang="ts">
-import Home from '~/components/views/Home.vue'
+import HomeView from '~/components/views/HomeView.vue'
 
-const { data: doc } = await useAsyncData('home', () => {
-  return queryContent('/').findOne()
+const { data } = await useAsyncData('home', () => {
+  return queryContent<ParsedPage>('/').findOne()
 })
 
-provideContent(doc)
+provideContent(data)
 
-if (!doc.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Home page not found' })
-}
+usePageSeo(data)
 </script>

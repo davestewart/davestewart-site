@@ -9,22 +9,6 @@ body {
   scroll-padding-top: 48px;
 }
 
-#app {
-  padding-top: 48px;
-}
-
-// header and footer
-.siteHeader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  border-bottom: 1px solid $borderColor;
-  background: white;
-  // see component for animation regarding box shadow + opacity
-}
-
 .siteFooter {
   min-height: 80px;
   background: $footerBg;
@@ -34,7 +18,6 @@ body {
 .siteMain {
   min-height: calc(100vh - 45px - 80px - 100px);
   position: relative;
-  padding-top: 40px;
 }
 
 // horizontal layout - header

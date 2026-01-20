@@ -25,10 +25,10 @@ import { computed } from 'vue'
 import { useMedia } from '~/composables/useMedia'
 
 const props = defineProps<{
-  page: ContentItem
+  page: ContentPage
 }>()
 
-const source = useMedia({ page: props.page }, 'thumbnail')
+const source = useMedia(props.page.media.thumbnail)
 
 const title = computed(() => {
   const page = props.page

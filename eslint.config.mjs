@@ -49,6 +49,7 @@ export default withNuxt(
       '@stylistic/comma-dangle': ['error', 'always-multiline'],
       '@stylistic/brace-style': ['error', 'stroustrup'],
       '@stylistic/space-before-function-paren': ['error', 'always'],
+      '@stylistic/operator-linebreak': 'off',
 
       // Prefer function declarations over expressions
       'func-style': ['error', 'declaration', { allowArrowFunctions: true }],
@@ -60,15 +61,6 @@ export default withNuxt(
       'vue/max-attributes-per-line': ['error', {
         singleline: 3,
         multiline: 1,
-      }],
-      'vue/html-self-closing': ['error', {
-        html: {
-          void: 'always',
-          normal: 'never',
-          component: 'always',
-        },
-        svg: 'always',
-        math: 'always',
       }],
     },
   },

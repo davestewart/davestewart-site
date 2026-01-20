@@ -47,9 +47,9 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const { data: pages } = await useAsyncData('404-page', async () => {
-  return await getPosts({
-    random: true,
+const pages = computed(() => {
+  return getPosts({
+    sort: 'random',
     limit: 3,
   })
 })

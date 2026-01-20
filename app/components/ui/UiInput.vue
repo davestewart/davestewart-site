@@ -52,9 +52,9 @@ const input = computed({
     right: 0;
     bottom: 0;
     width: 30px;
-    line-height: 30px;
+    line-height: 30px !important;
     font-size: 1.3rem;
-    //font-weight: 600;
+    font-weight: 600;
     vertical-align: middle;
     text-align: center;
     color: $grey-light;

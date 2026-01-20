@@ -93,14 +93,14 @@
             </div>
           </div>
 
-          <!-- by folder -->
+          <!-- by path -->
           <div v-else-if="query.sort === 'path'" class="search__tree">
             <PageTree :format="query.format" :items="itemsAsTree" />
           </div>
 
           <!-- thumbnails -->
           <div v-else-if="query.sort === 'thumbs'" class="search__list">
-            <ThumbnailWall :pages="itemsAsList as NavPage[]" />
+            <ThumbnailWall :pages="itemsAsList as ContentPage[]" />
           </div>
         </div>
 
@@ -116,10 +116,8 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAsyncData } from '#app'
 import { onKeyStroke } from '@vueuse/core'
-import { makeTree } from '~/composables/useNavigation'
-import type { NavItem } from '~/composables/useNavigation'
+import { type ContentItem, makeTree } from '~/stores/content'
 
 // --- Types & Interfaces ---
 
@@ -135,11 +133,7 @@ interface Query {
   year: string
 }
 
-const plural = (count: number, noun: string) => {
-  return `${count} ${noun}${count !== 1 ? 's' : ''}`
-}
-
-const groupBy = (array: NavItem[], key: string, iteratee?: (val: NavItem) => any) => {
+function groupBy (array: ContentItem[], key: string, iteratee?: (val: ContentItem) => any) {
   const result: any = {}
   array.forEach((item) => {
     const val = (iteratee
@@ -151,7 +145,7 @@ const groupBy = (array: NavItem[], key: string, iteratee?: (val: NavItem) => any
   return Object.keys(result).sort().reverse().map(k => ({ title: k, items: result[k] }))
 }
 
-const makeTextFilter = (text: string, useOr = true) => {
+function makeTextFilter (text: string, useOr = true) {
   text = text.trim()
   if (text === '') return () => true
   const matches = text.toLowerCase().match(/\S+/g) || []
@@ -165,13 +159,28 @@ const makeTextFilter = (text: string, useOr = true) => {
     : (page: any) => predicates.every(fn => fn(page))
 }
 
-const makeTagsFilter = (tags: string[], useOr = false) => {
-  const orQuery = (page: any) => (page.tags ?? []).some((tag: string) => tags.includes(tag))
-  const andQuery = (page: any) => {
+function makeTagsFilter (tags: string[], useOr = false) {
+  const orQuery = (page: ContentPage) => (page.tags ?? []).some((tag: string) => tags.includes(tag))
+  const andQuery = (page: ContentPage) => {
     const pageTags = (page.tags ?? [])
     return tags.every((tag: string) => pageTags.includes(tag))
   }
-  return useOr ? orQuery : andQuery
+  const query = useOr ? orQuery : andQuery
+  return (item: ContentItem) => {
+    return item.type === 'folder' || query(item)
+  }
+}
+
+function makeDateFilter (year: string) {
+  return (item: ContentItem) => {
+    if (item.type === 'folder') {
+      return true
+    }
+    const pageYear = item.date
+      ? item.date.substring(0, 4)
+      : ''
+    return pageYear === year
+  }
 }
 
 const makeDefaultQuery = (): Query => ({
@@ -180,7 +189,7 @@ const makeDefaultQuery = (): Query => ({
   tags: [],
   tagsOp: 'and',
   filter: 'off',
-  sort: 'date',
+  sort: 'path',
   format: 'text',
   path: '',
   year: '',
@@ -209,7 +218,7 @@ const options = reactive({
 })
 
 // Data Fetching
-const { data: allPages } = await useAsyncData('search-all', () => getItems('/'))
+const allPages = computed(() => getItems('/'))
 
 // Filtering & Computed Props
 const paths = {
@@ -224,7 +233,7 @@ const paths = {
 
 const prepared = computed(() => {
   // Filter visible and searchable pages
-  let items = (allPages.value || []).filter((p: any) => !p.draft) // basic visibility check
+  let items = allPages.value.filter((p: any) => !p.draft) // basic visibility check
 
   items = items.filter((item: any) => {
     const path = item.path
@@ -243,7 +252,7 @@ const prepared = computed(() => {
 
 const filtered = computed(() => {
   let items = prepared.value
-  const { text, tags } = query
+  const { text, tags, year } = query
 
   if (tags.length) {
     items = items.filter(makeTagsFilter(tags as string[]))
@@ -251,6 +260,10 @@ const filtered = computed(() => {
 
   if (text) {
     items = items.filter(makeTextFilter(text))
+  }
+
+  if (year) {
+    items = items.filter(makeDateFilter(year))
   }
 
   return items
@@ -261,7 +274,7 @@ const itemsAsList = computed(() => {
 })
 
 const itemsByYear = computed(() => {
-  const items = itemsAsList.value.filter((item: any) => item.path !== '/')
+  let items = itemsAsList.value.filter((item: any) => item.path !== '/')
   return groupBy(items, 'date', (date: string) => date && date.substring(0, 4))
 })
 
@@ -317,13 +330,13 @@ const reset = () => {
   query.filter = def.filter
 }
 
-const toggleTag = (href: string, tag: string) => {
+const toggleTag = (tag: string) => {
   const idx = query.tags.indexOf(tag)
   if (idx === -1) query.tags.push(tag)
   else query.tags.splice(idx, 1)
 }
 
-const setTag = (href: string, tag: string) => {
+const setTag = (tag: string) => {
   query.tags = tag !== query.tags[0] ? [tag] : []
 }
 
@@ -361,6 +374,10 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+.layout__search {
+  margin-bottom: 4rem;
+}
+
 .search {
 
   .layout__folder {
@@ -419,11 +436,19 @@ onMounted(() => {
     /* transition? */
   }
 
+  &__results {
+    margin-top: 1rem
+  }
+
   &__tree {
 
     // hide descriptions for empty thumbnail folders
     .pageTree[data-pages="0"]>.pageTree__header>.pageTree__desc {
       display: none;
+    }
+
+    .pageTree {
+      margin-bottom: 1.5rem;
     }
   }
 
@@ -444,8 +469,6 @@ onMounted(() => {
 }
 
 .searchControls {
-
-  // Styles preserved
   @include md-up {
     margin-left: -1rem;
   }

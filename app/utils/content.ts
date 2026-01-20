@@ -1,4 +1,4 @@
-export function getTitle (page: NavPage) {
+export function getTitle (page: ContentPage) {
   return page.shortTitle || page.title
 }
 

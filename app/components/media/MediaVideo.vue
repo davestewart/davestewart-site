@@ -1,30 +1,29 @@
 <template>
   <div v-if="url" class="mediaVideo">
-    <pre>{{ { src, source } }}</pre>
     <iframe
       :src="url"
       :style="source.style"
       sandbox="allow-forms allow-scripts allow-pointer-lock allow-same-origin allow-top-navigation allow-presentation"
       allowFullScreen
-    ></iframe>
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useMedia } from '~/composables/useMedia'
+import { type MediaBase, resolveMedia, useMedia } from '~/composables/useMedia'
 
-const props = defineProps({
-  media: { type: String, default: 'video' },
-  src: String,
-  width: [String, Number],
-  height: [String, Number],
-  scale: { type: Boolean, default: false },
-  caption: String,
-  page: Object,
-})
+// Either a media key, or base media properties
+type MediaEmbedProps =
+  | { media: MediaKey, src?: never, width?: never, height?: never }
+  | { media?: never } & MediaBase
 
-const source = useMedia(props, 'video')
+const props = defineProps<MediaEmbedProps>()
+
+const media = props.src
+  ? { src: props.src!, width: props.width, height: props.height }
+  : resolveMedia(props.media ?? 'video')
+
+const source = useMedia(media) as MediaItem
 
 const url = computed(() => {
   const src = source.src

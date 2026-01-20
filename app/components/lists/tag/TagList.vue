@@ -4,48 +4,25 @@
       v-for="tag in tags"
       :key="tag"
       :tag="tag"
-      :selected="selected.includes(tag)"
+      :selected="selected?.includes(tag)"
       :valid="(valid || []).includes(tag)"
-    >
-      {{ tag.replace(/-/, ' ') }}
-    </TagItem>
+    />
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
 import TagItem from './TagItem.vue'
 
-export default {
-  components: {
-    TagItem,
-  },
+const props = withDefaults(defineProps<{
+  tags: string[]
+  selected?: string[]
+  valid?: string[]
+}>(), {
+  selected: () => [],
+})
 
-  props: {
-    tags: {
-      type: Array,
-      default () {
-        return []
-      },
-    },
-
-    selected: {
-      type: Array,
-      default () {
-        return []
-      },
-    },
-
-    valid: {
-      type: Array,
-    },
-  },
-
-  computed: {
-    showValid () {
-      return Array.isArray(this.valid)
-    },
-  },
-}
+const showValid = computed(() => Array.isArray(props.valid))
 </script>
 
 <style lang="scss">

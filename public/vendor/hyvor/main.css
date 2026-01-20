@@ -1,0 +1,197 @@
+/* ---------------------------------------------------------------------------------------------------------------------
+ * LAYOUT
+ */
+
+@import url("https://use.typekit.net/pxx7mug.css");
+
+:root {
+  --theme: #EA4848;
+}
+
+body {
+  font-size: 15px;
+  padding: 0;
+}
+
+body,
+.background-box {
+  color: #2C3E50;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * REACTIONS
+ */
+
+.reactions {
+  margin-bottom:0;
+}
+
+@media screen and (min-width: 768px) {
+  .reactions {
+    gap: 30px;
+  }
+}
+
+.reactions-title {
+  margin-bottom:25px;
+}
+
+.reactions-wrap {
+  position:relative;
+}
+
+.reaction {
+  margin-bottom:30px;
+  align-items: start;
+}
+
+.reaction img {
+  width:45px;
+  height:45px;
+}
+
+.reaction .reaction-text {
+  color:#BBB;
+  font-size: 1em;
+  margin-top: 10px;
+  margin-left: 7px;
+}
+
+.reaction:hover .reaction-text {
+  color:#333;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * COMMENTS LAYOUT
+ */
+
+.comments-box {
+  margin-top: 0;
+}
+
+.comment-writer {
+  background: var(--ht-color-input);
+  margin: 4px 10px;
+}
+
+.cb-header {
+  background: none !important;
+}
+
+.cb-body {
+  padding: 0;
+}
+
+.cb-footer {
+  display: none;
+}
+
+.comments-rendered:not(:empty) {
+  margin-top: 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid #EAECEF;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * DISPLAY FONTS
+ */
+
+.sort-name,
+.cvrt-name,
+.cvr-bottom,
+.cbh-comments-count {
+  font-family: europa, sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * WRITER
+ */
+
+.cbb-writer {
+  min-height: 110px;
+}
+
+.writer {
+  outline: 1px solid #eaecef;
+}
+
+.writer > * {
+  margin-right: -1px;
+}
+
+.w-placeholder {
+  opacity: .4;
+}
+
+.w-panel {
+  overflow-y: auto;
+  background: white;
+}
+
+textarea {
+  max-height: 200px;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * PREVIEW
+ */
+
+.preview-panel {
+  height: 15rem;
+}
+
+.preview-panel .loader {
+  position: relative;
+  top: 6.5rem;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * COMMENTS
+ */
+
+.comment.active > .comment-view:before {
+  background: #ea4848;
+}
+
+.cvr-middle {
+  margin: 1rem 0;
+}
+
+.cvr-bottom a {
+
+}
+
+.cvr-replier {
+  margin-top: 30px;
+}
+
+a.cvr-btn {
+  opacity: .3;
+}
+
+a.cvr-btn:hover {
+  opacity: 1;
+  color: var(--theme);
+}
+
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * FORMATTING
+ */
+
+blockquote {
+  margin: .5rem 1rem 1rem !important;
+  padding: 0.7rem 1rem !important;
+  border-color: var(--theme);
+}
+
+pre {
+  margin: 1rem;
+  line-height: 1.4;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * CODE
+ */

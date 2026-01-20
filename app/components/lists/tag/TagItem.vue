@@ -1,40 +1,31 @@
 <template>
-  <a
+  <NuxtLink
     class="tagList__tag"
-    :href="href"
+    :to="`/search/?tags=${props.tag}`"
     :class="{ selected, valid }"
-    @click.exact.shift.prevent="onClick('toggle')"
-    @click.exact.prevent="onClick('click')"
-  >{{ tag.replace(/-/, ' ') }}</a>
+    @click.capture="onClick"
+  >{{ tag.replace(/-/g, ' ') }}
+  </NuxtLink>
 </template>
 
-<script>
-export default {
-  props: {
-    tag: {
-      type: String,
-    },
+<script setup lang="ts">
+import { inject } from 'vue'
 
-    selected: {
-      type: Boolean,
-    },
+const props = defineProps<{
+  tag: string
+  selected?: boolean
+  valid?: boolean
+}>()
 
-    valid: {
-      type: Boolean,
-    },
-  },
+// eslint-disable-next-line
+const injected = inject<((tag: string, toggle: boolean) => void) | null>('handleTagClick', null)
 
-  computed: {
-    href () {
-      return `/search/?tags=${this.tag}`
-    },
-  },
-
-  methods: {
-    onClick (type) {
-      this.$parent.$emit(type, this.href, this.tag)
-    },
-  },
+// report when a child of TagMatrix
+function onClick (event: MouseEvent) {
+  if (injected) {
+    event.preventDefault()
+    injected(props.tag, event.shiftKey)
+  }
 }
 </script>
 
@@ -64,6 +55,7 @@ export default {
 
 .showValid a.tagList__tag {
   color: $grey-light;
+
   &.valid {
     color: $accentColor;
   }

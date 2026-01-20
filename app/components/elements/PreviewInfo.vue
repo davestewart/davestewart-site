@@ -20,23 +20,18 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { Status } from '../../store/config/status'
+import { PostStatus } from '~/stores/config/status'
 import { isProd } from '../../utils/config'
 import SiteIcon from '../site/SiteIcon.vue'
 
-const show = ref(false)
-const route = useRoute()
+const props = defineProps<{
+  page: ParsedPage
+}>()
 
-// Fetch current page content
-const { data: page } = await useAsyncData(`preview-info-${route.path}`, () => {
-  return queryContent(route.path).findOne()
-})
+const show = ref(false)
 
 onMounted(() => {
-  // Check if page status is 'preview'
-  // Note: Nuxt Content v3 document structure
-  if (isProd && (page.value as any)?.status === Status.PREVIEW) {
+  if (isProd && props.page?.status === PostStatus.PREVIEW) {
     show.value = true
   }
 })

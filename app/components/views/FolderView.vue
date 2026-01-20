@@ -1,17 +1,14 @@
 <template>
   <div class="layout__folder">
-    <h1>{{ doc.title }}</h1>
+    <h1>{{ page.title }}</h1>
     <p class="description">
-      {{ doc.description }}
+      {{ page.description }}
     </p>
 
     <!-- content -->
     <div class="pageContent">
       <!-- text -->
-      <ContentRenderer v-if="doc.body.children.length" :value="doc" />
-
-      <!-- navigation -->
-      <NavToc v-if="toc" :headers="headers" :level="toc" />
+      <ContentRenderer v-if="page.body?.children.length" :value="page" />
 
       <!-- folders -->
       <PageTree v-if="options.mode === 'tree'" :items="tree" :format="options.format" />
@@ -19,14 +16,6 @@
         <ThumbnailWall v-if="options.format === 'image'" :pages="listPages" />
         <PageList v-else :pages="listPages" />
       </template>
-
-      <!-- after -->
-      <!-- <Content slot-key="after" class="pageContent pageContent--bottom"/> -->
-      <!-- Nuxt Content 3 doesn't support slots like this easily without MDC components or slots in MD.
-           Assuming 'after' was a slot in the markdown file?
-           If standard markdown, it's just content. If specific slot, we need a way to target it.
-           Legacy VuePress slot-key="after" implies named slot content.
-           We might skip for now or use a custom component logic. -->
     </div>
   </div>
 </template>
@@ -34,10 +23,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { makeHeaders } from '~/composables/useNavigation'
+
+import { makeHeaders } from '~/stores/content'
 
 const props = defineProps<{
-  doc: any
+  page: ParsedPage
 }>()
 
 const route = useRoute()
@@ -56,16 +46,14 @@ const options = computed(() => {
 // Data
 // const { tree, pages, headers } = await useNavTree(route.path)
 
-const { data } = useAsyncData(`folder-${route.path}`, () => {
-  return getNavTree(route.path)
-})
+const data = computed(() => getContentTree(route.path))
 
 // const { data } = await useFolder()
 const tree = computed(() => data.value?.tree || [])
 const pages = computed(() => data.value?.pages || [])
 
-const headers = computed(() => makeHeaders(tree.value, props.doc.title))
-const toc = computed(() => props.doc.toc)
+const headers = computed(() => makeHeaders(tree.value, props.page.title))
+const toc = computed(() => props.page.toc)
 
 // Filtered pages for list view (legacy: pages not tree)
 // useFolder returns { tree, pages } where pages is the flat list of descendants.

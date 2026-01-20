@@ -6,8 +6,6 @@
         :tags="allTags"
         :selected="selected"
         :valid="valid"
-        @click="setTag"
-        @toggle="toggleTag"
       />
     </div>
 
@@ -19,8 +17,6 @@
           :tags="group.tags"
           :selected="selected"
           :valid="valid"
-          @click="setTag"
-          @toggle="toggleTag"
         />
       </div>
     </div>
@@ -28,9 +24,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useTags } from '~/composables/useTags'
-import { tagGroups } from '../../../store/config/tags'
+import { ref, computed, watch, provide } from 'vue'
+import { useSearchStore } from '~/stores/search'
 
 const components = ['list', 'groups']
 
@@ -42,12 +37,13 @@ const props = defineProps<{
 
 const emit = defineEmits(['click', 'toggle'])
 
+const store = useSearchStore()
+
 // Get all tags from store replacement
-const { tags } = await useTags()
-const allTags = computed(() => tags.value)
+const allTags = computed(() => store.tagList)
 
 const component = ref('list')
-const groups = computed(() => tagGroups)
+const groups = computed(() => store.tagGroups)
 
 // Valid tags are those that appear in the filtered pages
 const valid = computed(() => {
@@ -70,13 +66,11 @@ watch(() => props.mode, (value) => {
   }
 }, { immediate: true })
 
-function setTag (...args: any[]) {
-  emit('click', ...args)
+function handleTagClick (tag: string, toggle: boolean) {
+  emit(toggle ? 'toggle' : 'click', tag)
 }
 
-function toggleTag (...args: any[]) {
-  emit('toggle', ...args)
-}
+provide('handleTagClick', handleTagClick)
 </script>
 
 <style lang="scss">

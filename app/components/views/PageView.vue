@@ -1,29 +1,28 @@
 <template>
-  <div class="page" :data-path="doc._path">
-    <PageHero :page="doc" />
-    <h1>{{ doc.title }}</h1>
+  <div class="page" :data-path="page._path">
+    <PageHero :page="page" />
+    <h1>{{ page.title }}</h1>
     <p class="description">
-      {{ description }}
+      {{ page.description }}
     </p>
-    <PageInfo v-if="isPost" :doc="doc" />
-    <PreviewInfo :doc="doc" />
-    <ContentRenderer :value="doc" class="pageContent" />
+    <PageInfo v-if="isPost" :page="page" />
+    <PreviewInfo :page="page" />
+    <ContentRendererMarkdown
+      :value="page"
+      class="pageContent"
+    />
 
     <!-- comments -->
-    <PageFeedback
-      v-if="isPost"
-      website-id="6366"
-      title="So..."
-      :doc="doc"
-    />
+    <PageFeedback v-if="isPost" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import PageFeedback from '~/components/page/PageFeedback.vue'
 
 const props = defineProps<{
-  doc: ContentItem
+  page: ParsedPage
 }>()
 
 const isPost = computed(() => {
@@ -31,10 +30,8 @@ const isPost = computed(() => {
     '/bio/',
     '/nuxt-mentor/',
   ]
-  return !ignore.some(path => props.doc._path?.startsWith(path))
+  return !ignore.some(path => props.page._path?.startsWith(path))
 })
-
-const description = computed(() => props.doc.description)
 </script>
 
 <style lang="scss">
