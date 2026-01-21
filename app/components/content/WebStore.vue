@@ -10,25 +10,23 @@
       Note that you'll need to reload any loaded {{ rel }} pages after installation.
     </p>
     <p v-if="review" class="webStore__review">
-      {{ rel ? 'And if' : 'If' }} you make use of extension and like it, please consider <a :href="url('reviews')" target="_store">leaving a review</a> – it really helps with visibility!
+      {{ rel ? 'And if' : 'If' }} you make use of extension and like it, please consider
+      <a :href="url('reviews')" target="_store">leaving a review</a>
+      – it really helps with visibility!
     </p>
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    id: String,
-    name: String,
-    rel: String,
-    review: Boolean,
-  },
+<script setup lang="ts">
+const props = defineProps<{
+  id: string
+  name: string
+  rel?: string
+  review?: boolean
+}>()
 
-  methods: {
-    url (path = '') {
-      return `https://chromewebstore.google.com/detail/${this.id}/${path}`
-    },
-  },
+function url (path = '') {
+  return `https://chromewebstore.google.com/detail/${props.id}/${path}`
 }
 </script>
 

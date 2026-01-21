@@ -30,19 +30,10 @@ export default defineNuxtConfig({
   components: {
     dirs: [
       { path: '~/components', pathPrefix: false },
-      { path: '~/components/content', pathPrefix: false, global: true },
-      { path: '~/components/elements', pathPrefix: false, global: true },
-      { path: '~/components/lists/home', pathPrefix: false, global: true },
-      { path: '~/components/nav', pathPrefix: false, global: true },
-      { path: '~/components/media', pathPrefix: false, global: true },
-      { path: '~/components/embeds', pathPrefix: false, global: true },
-      { path: '~/components/site', pathPrefix: false, global: true },
     ],
   },
 
   devtools: { enabled: true },
-
-  compatibilityDate: '2025-07-15',
 
   app: {
     head: {
@@ -66,15 +57,6 @@ export default defineNuxtConfig({
   css: [
     '~/assets/styles/index.scss',
   ],
-
-  experimental: {
-    appManifest: false,
-    defaults: {
-      nuxtLink: {
-        trailingSlash: 'append',
-      },
-    },
-  },
 
   content: {
     sources: {
@@ -106,19 +88,16 @@ export default defineNuxtConfig({
     },
   },
 
-  contentAssets: {
-    // add image size hints
-    imageSize: 'style src',
-
-    // show debug messages
-    debug: false,
-  },
-
-  eslint: {
-    config: {
-      stylistic: true,
+  experimental: {
+    appManifest: false,
+    defaults: {
+      nuxtLink: {
+        trailingSlash: 'append',
+      },
     },
   },
+
+  compatibilityDate: '2025-07-15',
 
   vite: {
     plugins: [
@@ -133,6 +112,20 @@ export default defineNuxtConfig({
           `,
         },
       },
+    },
+  },
+
+  contentAssets: {
+    // add image size hints
+    imageSize: 'style src',
+
+    // show debug messages
+    debug: false,
+  },
+
+  eslint: {
+    config: {
+      stylistic: true,
     },
   },
 })

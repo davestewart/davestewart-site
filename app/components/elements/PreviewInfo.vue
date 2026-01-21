@@ -22,7 +22,6 @@
 import { ref, onMounted } from 'vue'
 import { PostStatus } from '~/stores/config/status'
 import { isProd } from '../../utils/config'
-import SiteIcon from '../site/SiteIcon.vue'
 
 const props = defineProps<{
   page: ParsedPage

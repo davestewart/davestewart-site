@@ -27,7 +27,6 @@ import { useRoute, useRouter } from '#app'
 import { onKeyStroke } from '@vueuse/core'
 import { getTitle } from '~/utils/content'
 
-
 const route = useRoute()
 const router = useRouter()
 const { surround: posts } = storeToRefs(useContentStore())

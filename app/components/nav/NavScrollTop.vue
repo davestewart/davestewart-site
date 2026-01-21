@@ -1,5 +1,5 @@
 <template>
-  <div class="scrollTop" @click="onClick">
+  <div ref="el" class="scrollTop" @click="onClick">
     <span class="scrollTop__inner">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -16,17 +16,26 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
 import { throttle } from 'throttle-debounce'
 
-const elements = {
+// size of graphic
+const size = 90
+
+const el = ref<HTMLElement>()
+
+interface Elements {
+  footerOuter: HTMLElement | null
+  footerInner: HTMLElement | null
+  target: HTMLElement | null
+}
+
+const elements: Elements = {
   footerOuter: null,
   footerInner: null,
   target: null,
 }
-
-// size of graphic
-const size = 90
 
 /**
  * NavScrollTop uses a combination of position:sticky and JS to position itself
@@ -34,75 +43,83 @@ const size = 90
  * position:sticky ensures it sticks to the bottom of the main content, and JS
  * pushes it above the bottom navigation when the page is narrow.
  */
-export default {
-  mounted () {
-    // elements
-    Object.assign(elements, {
-      footerOuter: document.querySelector('.siteFooter'),
-      footerInner: document.querySelector('.navSiblings'),
-      target: document.querySelector('.scrollTop__inner'),
-    })
 
-    // handlers
-    window.addEventListener('scroll', this.onEvent.bind(this))
-    window.addEventListener('resize', this.onEvent.bind(this))
+function update () {
+  if (!elements.target) {
+    return
+  }
 
-    // update
-    this.update()
-  },
+  // whether the graphic will overlap the footer navigation
+  const isNarrow = window.innerWidth < 900 + size + size
 
-  methods: {
-    update () {
-      // whether the graphic will overlap the footer navigation
-      const isNarrow = window.innerWidth < 900 + size + size
+  // offset
+  let offset = 0
 
-      // offset
-      let offset = 0
+  // offset the top of the scroll to top graphic if the page is narrow
+  if (isNarrow && elements.footerOuter) {
+    // y value of scroll
+    const y = window.scrollY + window.innerHeight
 
-      // offset the top of the scroll to top graphic if the page is narrow
-      if (isNarrow) {
-        // y value of scroll
-        const y = window.scrollY + window.innerHeight
+    // y value of footer
+    const b = elements.footerOuter.offsetTop
 
-        // y value of footer
-        const b = elements.footerOuter.offsetTop
+    // height of the footer navigation
+    const h = elements.footerInner?.offsetHeight ?? 40
 
-        // height of the footer navigation
-        const h = elements.footerInner?.offsetHeight ?? 40
+    // y value of limiting element
+    const yMax = isNarrow
+      ? b - h
+      : b
 
-        // y value of limiting element
-        const yMax = isNarrow
-          ? b - h
-          : b
+    // is the navigation visible?
+    const atTarget = y > yMax
 
-        // is the navigation visible?
-        const atTarget = y > yMax
+    // value will only ever be between 0 and height of footer navigation
+    offset = atTarget && isNarrow
+      ? Math.min(h, y - yMax)
+      : 0
+  }
 
-        // value will only ever be between 0 and height of footer navigation
-        offset = atTarget && isNarrow
-          ? Math.min(h, y - yMax)
-          : 0
-      }
-
-      // apply
-      elements.target.style.bottom = offset + 'px'
-    },
-
-    onEvent: throttle(10, function () {
-      this.update()
-    }),
-
-    onClick () {
-      // scroll to top
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-
-      // disable / reset styles etc
-      const classList = this.$el.classList
-      classList.add('disabled')
-      setTimeout(() => classList.remove('disabled'), 1300)
-    },
-  },
+  // apply
+  elements.target.style.bottom = offset + 'px'
 }
+
+const onEvent = throttle(10, () => {
+  update()
+})
+
+function onClick () {
+  if (!el.value) return
+
+  // scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+
+  // disable / reset styles etc
+  const classList = el.value.classList
+  classList.add('disabled')
+  setTimeout(() => classList.remove('disabled'), 1300)
+}
+
+onMounted(() => {
+  // elements
+  Object.assign(elements, {
+    footerOuter: document.querySelector('.siteFooter'),
+    footerInner: document.querySelector('.navSiblings'),
+    target: document.querySelector('.scrollTop__inner'),
+  })
+
+  // handlers
+  window.addEventListener('scroll', onEvent)
+  window.addEventListener('resize', onEvent)
+
+  // update
+  update()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', onEvent)
+  window.removeEventListener('resize', onEvent)
+})
 </script>
 
 <style lang="scss">
@@ -153,6 +170,7 @@ export default {
   opacity: 0 !important;
   cursor: default !important;
   pointer-events: none;
+
   svg {
     fill: $textColor !important;
   }

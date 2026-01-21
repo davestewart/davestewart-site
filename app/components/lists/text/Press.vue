@@ -7,21 +7,19 @@
         class="press__image mr-3"
         :src="image"
         :alt="name"
-      />
+      >
       <h4 class="press__title">{{ title }}</h4>
     </a>
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    name: String,
-    title: String,
-    image: String,
-    link: String,
-  },
-}
+<script setup lang="ts">
+defineProps<{
+  name: string
+  title: string
+  image: string
+  link: string
+}>()
 </script>
 
 <style lang="scss">

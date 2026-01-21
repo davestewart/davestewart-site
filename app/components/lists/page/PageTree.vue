@@ -48,12 +48,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import PageItem from './PageItem.vue'
-import { isVisible } from '~/stores/config/status'
-// We filtered in useFolder, so we might not need isVisible here if data is already clean.
-// But let's assume items passed might need filtering?
-// Actually useFolder filtered them.
-// Let's rely on passed items.
 
 defineOptions({
   name: 'PageTree',

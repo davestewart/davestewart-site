@@ -15,10 +15,6 @@
   </footer>
 </template>
 
-<script setup lang="ts">
-// Footer logic if any
-</script>
-
 <style lang="scss">
 .siteFooter {
   .layout__inner {

@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink class="siteBranding" to="/bio/" @click.prevent="onClick">
+  <NuxtLink class="siteBranding" to="/bio/">
     <SiteIcon class="siteBranding__icon" />
     <div class="siteBranding__text">
       <span>Dave Stewart</span>
@@ -7,19 +7,6 @@
     </div>
   </NuxtLink>
 </template>
-
-<script>
-export default {
-  methods: {
-    onClick (event) {
-      event.currentTarget.blur()
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      this.$router.push('/bio/').catch(() => {})
-      // setTimeout(() => , 750)
-    },
-  },
-}
-</script>
 
 <style lang="scss">
 .siteBranding {

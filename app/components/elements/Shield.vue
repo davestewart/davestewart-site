@@ -18,45 +18,44 @@
   </span>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { storage } from '../../utils/storage.js'
 
-export default {
-  props: {
-    github: String,
-  },
+const props = defineProps<{
+  github: string
+}>()
 
-  computed: {
-    src () {
-      return `https://img.shields.io/github/stars/${this.github}?style=flat&color=%23ea4848&label=Stars%3A&logo=github`
-    },
+const link = ref<HTMLAnchorElement>()
 
-    href () {
-      return `https://github.com/${this.github}#readme`
-    },
+const src = computed(() =>
+  `https://img.shields.io/github/stars/${props.github}?style=flat&color=%23ea4848&label=Stars%3A&logo=github`,
+)
 
-    key () {
-      return `badges/${this.github}`
-    },
-  },
+const href = computed(() =>
+  `https://github.com/${props.github}#readme`,
+)
 
-  mounted () {
-    const width = storage.get(this.key)
-    if (width) {
-      this.$refs.link.style.width = width + 'px'
+const key = computed(() =>
+  `badges/${props.github}`,
+)
+
+onMounted(() => {
+  const width = storage.get(key.value)
+  if (width && link.value) {
+    link.value.style.width = width + 'px'
+  }
+})
+
+function onLoad () {
+  if (!link.value) return
+  link.value.style.width = ''
+  nextTick(() => {
+    if (link.value) {
+      const width = link.value.offsetWidth
+      storage.set(key.value, width)
     }
-  },
-
-  methods: {
-    onLoad () {
-      const img = this.$refs.link
-      img.style.width = ''
-      this.$nextTick(() => {
-        const width = img.offsetWidth
-        storage.set(this.key, width)
-      })
-    },
-  },
+  })
 }
 </script>
 

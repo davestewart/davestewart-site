@@ -7,20 +7,16 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    visible: Boolean,
-  },
+<script setup lang="ts">
+import { computed } from 'vue'
 
-  computed: {
-    classes () {
-      return {
-        visible: this.visible,
-      }
-    },
-  },
-}
+const props = defineProps<{
+  visible: boolean
+}>()
+
+const classes = computed(() => ({
+  visible: props.visible,
+}))
 </script>
 
 <style lang="scss">

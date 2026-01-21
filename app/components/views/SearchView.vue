@@ -147,7 +147,9 @@ function groupBy (array: ContentItem[], key: string, iteratee?: (val: ContentIte
 
 function makeTextFilter (text: string, useOr = true) {
   text = text.trim()
-  if (text === '') return () => true
+  if (text === '') {
+    return () => true
+  }
   const matches = text.toLowerCase().match(/\S+/g) || []
   const predicates = matches.map((t) => {
     return t.startsWith('/')

@@ -19,7 +19,9 @@
 
     <SiteIcon size="32" fill="#EA4848" />
 
-    <Comments :website-id="6366" :settings="settings" />
+    <ClientOnly>
+      <Comments :website-id="6366" :settings="settings" />
+    </ClientOnly>
   </div>
 </template>
 

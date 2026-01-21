@@ -7,14 +7,12 @@
   ><span :style="`background-image:url(/assets/icons/${name}.svg)`">&nbsp;</span></a>
 </template>
 
-<script>
-export default {
-  props: {
-    name: String,
-    href: String,
-    color: String,
-  },
-}
+<script setup lang="ts">
+defineProps<{
+  name: string
+  href: string
+  color: string
+}>()
 </script>
 
 <style lang="scss">

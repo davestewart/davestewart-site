@@ -36,7 +36,7 @@
     <!-- dropdown -->
     <div v-if="visible" ref="dropdown" class="navSite__dropdown">
       <div class="navSite__branding">
-        <SiteBranding @click.native="hide" />
+        <SiteBranding @click="hide" />
       </div>
       <NavSections headers @click="hide" />
       <p class="navSite__promo">
@@ -46,25 +46,19 @@
   </nav>
 </template>
 
-<script>
-export default {
-  data () {
-    return {
-      visible: false,
-    }
-  },
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
-  watch: {
-    '$route.path' () {
-      this.visible = false
-    },
-  },
+const route = useRoute()
+const visible = ref(false)
 
-  methods: {
-    hide () {
-      this.visible = false
-    },
-  },
+watch(() => route.path, () => {
+  visible.value = false
+})
+
+function hide () {
+  visible.value = false
 }
 </script>
 

@@ -12,10 +12,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import MediaEmbed from '../media/MediaEmbed.vue'
-import MediaVideo from '../media/MediaVideo.vue'
-import MediaGallery from '../media/MediaGallery.vue'
-import MediaFeatured from '../media/MediaFeatured.vue'
 import { isImage, isPlainObject, isVideo } from '~/utils/assert'
 
 const props = defineProps<{
