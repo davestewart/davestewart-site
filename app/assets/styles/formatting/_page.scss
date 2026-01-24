@@ -313,6 +313,18 @@ a span {
   margin-left: 2px;
 }
 
+.pageContent {
+  a[target]:not(:has(img))::after {
+    content: url('/assets/img/external-link.svg');
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-left: 2px;
+    vertical-align: -2px;
+    opacity: 0.5;
+  }
+}
+
 // hide external link indicators by switch
 .no-external a span {
   display: none;

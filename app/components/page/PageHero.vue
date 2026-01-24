@@ -13,6 +13,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { isImage, isPlainObject, isVideo } from '~/utils/assert'
+import { MediaEmbed, MediaGallery, MediaFeatured, MediaVideo } from '#components'
 
 const props = defineProps<{
   page: ParsedPage

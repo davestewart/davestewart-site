@@ -46,7 +46,7 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' },
       ],
       link: [
-        { rel: 'shortcut icon', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
       ],
       script: [
         { src: 'https://gumroad.com/js/gumroad.js', async: true },

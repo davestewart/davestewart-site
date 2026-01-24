@@ -73,9 +73,9 @@ const sections = computed(() => {
       createLink('/search/', 'Search', 'Search portfolio'),
     ]),
     createSection('Creation', [
+      createLink('/work/', 'Work'),
       createLink('/products/', 'Products'),
       createLink('/projects/', 'Projects'),
-      createLink('/work/', 'Work'),
       createLink('/archive/', 'Archive'),
       createLink('/projects/personal/dave-stewart/', 'Site', 'Info and site source code'),
     ]),
