@@ -5,21 +5,31 @@ function resolve (path: string) {
   return fileURLToPath(new URL(path, import.meta.url))
 }
 
-const source = {
-  local: {
+function source (name: string, dir = '') {
+  if (process.env.NODE_ENV === 'production') {
+    return {
+      driver: 'github',
+      repo: `davestewart/${name}`,
+      token: process.env.GITHUB_TOKEN,
+      dir,
+    }
+  }
+  return {
     driver: 'fs',
-    base: resolve('../davestewart-content/content/'),
-    name: 'content',
-  },
-  github: {
-    driver: 'github',
-    repo: 'davestewart/davestewart-content',
-    dir: 'content',
-  },
+    base: resolve(`../${name}/${dir}`),
+  }
 }
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  extends: [
+    'themes/core',
+  ],
+
+  dir: {
+    public: resolve('./public'),
+  },
+
   modules: [
     'nuxt-content-assets',
     '@nuxt/content',
@@ -60,9 +70,8 @@ export default defineNuxtConfig({
 
   content: {
     sources: {
-      content: process.env.NODE_ENV === 'production'
-        ? source.github
-        : source.local,
+      content: source('davestewart-content', 'content'),
+      showcase: source('davestewart-showcase'),
     },
     navigation: {
       fields: [
