@@ -40,8 +40,8 @@ h5 {
 }
 
 h1 {
-  margin-top: .5rem;
-  font-size: 2.2rem;
+  margin-top: 0;
+  font-size: 3rem;
 }
 
 p.description {
@@ -59,7 +59,7 @@ strong {
 small {
   font-size: .85em;
 
-  br+& {
+  br +& {
     vertical-align: top;
   }
 }
@@ -84,7 +84,7 @@ em strong {
 
 .pageContent {
 
-  margin-bottom: 2rem;
+  padding-bottom: 2rem;
   line-height: 1.7; // Open Sans
 
   &--bottom {
@@ -119,16 +119,16 @@ em strong {
     font-size: 1.1em;
     margin-bottom: 0.5em;
 
-    &+p {
+    & + p {
       margin-top: 0;
     }
   }
 
-  h1+h2,
-  h2+h3,
-  h2+h4,
-  h3+h4,
-  h4+h5 {
+  h1 + h2,
+  h2 + h3,
+  h2 + h4,
+  h3 + h4,
+  h4 + h5 {
     margin-top: 0;
   }
 
@@ -159,7 +159,7 @@ em strong {
   }
 
   // top-level lists with nested content
-  >ul>li>p:first-child {
+  > ul > li > p:first-child {
     margin-top: 1rem;
   }
 
@@ -194,8 +194,8 @@ em strong {
   }
 
   video,
-  p>video,
-  p>img {
+  p > video,
+  p > img {
     display: block;
     margin: 2rem auto;
 
@@ -280,11 +280,11 @@ blockquote:not([class]) {
     margin-top: 0;
   }
 
-  >p:first-child {
+  > p:first-child {
     margin-top: 0;
   }
 
-  >p:last-child {
+  > p:last-child {
     margin-bottom: 0;
   }
 }
@@ -314,14 +314,16 @@ a span {
 }
 
 .pageContent {
-  a[target]:not(:has(img))::after {
-    content: url('/assets/img/external-link.svg');
-    display: inline-block;
-    width: 15px;
-    height: 15px;
-    margin-left: 2px;
-    vertical-align: -2px;
-    opacity: 0.5;
+  p, li {
+    a:not([href^="#"]):not([href^="/"]):not([class]):not(:has(img))::after {
+      content: url('/assets/img/external-link.svg');
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      margin-left: 2px;
+      vertical-align: -2px;
+      opacity: 0.5;
+    }
   }
 }
 
@@ -331,7 +333,7 @@ a span {
 }
 
 // hide external link indicators for images
-a img+span {
+a img + span {
   display: none;
 }
 

@@ -13,7 +13,7 @@
     />
 
     <!-- comments -->
-    <PageFeedback v-if="isPost" />
+    <PageFeedback v-if="isPost && feedback !== false" />
   </div>
 </template>
 
@@ -23,7 +23,11 @@ import PageFeedback from '~/components/page/PageFeedback.vue'
 
 const props = defineProps<{
   page: ParsedPage
+  info?: boolean
+  feedback?: boolean
 }>()
+
+provideContent(ref(props.page))
 
 const isPost = computed(() => {
   const ignore = [

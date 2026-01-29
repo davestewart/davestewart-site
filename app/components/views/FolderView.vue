@@ -46,7 +46,7 @@ const options = computed(() => {
 // Data
 // const { tree, pages, headers } = await useNavTree(route.path)
 
-const data = computed(() => getContentTree(route.path))
+const data = computed(() => getContentTree(props.page._path!))
 
 // const { data } = await useFolder()
 const tree = computed(() => data.value?.tree || [])
@@ -66,6 +66,6 @@ const toc = computed(() => props.page.toc)
 const listPages = computed(() => {
   // Filter out folders or specific items if needed
   // Return flat list
-  return pages.value.filter((p: any) => p.path !== route.path && p.layout !== 'folder')
+  return pages.value.filter((p: any) => p.path !== props.page._path && p.layout !== 'folder')
 })
 </script>

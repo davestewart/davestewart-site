@@ -4,6 +4,7 @@
     v-if="data"
     :page="data"
   />
+  <NotFound v-else />
 </template>
 
 <script setup lang="ts">
@@ -17,7 +18,7 @@ const route = useRoute()
 /**
  * All content pages
  */
-const { data } = await useAsyncData(`page-${route.path}`, () => {
+const { data, error } = await useAsyncData(`page-${route.path}`, () => {
   // @see https://v2.content.nuxt.com/usage/typescript#type-augmentation
   return queryContent<ParsedPage>()
     .where({
@@ -32,15 +33,16 @@ const { data } = await useAsyncData(`page-${route.path}`, () => {
 provideContent(data)
 usePageSeo(data)
 
-const getViewComponent = (data: ParsedPage | undefined) => {
-  if (!data) {
+const getViewComponent = (content: ParsedPage | undefined) => {
+  if (error.value || !content) {
     return NotFound
   }
 
-  switch (data.type) {
+  switch (content.type) {
     case 'folder':
       return FolderView
     case 'post':
+      return PageView
     default:
       return PageView
   }
