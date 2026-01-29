@@ -1,12 +1,21 @@
 <template>
-  <NuxtLink class="siteBranding" to="/bio/">
+  <NuxtLink class="siteBranding" :to="to">
     <SiteIcon class="siteBranding__icon" />
-    <div class="siteBranding__text">
+    <div v-if="!icon" class="siteBranding__text">
       <span>Dave Stewart</span>
       <span>Web Developer + Indie Maker</span>
     </div>
   </NuxtLink>
 </template>
+
+<script lang="ts" setup>
+withDefaults(defineProps<{
+  icon?: boolean
+  to?: string
+}>(), {
+  to: '/',
+})
+</script>
 
 <style lang="scss">
 .siteBranding {
@@ -58,7 +67,7 @@
     }
   }
 
-  .navSite &,
+  .navSide &,
   &:hover {
     svg {
       fill: $accentColor;

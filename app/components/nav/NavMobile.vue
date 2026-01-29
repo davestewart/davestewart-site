@@ -1,8 +1,8 @@
 <template>
-  <nav class="navSite">
+  <nav class="navMobile">
     <!-- button -->
-    <div class="navSite__button" @click="visible = !visible">
-      <svg width="15px" height="14px" viewBox="0 0 15 14">
+    <div class="navMobile__button" @click="visible = !visible">
+      <svg width="20px" height="20px" viewBox="0 0 15 14">
         <rect
           id="bar-1"
           fill="currentColor"
@@ -31,15 +31,15 @@
     </div>
 
     <!-- background -->
-    <div v-if="visible" class="navSite__background" @mousedown="hide"></div>
+    <div v-if="visible" class="navMobile__background" @mousedown="hide"></div>
 
     <!-- dropdown -->
-    <div v-if="visible" ref="dropdown" class="navSite__dropdown">
-      <div class="navSite__branding">
+    <div v-if="visible" ref="dropdown" class="navMobile__dropdown">
+      <div class="navMobile__branding">
         <SiteBranding @click="hide" />
       </div>
       <NavSections headers @click="hide" />
-      <p class="navSite__promo">
+      <p class="navMobile__promo">
         Are you looking for a new <a href="https://controlspace.app" target="_blank">tab manager</a>?
       </p>
     </div>
@@ -65,7 +65,7 @@ function hide () {
 <style lang="scss">
 @use 'sass:color';
 
-.navSite {
+.navMobile {
   height: 100%;
   display: flex;
   align-items: center;

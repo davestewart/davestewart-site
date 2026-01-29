@@ -106,6 +106,12 @@ export const useContentStore = defineStore('content', () => {
     // Your existing logic
   })
 
+  const getPost = computed(() => (path: string): ContentPage | undefined => {
+    return items.value
+      ?.filter(item => item.type === 'post')
+      .find(item => item.path === path || item.permalink === path) ?? undefined
+  })
+
   // initializers
   async function initServer () {
     currentPath.value = route.path
@@ -132,6 +138,7 @@ export const useContentStore = defineStore('content', () => {
     // methods
     getItems,
     getPosts,
+    getPost,
 
     // initializers
     initServer,

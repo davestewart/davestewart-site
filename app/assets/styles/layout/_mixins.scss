@@ -2,6 +2,7 @@
   @media screen and (max-width: 430px) { @content }
 }
 
+
 @mixin md-down {
   @media screen and (max-width: 740px) { @content }
 }
@@ -14,6 +15,16 @@
   @media screen and (min-width: 431px) { @content }
 }
 
+
 @mixin lg {
   @media screen and (min-width: 741px) { @content }
+}
+
+
+@mixin xl-down {
+  @media screen and (max-width: 1440px) { @content }
+}
+
+@mixin xl {
+  @media screen and (min-width: 1441px) { @content }
 }

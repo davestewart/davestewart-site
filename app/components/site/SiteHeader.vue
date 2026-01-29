@@ -1,11 +1,26 @@
 <template>
-  <header ref="el" class="siteHeader">
-    <transition name="fade">
-      <div v-if="scroll < 50 ? true : delta <= 0" class="siteHeader__el">
+  <SmartHeader
+    v-slot="{ style }"
+    mode="slide-trigger"
+    :height="60"
+    :scroll-down-scalar="0.1"
+    :scroll-up-scalar="0.5"
+    :navigation-duration="0"
+  >
+    <header
+      ref="el"
+      class="siteHeader"
+      :style="{
+        ...style,
+        boxShadow: `0 0 calc(var(--value) * 20px) rgba(0, 0, 0, 1)`,
+      }"
+    >
+      <div class="siteHeader__el">
         <div class="siteHeader__background">
           <div class="layout__inner">
             <div class="siteHeader__left">
-              <NavSite />
+              <NavMobile />
+              <NavTop />
               <NavBreadcrumbs />
             </div>
             <div class="siteHeader__right">
@@ -14,37 +29,27 @@
           </div>
         </div>
       </div>
-    </transition>
-  </header>
+    </header>
+  </SmartHeader>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { useWindowScroll, useWindowSize } from '@vueuse/core'
+import { useWindowSize } from '@vueuse/core'
 
 const el = ref<HTMLElement | null>(null)
 const router = useRouter()
 
-// show or hide the header depending on the scroll direction
-const scroll = ref(0)
-const delta = ref(0)
-const { y: scrollY } = useWindowScroll({
-  onScroll: () => {
-    delta.value = scrollY.value - scroll.value
-    scroll.value = scrollY.value
-  },
-})
-
 // pad the body and app scrolling depending on the header height
-const offset = ref(40)
+const offset = ref(51)
 useHead({
   style: computed(() => {
     const value = `${offset.value}px`
     return [`
-      body {
+      html {
         scroll-padding-top: ${value};
       }
-      #app {
+      .layout__default {
         padding-top: ${value};
       }
     `]
@@ -52,7 +57,10 @@ useHead({
 })
 
 function updateHeader () {
-  offset.value = el.value?.offsetHeight || 40
+  const value = el.value?.offsetHeight
+  if (value) {
+    offset.value = value
+  }
 }
 
 const { width } = useWindowSize()
@@ -67,8 +75,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
-#app {
-  padding-top: 40px;
+html {
+  scroll-padding-top: 51px;
 }
 
 // header and footer
@@ -87,16 +95,24 @@ onMounted(() => {
   &__el {
     border-bottom: 1px solid $borderColor;
     background: white;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   // used to give all items reasonable outline padding
   a, .breadcrumb__text {
-    padding: 2px 6px;
+    //padding: 2px 6px;
   }
 
   .layout__inner {
     // pull in padding because breadcrumbs already contain bottom margin
-    padding: 0;
+    padding: 0 1rem;
+    @include xl-down {
+      padding-left: 0;
+      padding-right: 0;
+    }
   }
 
   @include full {
@@ -123,22 +139,47 @@ onMounted(() => {
   }
 }
 
+.navTop {
+  display: none;
+}
+
+.navMobile,
+.navBreadcrumbs {
+  display: flex;
+}
+
+@include lg {
+  .navTop {
+    display: flex;
+  }
+  .navBreadcrumbs,
+  .navMobile {
+    display: none;
+  }
+}
+
 // animation
 .siteHeader {
-  // opacity
-  body.modal-raised &__el {
+  // opacity for preview modal
+  &__el {
+    opacity: 1;
+    transition: .5s opacity;
+    transition-delay: 0.25s;
+  }
+
+  body.preview-raised &__el {
+    transition-delay: 0s;
     opacity: 0;
-    transition: .2s opacity; // fast-in
   }
 
   // shadow
   &__background {
-    transition: 1s box-shadow; // slow-out
+    //transition: 1s box-shadow; // slow-out
   }
 
-  body.is-scrolled & .siteHeader__background {
-    box-shadow: 0 0 20px rgba(black, 0.07);
-    transition: .3s box-shadow; // fast-in
+  body.is-scrolled & .siteHeader__el {
+    //box-shadow: 0 0 20px rgba(black, 0.07);
+    //transition: .3s box-shadow; // fast-in
   }
 }
 </style>

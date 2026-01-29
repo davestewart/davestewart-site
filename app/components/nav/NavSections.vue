@@ -17,16 +17,13 @@
         @click="$emit('click')"
       >
         <span class="navSections__text">{{ link.title }}</span>
-        <span class="navSections__desc">{{ link.description || getDescription(link.path) }}</span>
+        <span class="navSections__desc">{{ link.description }}</span>
       </NuxtLink>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { getItems } from '#imports'
-
 defineProps<{
   headers?: boolean
 }>()
@@ -35,56 +32,7 @@ defineEmits<{
   (e: 'click'): void
 }>()
 
-const paths = computed(() => {
-  return sections.value.flatMap(section =>
-    section.links.map(link => link.path),
-  )
-})
-
-const allPages = computed(() => {
-  const items = getItems()
-  return items.filter(item => paths.value.includes(item.path))
-})
-
-type Link = {
-  path: string
-  title: string
-  description?: string
-}
-
-// helpers
-const createLink = (path: string, title: string, description = ''): Link => {
-  return { path, title, description }
-}
-
-const createSection = (name: string, links: Link[]) => {
-  return { name, links }
-}
-
-function getDescription (path: string) {
-  return allPages.value?.find(page => page.path === path)?.description ?? ''
-}
-
-const sections = computed(() => {
-  return [
-    createSection('Navigation', [
-      createLink('/', 'Home', 'Back to the Home page'),
-      createLink('/sitemap/', 'Site map', 'Full list of everything on the site'),
-      createLink('/search/', 'Search', 'Search portfolio'),
-    ]),
-    createSection('Creation', [
-      createLink('/work/', 'Work'),
-      createLink('/products/', 'Products'),
-      createLink('/projects/', 'Projects'),
-      createLink('/archive/', 'Archive'),
-      createLink('/projects/personal/dave-stewart/', 'Site', 'Info and site source code'),
-    ]),
-    createSection('Ideation', [
-      createLink('/blog/', 'Blog'),
-      createLink('/bio/', 'Bio'),
-    ]),
-  ]
-})
+const { sections } = useNavStore()
 </script>
 
 <style lang="scss">
@@ -163,7 +111,9 @@ const sections = computed(() => {
 
   &__text {
     display: block;
-    font: $titleFont;
+    font-family: $titleFont;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
   }
 
   &__desc {

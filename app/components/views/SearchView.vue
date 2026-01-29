@@ -13,10 +13,11 @@
 
       <!-- parameters -->
       <div class="search__parameters">
-        <!-- clear -->
+        <!-- clear
         <button class="search__clear" :class="{ active: canReset }" @click.prevent="reset">
           <span>&times;</span>
         </button>
+         -->
 
         <div class="searchControls">
           <UiControls class="only-sm">
@@ -81,8 +82,7 @@
               :data-mode="query.format"
             >
               <div class="pageTree__header">
-                <a :id="group.title"></a>
-                <h2 class="pageTree__title">
+                <h2 :id="`year_${group.title}`" class="pageTree__title">
                   {{ group.title }}
                 </h2>
               </div>
@@ -116,7 +116,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { onKeyStroke } from '@vueuse/core'
+import { onKeyDown, onKeyStroke } from '@vueuse/core'
 import { type ContentItem, makeTree } from '~/stores/content'
 
 // --- Types & Interfaces ---
@@ -127,7 +127,8 @@ interface Query {
   tags: string[]
   tagsOp: string
   filter: string
-  sort: string
+  group: 'path' | 'date'
+  sort: 'path' | 'date'
   format: 'text' | 'image'
   path: string
   year: string
@@ -154,7 +155,10 @@ function makeTextFilter (text: string, useOr = true) {
   const predicates = matches.map((t) => {
     return t.startsWith('/')
       ? (page: any) => page.path && page.path.includes(t)
-      : (page: any) => ((page.title || '') + (page.description || page.frontmatter?.description || '')).toLowerCase().includes(t)
+      : (page: any) => {
+        console.log({ t, page })
+        return ((page.title || '') + (page.description || '')).toLowerCase().includes(t)
+      }
   })
   return useOr
     ? (page: any) => predicates.some(fn => fn(page))
@@ -265,7 +269,7 @@ const filtered = computed(() => {
   }
 
   if (year) {
-    items = items.filter(makeDateFilter(year))
+    // items = items.filter(makeDateFilter(year))
   }
 
   return items
@@ -358,20 +362,28 @@ onKeyStroke('Escape', (e) => {
   // history.back() // removed for now
 })
 
-// Focus logic
-const focus = () => {
-  // need to access UiInput inner input or just rely on autofocus
-  // searchInput ref might be component instance.
-}
 
 onMounted(() => {
-  if (import.meta.client) {
-    document.title = 'Search | Dave Stewart'
-    if (query.year) {
-      query.sort = 'date'
-      // scrollTo logic...
+  function onKeyDown (event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      if (!query.text) {
+        history.back()
+      }
     }
   }
+  document.addEventListener('keydown', onKeyDown)
+  onUnmounted(() => {
+    document.removeEventListener('keydown', onKeyDown)
+  })
+  if (query.year) {
+    query.sort = 'date'
+    setTimeout(() => {
+      document.querySelector(`#year_${query.year}`)?.scrollIntoView({ behavior: 'smooth' })
+    }, 750)
+  }
+  nextTick(() => {
+    searchInput.value?.focus()
+  })
 })
 </script>
 
@@ -382,11 +394,8 @@ onMounted(() => {
 
 .search {
 
-  .layout__folder {
-    margin-top: 1rem;
-  }
-
   &__title {
+    margin-top: 0;
     padding-right: 3rem;
   }
 

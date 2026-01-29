@@ -60,7 +60,7 @@ const { breadcrumbs: links } = storeToRefs(useContentStore())
 
 // hide page title on mobile
 @include sm {
-  .layout__page {
+  .layout__default {
     .breadcrumb__item:nth-last-child(10n+2):after,
     .breadcrumb__item:last-child {
       display: none;

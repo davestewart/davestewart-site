@@ -1,7 +1,7 @@
 <template>
   <footer class="siteFooter">
     <div class="layout__inner siteFooter__branding">
-      <SiteBranding />
+      <SiteBranding to="/bio/" />
       <FooterIcons />
     </div>
 

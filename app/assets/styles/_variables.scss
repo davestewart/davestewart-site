@@ -14,6 +14,9 @@ $codeBg: #F5F5F8;
 $footerBg: #F8F9FA;
 
 // colors
+$grey-darkest: #323232;
+$grey-darker: #393737;
+$grey-dark: #808080;
 $grey: #969FA8;
 $grey-light: #C1C5C6;
 $grey-lighter: #DCDFE4;
@@ -22,7 +25,9 @@ $grey-lightest: #EAECEF;
 // layout
 //$widthPage: 720px;
 $widthPage: 840px;
-$widthHome: 940px;
+$widthAside: 240px;
+$widthGap: 0px;
+$widthOuter: calc(#{$widthPage} + #{$widthAside * 2} + #{$widthGap * 2});
 
 // $font
 $titleFont: europa, sans;

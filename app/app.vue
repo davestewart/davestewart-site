@@ -1,36 +1,6 @@
 <template>
   <div id="app" :class="classes" :data-path="path">
-    <!-- header -->
-    <SiteHeader />
-
-    <!-- main -->
-    <main class="siteMain">
-      <!-- content -->
-      <div class="layout__inner">
-        <NuxtPage />
-      </div>
-
-      <!-- prev / next -->
-      <NavSurround />
-
-      <!-- scroll to top -->
-      <ClientOnly>
-        <NavScrollTop />
-      </ClientOnly>
-    </main>
-
-    <!-- control space promo -->
-    <ClientOnly>
-      <CsPromo />
-    </ClientOnly>
-
-    <!-- lower area -->
-    <div class="layout__bottom">
-      <!-- footer -->
-      <SiteFooter />
-    </div>
-
-    <!-- preview modal -->
+    <NuxtLayout />
     <Preview ref="preview" />
   </div>
 </template>

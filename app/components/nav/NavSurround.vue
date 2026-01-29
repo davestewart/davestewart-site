@@ -4,7 +4,7 @@
       <!-- prev -->
       <div v-if="prev" class="navSurround__prev">
         <span class="arrow"></span>
-        <NuxtLink :to="prev.path">
+        <NuxtLink class="navSurround__link" :to="prev.path">
           {{ getTitle(prev) }}
         </NuxtLink>
       </div>
@@ -12,7 +12,7 @@
 
       <!-- next -->
       <div v-if="next" class="navSurround__next">
-        <NuxtLink :to="next.path">
+        <NuxtLink class="navSurround__link" :to="next.path">
           {{ getTitle(next) }}
         </NuxtLink>
         <span class="arrow"></span>
@@ -75,9 +75,16 @@ onKeyStroke('ArrowUp', (e) => {
     display: block;
   }
 
+  &__link {
+    font-family: $titleFont;
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+  }
+
   &__prev {
     display: flex;
     padding-right: .5rem;
+    padding-left: .5rem;
 
     span:before {
       @include arrow;
@@ -88,6 +95,7 @@ onKeyStroke('ArrowUp', (e) => {
   &__next {
     display: flex;
     padding-left: .5rem;
+    padding-right: .5rem;
     text-align: right;
 
     span:after {
