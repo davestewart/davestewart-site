@@ -35,7 +35,9 @@
 
       <section style="margin-top: 2rem">
         <p>Or pick a random project!</p>
-        <ThumbnailWall v-if="pages" :pages="pages" />
+        <ClientOnly>
+          <ThumbnailWall v-if="pages" :pages="pages" />
+        </ClientOnly>
       </section>
     </div>
   </div>

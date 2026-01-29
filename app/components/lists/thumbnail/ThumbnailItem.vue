@@ -3,8 +3,7 @@
     <!-- image -->
     <div class="thumbnailItem__image">
       <NuxtLink :to="page.permalink ?? page.path" draggable="false">
-<!--        <MediaImage :source="source" />-->
-        <img :src="source.src" :style="source.style" alt="" />
+        <MediaImage :source="source" />
       </NuxtLink>
     </div>
 
@@ -28,7 +27,7 @@ const props = defineProps<{
   page: ContentPage
 }>()
 
-const source = useMedia(props.page.media.thumbnail)
+const source = useMedia(props.page?.media?.thumbnail)
 
 const title = computed(() => {
   const page = props.page
@@ -51,7 +50,7 @@ const description = computed(() => {
   background: white;
 
   padding: 0;
-  border-radius: 4px;
+  border-radius: 6px;
 
   @include shadow-md;
 
@@ -64,8 +63,8 @@ const description = computed(() => {
   // stripes for transparent thumbnails
   &__image {
     overflow: hidden;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
 
     @include md-up {
       background-image: linear-gradient(0deg, #f2f6f8 0%, #FFF 35%);

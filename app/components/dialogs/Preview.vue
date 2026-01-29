@@ -1,8 +1,9 @@
 <template>
-  <div v-show="visible" class="preview" :class="{ active, raised }">
-    <transition name="preview__fade">
+  <div v-show="visible" class="preview" :class="{ visible, active, raised }">
+    <transition name="preview">
       <div
-        v-if="active"
+        v-show="active"
+        ref="background"
         class="preview__background"
         @mousedown.self="onMouseDown"
       />
@@ -31,6 +32,7 @@ const els = {
 
 // refs
 const offset = ref(null)
+const background = ref(null)
 const container = ref(null)
 
 // state
@@ -46,11 +48,11 @@ const router = useRouter()
 
 // watch
 watch(visible, (value) => {
-  document.body.classList.toggle('modal-active', value)
+  document.body.classList.toggle('preview-active', value)
 })
 
 watch(active, (value) => {
-  document.body.classList.toggle('modal-raised', value)
+  document.body.classList.toggle('preview-raised', value)
 })
 
 // methods
@@ -93,11 +95,13 @@ function show (source) {
   setElementBounds(els.container, size.value)
   requestAnimationFrame(() => {
     updateContainerBounds()
+    background.value.style.opacity = 1
   })
 
   // show and add listeners
   visible.value = true
   active.value = true
+  background.value.style.opacity = 0
 
   // set up movement data
   els.offset.style.transform = ''
@@ -246,6 +250,7 @@ function onPageScroll () {
 defineExpose({
   show,
   hide,
+  visible,
 })
 </script>
 
@@ -255,15 +260,20 @@ defineExpose({
   overflow-y: visible;
   @include fit;
 
-  &.active {
+  &.visible {
     z-index: 500;
   }
 
   &__background {
     @include fit;
     position: absolute;
-    background: rgba(white, 1); // .95
+    background-color: rgba(white, 0);
+    transition: all .4s;
     pointer-events: fill;
+  }
+
+  &.active &__background {
+    background: rgba(white, 1);
   }
 
   &__container {

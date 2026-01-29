@@ -3,6 +3,7 @@ import { ref } from 'vue'
 interface PreviewComponent {
   show: (source: HTMLElement) => void
   hide: (immediate?: boolean) => void
+  visible: Ref<boolean>
 }
 
 let previewInstance: PreviewComponent | null = null
@@ -31,6 +32,8 @@ export function usePreview () {
       }
       previewInstance.hide(immediate)
     },
+    get visible () {
+      return previewInstance?.visible ?? ref(false)
+    },
   }
 }
-

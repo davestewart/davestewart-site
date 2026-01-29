@@ -68,11 +68,11 @@ const cache: Cache = {
 
 // body class management
 watch(() => state.internalShow, (val) => {
-  document.body.classList.toggle('modal-active', val)
+  document.body.classList.toggle('preview-active', val)
 })
 
 watch(() => state.active, (val) => {
-  document.body.classList.toggle('modal-raised', val)
+  document.body.classList.toggle('preview-raised', val)
 })
 
 // main show/hide logic

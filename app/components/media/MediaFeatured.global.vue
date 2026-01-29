@@ -8,7 +8,8 @@
 </template>
 
 <script setup lang="ts">
-import { type MediaBase, resolveMedia, useMedia } from '~/composables/useMedia'
+import { resolveMedia, useMedia } from '../../composables/useMedia'
+import type { MediaBase, MediaKey, MediaItem } from '../../composables/useMedia'
 
 // Either a media key, or base media properties
 type MediaFeaturedProps =

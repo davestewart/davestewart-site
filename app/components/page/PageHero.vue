@@ -3,7 +3,6 @@
     <component
       :is="component"
       :media="preferred"
-      :captions="false"
       width="100%"
       scale
     />

@@ -3,18 +3,14 @@
     <span class="pageItem__title" :data-status="page.status ? page.status : undefined">
       <NuxtLink :to="page.path">{{ page.title }}</NuxtLink>
     </span>
-    <span v-if="desc" class="pageItem__desc">{{ desc }}</span>
+    <span v-if="page.description" class="pageItem__desc">{{ page.description }}</span>
   </li>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
-const props = defineProps<{
-  page: any
+defineProps<{
+  page: ParsedPage
 }>()
-
-const desc = computed(() => props.page.desc || props.page.description || props.page.frontmatter?.description || props.page.meta?.description)
 </script>
 
 <style lang="scss">

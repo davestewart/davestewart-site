@@ -57,7 +57,7 @@
 
     <!-- caption -->
     <div v-if="hasCaption" class="mediaGallery__caption">
-      <NuxtLink v-if="captionLink" :to="captionLink">
+      <NuxtLink v-if="captionLink" :to="captionLink" @click.capture="onClickLink($event, captionLink)">
         {{ captionText }}
       </NuxtLink>
       <span v-else>{{ captionText }}</span>
@@ -67,7 +67,8 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { type MediaItem, type MediaSource, resolveMedia, useMedia } from '~/composables/useMedia'
+import { resolveMedia, useMedia } from '../../composables/useMedia'
+import type { MediaItem } from '../../composables/useMedia'
 import { getKeys, isNotModifier, stopEvent } from '~/utils/events'
 import { offset } from '~/utils/array'
 import { storage } from '~/utils/storage'
@@ -122,14 +123,14 @@ const captionText = computed(() => currentImage.value?.text)
 const captionLink = computed(() => currentImage.value?.href)
 
 const containerStyle = computed(() => {
-  const image = images.at(-1)!
+  const image = images?.at(-1)!
   return `${image?.style}`
 })
 
 const widthStyle = computed(() => {
   const maxWidth = props.width
     ? props.width
-    : images.at(-1)?.width + 'px'
+    : images?.at(-1)?.width + 'px'
   return maxWidth
     ? `max-width: ${maxWidth}; margin: inherit auto;`
     : ''
@@ -180,6 +181,20 @@ function onKeyDown (event: KeyboardEvent) {
     if (right) {
       stopEvent(event)
       next()
+    }
+  }
+}
+
+function onClickLink (event: MouseEvent, link: string) {
+  if (props.scale) {
+    const visible = usePreview().visible
+    if (visible) {
+      event.stopImmediatePropagation()
+      event.preventDefault()
+      usePreview().hide()
+      setTimeout(() => {
+        navigateTo(link)
+      }, 350)
     }
   }
 }

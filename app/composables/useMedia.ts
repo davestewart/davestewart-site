@@ -100,8 +100,8 @@ export function resolveMedia<K extends MediaKey> (key: K, page?: { media?: Recor
 export function useMedia<T extends MediaSourceOption> (source: T | undefined): T extends Array<string | MediaSource> ? MediaItem[] : MediaItem {
   // defaults
   const CONFIG = {
-    DEFAULT_WIDTH: 840, // page width
-    DEFAULT_HEIGHT: 840 / 16 * 9,
+    DEFAULT_WIDTH: 840 * 3, // page width
+    DEFAULT_HEIGHT: 840 / 16 * 9 * 3,
   }
 
   // 1. Pure function to normalize any input into a MediaSource object

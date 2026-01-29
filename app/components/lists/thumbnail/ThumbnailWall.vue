@@ -1,8 +1,8 @@
 <template>
   <div class="thumbnailWall">
     <div class="thumbnailWall__grid">
-      <div v-for="page in pages" :key="page.path" class="thumbnailWall__item">
-        <ThumbnailItem :page="page" />
+      <div v-for="page in pages" :key="page?.path" class="thumbnailWall__item">
+        <ThumbnailItem v-if="page" :page="page" />
       </div>
     </div>
   </div>
@@ -18,6 +18,7 @@ defineProps<{
 .thumbnailWall {
   margin-top: 1rem;
   margin-bottom: 20px;
+  container-type: inline-size;
 
   &__grid {
     display: grid;
@@ -26,12 +27,12 @@ defineProps<{
 
     grid-template-columns: repeat(3, 1fr);
 
-    // Responsive overrides
-    @media (max-width: 740px) {
+    // responsive overrides
+    @container (max-width: 740px) {
       grid-template-columns: repeat(2, 1fr);
     }
 
-    @media (max-width: 430px) {
+    @container (max-width: 430px) {
       grid-template-columns: repeat(1, 1fr);
     }
   }

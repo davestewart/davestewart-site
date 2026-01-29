@@ -140,6 +140,9 @@ const headingTag = computed(() => `h${props.depth + 1}`)
     > .pageTree__folders,
     > .pageTree__pages {
       margin-left: 2rem;
+      @include md-down {
+        margin-left: 0;
+      }
     }
   }
 
