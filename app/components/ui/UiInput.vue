@@ -1,12 +1,13 @@
 <template>
   <div class="uiInput">
     <input
+      ref="el"
       v-model="input"
       class="uiInput__text"
       type="text"
       autocomplete="off"
       :placeholder="placeholder"
-    />
+    >
     <span
       v-if="input"
       class="uiInput__clear"
@@ -25,10 +26,18 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:modelValue'])
 
+const el = ref<HTMLElement | null>()
+
 const input = computed({
   get: () => props.modelValue || '',
   set: val => emit('update:modelValue', val),
 })
+
+function focus () {
+  el.value?.focus()
+}
+
+defineExpose({ focus })
 </script>
 
 <style lang="scss">
