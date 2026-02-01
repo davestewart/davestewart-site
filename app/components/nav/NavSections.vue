@@ -104,7 +104,7 @@ const { sections } = useNavStore()
     }
 
     &:hover {
-      background: color.mix($grey-lightest, white, 50%);
+      background: color.mix($grey-lightest, white, 75%);
       text-decoration: none;
     }
   }
@@ -121,9 +121,13 @@ const { sections } = useNavStore()
     color: $grey;
   }
 
-  a.router-link-exact-active[href="/"] *,
-  a.router-link-active:not([href="/"]) * {
-    color: $grey-light;
+  a.router-link-exact-active[href="/"],
+  a.router-link-active:not([href="/"]) {
+    pointer-events: none;
+    * {
+      color: $grey;
+    }
+
   }
 
   a span {

@@ -41,7 +41,7 @@ const elements: Elements = {
  * NavScrollTop uses a combination of position:sticky and JS to position itself
  *
  * position:sticky ensures it sticks to the bottom of the main content, and JS
- * pushes it above the bottom navigation when the page is narrow.
+ * pushes it above the bottom .navSurround when the page is narrow.
  */
 
 function update () {
@@ -104,7 +104,7 @@ onMounted(() => {
   // elements
   Object.assign(elements, {
     footerOuter: document.querySelector('.siteFooter'),
-    footerInner: document.querySelector('.navSiblings'),
+    footerInner: document.querySelector('.navSurround'),
     target: document.querySelector('.scrollTop__inner'),
   })
 

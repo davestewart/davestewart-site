@@ -1,7 +1,7 @@
 <template>
   <footer class="siteFooter">
     <div class="layout__inner siteFooter__branding">
-      <SiteBranding to="/bio/" />
+      <SiteBranding to="/" />
       <FooterIcons />
     </div>
 
@@ -22,11 +22,19 @@
     justify-content: space-between;
     align-items: center;
     border-top: 1px dashed $grey-lightest;
+
+    &.siteFooter__sections {
+      padding: 1rem 0.5rem;
+    }
   }
 
   &__branding {
     padding-bottom: 1.5rem;
     padding-top: 1.5rem;
+
+    @include sm {
+      zoom: 0.9;
+    }
   }
 
   &__sections {
@@ -34,7 +42,6 @@
   }
 
   &__link {
-    //margin: 2rem auto;
     padding-bottom: 5rem !important;
     justify-content: end !important;
 

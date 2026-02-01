@@ -18,14 +18,8 @@
       <div class="siteHeader__el">
         <div class="siteHeader__background">
           <div class="layout__inner">
-            <div class="siteHeader__left">
-              <NavMobile />
-              <NavTop />
-              <NavBreadcrumbs />
-            </div>
-            <div class="siteHeader__right">
-              <NavSearch />
-            </div>
+            <NavMobile />
+            <NavTop />
           </div>
         </div>
       </div>
@@ -99,6 +93,11 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-grow: 1;
+  }
+
+  &__background {
+    flex-grow: 1;
   }
 
   // used to give all items reasonable outline padding
