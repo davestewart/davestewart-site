@@ -1,31 +1,32 @@
 @use "variables" as *;
 @use "layout/mixins" as *;
 
-.page[data-path^="/bio"] .pageContent {
+#app[data-path="/"] .pageContent,
+#app[data-path^="/bio"] .pageContent {
 
   // larger intro paragraph
   p:nth-child(2) {
-    @include introText;
-    font-weight: 700;
-    margin: .5em 0;
+    //@include introText;
+    //font-weight: 700;
+    //margin: .5em 0;
   }
 
   // hide external link marker
-  a span {
-    display: none;
-  }
+  //a span {
+  //  display: none;
+  //}
 
-  img:first-of-type {
+  img[src*="/bio/"] {
     margin: 0 0 1rem;
   }
 
   // make 2:1 image 1:1 on small screens
   @include md-down {
-    p:has(img:first-of-type) {
+    p:has(img[src*="/bio/"]) {
       overflow: hidden;
     }
 
-    img:first-of-type {
+    img[src*="/bio/"] {
       display: block;
       aspect-ratio:1/1 !important;
       object-fit: cover;

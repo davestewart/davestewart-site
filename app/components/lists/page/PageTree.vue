@@ -120,6 +120,9 @@ const headingTag = computed(() => `h${props.depth + 1}`)
 
   &__folders {
     margin-left: 2rem;
+    @include md-down {
+      margin-left: 0.5rem;
+    }
   }
 
   &[data-depth="0"] > &__folders {

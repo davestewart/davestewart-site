@@ -49,6 +49,10 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
+useSeoMeta({
+  title: '404',
+})
+
 const pages = computed(() => {
   return getPosts({
     sort: 'random',

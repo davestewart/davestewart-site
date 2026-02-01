@@ -66,6 +66,10 @@ code {
   color: $accentColor;
 }
 
+p code, li code {
+  line-break: anywhere;
+}
+
 pre>code {
   padding: unset;
   color: unset;

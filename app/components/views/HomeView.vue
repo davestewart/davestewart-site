@@ -1,9 +1,6 @@
 <template>
   <div class="layout__home home">
-    <NuxtLink to="/bio/" style="display: block">
-      <Splash />
-    </NuxtLink>
-    <h1>I'm Dave,</h1>
+    <Splash />
     <ContentRenderer id="content" :value="page" class="pageContent" />
   </div>
 </template>

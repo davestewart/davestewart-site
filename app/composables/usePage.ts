@@ -58,14 +58,18 @@ export function usePageSeo (pageOrMeta?: Ref<ParsedPage | undefined> | PageSeoMe
     title,
   })
 
-  useSeoMeta({
-    title,
+  const payload = {
+    title: title.value,
     ogTitle: `Dave Stewart | ${title.value}`,
-    description,
-    ogDescription: description,
-    ogImage: image,
+    description: description.value,
+    ogDescription: description.value,
+    ogImage: image.value,
     twitterCard: 'summary_large_image',
-  })
+  }
+
+  console.log('updating seo:', payload)
+
+  useSeoMeta(payload)
 }
 
 /**
