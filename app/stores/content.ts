@@ -73,29 +73,59 @@ type ContentBreadcrumb = {
 // store
 // ---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * Content store for managing current page and navigation data
+ */
 export const useContentStore = defineStore('content', () => {
-  // variables
+  // ---------------------------------------------------------------------------------------------------------------------
+  // page content
+  // ---------------------------------------------------------------------------------------------------------------------
+
+  // page route
   const route = useRoute()
 
-  const currentPath = ref('/')
+  // page path, but *only* once the page has finished loading (this is later that route navigation)
+  const path = ref('/')
 
+  // page object
+  const page = ref<ParsedPage | null>(null)
+
+  // load the current page
+  async function loadPage (path: string) {
+    page.value = await queryContent<ParsedPage>()
+      .where({
+        $or: [
+          { _path: path },
+          { permalink: path },
+        ],
+      })
+      .findOne()
+    return page.value
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // navigation items
+  // ---------------------------------------------------------------------------------------------------------------------
+
+  // all content items (metadata only)
   const items = ref<ContentItem[]>([])
-
-  // track page data
-  const { title } = usePage()
 
   // computed
   const breadcrumbs = computed(() => {
-    return getContentParents(currentPath.value, title.value)
+    return getContentParents(path.value, page.value?.title ?? '')
   })
 
   const siblings = computed(() => {
-    return getContentSiblings(currentPath.value)
+    return getContentSiblings(path.value)
   })
 
   const surround = computed(() => {
-    return getContentSurround(currentPath.value)
+    return getContentSurround(path.value)
   })
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // query functions (may move to search store)
+  // ---------------------------------------------------------------------------------------------------------------------
 
   // Computed getters for your navigation functions
   const getItems = computed(() => (path = '/') => {
@@ -112,22 +142,26 @@ export const useContentStore = defineStore('content', () => {
       .find(item => item.path === path || item.permalink === path) ?? undefined
   })
 
+  // ---------------------------------------------------------------------------------------------------------------------
   // initializers
+  // ---------------------------------------------------------------------------------------------------------------------
+
   async function initServer () {
-    currentPath.value = route.path
+    path.value = route.path
     items.value = await queryItems()
   }
 
   function initClient () {
     const nuxtApp = useNuxtApp()
     nuxtApp.hook('page:finish', () => {
-      currentPath.value = route.path
+      path.value = route.path
     })
   }
 
   return {
-    // variables
-    currentPath,
+    // current page
+    path,
+    page,
 
     // items
     items,
@@ -136,6 +170,7 @@ export const useContentStore = defineStore('content', () => {
     surround,
 
     // methods
+    loadPage,
     getItems,
     getPosts,
     getPost,
@@ -403,7 +438,7 @@ export function getContentTree (path: string) {
   const tree = makeTree(items, path)
 
   // Build headers for TOC (folder structure)
-  const currentPage = items.find((p: any) => p.path === path)
+  const currentPage = items.find(p => p.path === path)
   const rootTitle = currentPage?.title || 'Untitled Folder'
   const headers = makeHeaders(tree, rootTitle)
 
@@ -415,48 +450,50 @@ export function getContentTree (path: string) {
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
- * Logic to generate headers from tree
+ * Logic to generate section headers from nested items
  *
- * @param tree
+ * @param items       An array of potentially nested items
  * @param rootTitle
  */
-export function makeHeaders (tree: any[], rootTitle: string) {
-  const output: any[] = []
+export function makeHeaders (items: ContentItem[], rootTitle: string) {
+  type Header = {
+    level: number
+    title: string
+    slug: string
+  }
 
-  function process (item: any, level = 1) {
+  function process (item: ContentItem, level = 1) {
     if (item.type === 'folder' || level === 0) { // level 0 is root wrapper
       if (level > 0) {
         output.push({
           level,
           title: item.title,
-          slug: item.title.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-+|-+$/g, ''),
+          slug: slugify(item.title),
         })
       }
-      if (item.pages) {
-        item.pages.forEach((p: any) => process(p, level + 1))
+      if ('items' in item) {
+        item.items.forEach(p => process(p, level + 1))
       }
     }
   }
 
-  // Wrap tree in a root node to match legacy signature if needed, or just iterate tree
-  process({ type: 'folder', title: rootTitle, pages: tree }, 0)
+  const output: Header[] = []
+  process({ type: 'folder', title: rootTitle, items, path: '/' }, 0)
   return output
 }
 
 /**
  * Replicate legacy tree building logic adapted for Nuxt Content documents
- * @param pages
+ * @param nodes
  * @param rootPath
  */
-export function makeTree (pages: (ContentFolder | ContentPage)[], rootPath: string): ContentItem[] {
-  // Deep copy to allow mutation (nesting)
-  // v3 items have 'stem', 'extension', 'meta', 'body', etc. mapped to top level properties usually
-  // v2 items have path
-  const nodes = pages.map((p) => {
-    return clone(p)
-  })
-
-  const validNodes = nodes.filter(n => n.path !== rootPath && n.path.startsWith(rootPath))
+export function makeTree (nodes: (ContentFolder | ContentPage)[], rootPath: string): ContentItem[] {
+  // Filter and clone so we don't affect originals
+  const validNodes = nodes
+    .filter(n => n.path !== rootPath && n.path.startsWith(rootPath))
+    .map((p) => {
+      return clone(p)
+    })
 
   // Create a map for lookup
   const map: Record<string, ContentItem> = {}

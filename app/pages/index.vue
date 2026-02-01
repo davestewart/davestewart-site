@@ -6,9 +6,12 @@
 
 <script setup lang="ts">
 import HomeView from '~/components/views/HomeView.vue'
+import { useContentStore } from '#imports'
+
+const store = useContentStore()
 
 const { data } = await useAsyncData('home', () => {
-  return queryContent<ParsedPage>('/').findOne()
+  return store.loadPage('/')
 })
 
 provideContent(data)

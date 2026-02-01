@@ -107,7 +107,7 @@ function setParentPath (file: any) {
 
 function setContent (file: any) {
   const elements = file.body?.children || []
-  const index = elements.findIndex((element: any) => element.tag === 'h1')
+  const index = elements.findIndex((element: any) => element.tag === 'h1' && !element.props.className)
   if (index > -1) {
     elements.splice(index, 1)
   }
