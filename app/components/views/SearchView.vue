@@ -46,13 +46,13 @@
               />
             </div>
 
-            <!-- sorting -->
-            <div class="searchControls__sort">
-              <UiRadio v-model="query.sort" name="sort" :options="options.sort" />
+            <!-- grouping -->
+            <div class="searchControls__group">
+              <UiRadio v-model="query.group" name="group" :options="options.group" />
             </div>
 
             <!-- format -->
-            <div class="searchControls__format">
+            <div class="searchControls__format only-md-up">
               <UiRadio v-model="query.format" name="format" :options="options.format" />
             </div>
           </UiControls>
@@ -74,7 +74,7 @@
       <div class="layout__folder">
         <div v-if="itemsAsList.length" class="search__results">
           <!-- by date -->
-          <div v-if="query.sort === 'date'" class="search__date">
+          <div v-if="query.group === 'date'" class="search__date">
             <div
               v-for="group in itemsByYear"
               :key="group.title"
@@ -94,12 +94,12 @@
           </div>
 
           <!-- by path -->
-          <div v-else-if="query.sort === 'path'" class="search__tree">
+          <div v-else-if="query.group === 'path'" class="search__tree">
             <PageTree :format="query.format" :items="itemsAsTree" />
           </div>
 
           <!-- thumbnails -->
-          <div v-else-if="query.sort === 'thumbs'" class="search__list">
+          <div v-else-if="query.group === 'thumbs'" class="search__list">
             <ThumbnailWall :pages="itemsAsList as ContentPage[]" />
           </div>
         </div>
@@ -114,21 +114,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { onKeyDown, onKeyStroke } from '@vueuse/core'
+import { onKeyStroke } from '@vueuse/core'
 import { type ContentItem, makeTree } from '~/stores/content'
 
 // --- Types & Interfaces ---
 
 interface Query {
   text: string
-  textOp: string
   tags: string[]
-  tagsOp: string
-  filter: string
+  textOp: 'and' | 'or'
+  tagsOp: 'and' | 'or'
+  filter: 'off' | 'list' | 'groups'
   group: 'path' | 'date'
-  sort: 'path' | 'date'
   format: 'text' | 'image'
   path: string
   year: string
@@ -156,7 +155,6 @@ function makeTextFilter (text: string, useOr = true) {
     return t.startsWith('/')
       ? (page: any) => page.path && page.path.includes(t)
       : (page: any) => {
-        console.log({ t, page })
         return ((page.title || '') + (page.description || '')).toLowerCase().includes(t)
       }
   })
@@ -195,7 +193,7 @@ const makeDefaultQuery = (): Query => ({
   tags: [],
   tagsOp: 'and',
   filter: 'off',
-  sort: 'path',
+  group: 'path',
   format: 'text',
   path: '',
   year: '',
@@ -218,7 +216,7 @@ const query = reactive<Query>({
 // Options
 const options = reactive({
   filter: ['off', 'list', 'groups'],
-  sort: ['date', 'path'],
+  group: ['date', 'path'],
   format: ['text', 'image'],
   showTags: query.filter !== 'off',
 })
@@ -258,10 +256,10 @@ const prepared = computed(() => {
 
 const filtered = computed(() => {
   let items = prepared.value
-  const { text, tags, year } = query
+  const { text, tags, year, tagsOp } = query
 
   if (tags.length) {
-    items = items.filter(makeTagsFilter(tags as string[]))
+    items = items.filter(makeTagsFilter(tags as string[], tagsOp === 'or'))
   }
 
   if (text) {
@@ -362,7 +360,6 @@ onKeyStroke('Escape', (e) => {
   // history.back() // removed for now
 })
 
-
 onMounted(() => {
   function onKeyDown (event: KeyboardEvent) {
     if (event.key === 'Escape') {
@@ -371,12 +368,13 @@ onMounted(() => {
       }
     }
   }
+
   document.addEventListener('keydown', onKeyDown)
   onUnmounted(() => {
     document.removeEventListener('keydown', onKeyDown)
   })
   if (query.year) {
-    query.sort = 'date'
+    query.group = 'date'
     setTimeout(() => {
       document.querySelector(`#year_${query.year}`)?.scrollIntoView({ behavior: 'smooth' })
     }, 750)
@@ -454,7 +452,7 @@ onMounted(() => {
   &__tree {
 
     // hide descriptions for empty thumbnail folders
-    .pageTree[data-pages="0"]>.pageTree__header>.pageTree__desc {
+    .pageTree[data-pages="0"] > .pageTree__header > .pageTree__desc {
       display: none;
     }
 
@@ -486,7 +484,7 @@ onMounted(() => {
 
   &__text {
 
-    @include sm {
+    @include md-down {
 
       &,
       .uiInput {
@@ -505,7 +503,7 @@ onMounted(() => {
       margin: 0 -1rem .5rem;
     }
 
-    .uiControls>* {
+    .uiControls > * {
       padding: 5px;
     }
   }
