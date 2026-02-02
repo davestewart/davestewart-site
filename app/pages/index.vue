@@ -1,6 +1,9 @@
 <template>
   <div class="page-home">
-    <HomeView v-if="data" :page="data" />
+    <HomeView
+      v-if="data"
+      :page="data"
+    />
   </div>
 </template>
 
@@ -10,11 +13,10 @@ import { useContentStore } from '#imports'
 
 const store = useContentStore()
 
-const { data } = await useAsyncData('home', () => {
-  return store.loadPage('/')
+const { data } = await useAsyncData('home', async () => {
+  return await store.loadPage('/')
 })
 
-provideContent(data)
-
-usePageSeo(data)
+provideContent(data.value)
+usePageSeo(data.value)
 </script>
