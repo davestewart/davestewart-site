@@ -5,7 +5,6 @@
     :height="60"
     :scroll-down-scalar="0.1"
     :scroll-up-scalar="0.5"
-    :navigation-duration="0"
   >
     <header
       ref="el"

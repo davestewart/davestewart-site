@@ -44,7 +44,7 @@ const props = withDefaults(defineProps<Props>(), {
   transitionDownDuration: 1000,
   transitionUpDuration: 500,
   navigationThreshold: 640,
-  navigationDuration: 500,
+  navigationDuration: 300,
 })
 
 const emit = defineEmits<{
@@ -70,6 +70,8 @@ const isTrigger = computed(() => props.mode.includes('-trigger'))
 
 const isVisible = computed(() => offset.value === 0)
 
+const isResetting = ref(false)
+
 const progress = computed(() => offset.value / height.value)
 
 const style = computed(() => {
@@ -78,9 +80,11 @@ const style = computed(() => {
 
   // scroll-triggered
   if (isTrigger.value) {
-    const duration = scrollAccumulator > 0
-      ? props.transitionDownDuration
-      : props.transitionUpDuration
+    const duration = isResetting.value
+      ? props.navigationDuration
+      : scrollAccumulator > 0
+        ? props.transitionDownDuration
+        : props.transitionUpDuration
 
     if (mode === 'slide-trigger') {
       return {
@@ -274,9 +278,15 @@ function onScroll () {
     //   :
 
     // smooth transition on navigation
-    if (scrollY === 0 && delta < -props.navigationThreshold && props.navigationDuration > 0) {
-      animateOffsetToZero()
-      return
+    if (scrollY === 0 && delta.value < -props.navigationThreshold) {
+      if (props.mode.includes('trigger')) {
+        isResetting.value = true
+        requestAnimationFrame(() => isResetting.value = false)
+      }
+      else if (props.navigationDuration > 0) {
+        animateOffsetToZero()
+        return
+      }
     }
 
     if (isHidden && shouldShow) {
