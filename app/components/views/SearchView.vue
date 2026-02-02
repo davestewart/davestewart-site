@@ -120,25 +120,55 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { onKeyStroke } from '@vueuse/core'
-import { type ContentItem, makeTree } from '~/stores/content'
+import { onKeyStroke, useLocalStorage } from '@vueuse/core'
+import { type ContentBreadcrumb, type ContentItem, getItems, makeTree, sortBySection } from '~/stores/content'
 import { type SearchQuery, searchContent, groupBy, parseQuery, makeDefaultQuery, cleanQuery, DEFAULT_SEARCH_PATHS } from '~/stores/search'
 
 const route = useRoute()
 const router = useRouter()
+
+// ---------------------------------------------------------------------------------------------------------------------
+// variables
+// ---------------------------------------------------------------------------------------------------------------------
+
 const searchInput = ref<HTMLElement | null>(null)
+
+const storedOptions = useLocalStorage<Pick<SearchQuery, 'group' | 'format' | 'tagsFilter'>>('searchOptions', {
+  group: 'path',
+  format: 'image',
+  tagsFilter: 'off',
+})
 
 const query = reactive<SearchQuery>({
   ...makeDefaultQuery(),
+  ...storedOptions.value,
   ...parseQuery(route.query),
 })
 
 const options = reactive({
   filter: ['off', 'list', 'groups'],
-  group: ['date', 'path'],
-  format: ['text', 'image'],
+  group: ['path', 'date'],
+  format: ['image', 'text'],
   showTags: query.tagsFilter !== 'off',
 })
+
+watch(query, (val) => {
+  router.replace({ path: '/search/', query: cleanQuery(val) }).catch(() => { })
+
+  // Persist layout options to localStorage
+  storedOptions.value = {
+    group: val.group,
+    format: val.format,
+    tagsFilter: val.tagsFilter,
+  }
+
+  // Options sync
+  options.showTags = query.tagsFilter !== 'off'
+}, { deep: true })
+
+// ---------------------------------------------------------------------------------------------------------------------
+// data
+// ---------------------------------------------------------------------------------------------------------------------
 
 const filtered = computed(() => {
   return searchContent(query, {
@@ -157,8 +187,41 @@ const itemsByYear = computed(() => {
 })
 
 const itemsAsTree = computed(() => {
-  return makeTree(filtered.value, '/')
+  if (!isFiltered.value) {
+    return makeTree(filtered.value, '/')
+  }
+
+  // TODO: the following code is crap; look to filter tree in main search
+
+  // use existing breadcrumbs function to get all parents for filtered items
+  const breadcrumbs: Map<string, ContentBreadcrumb> = new Map()
+  for (const page of filtered.value) {
+    const parents = getContentParents(page.path)
+    parents.pop()
+    for (const parent of parents) {
+      if (!breadcrumbs.has(parent.path)) {
+        breadcrumbs.set(parent.path, parent)
+      }
+    }
+  }
+
+  // convert breadcrumbs to content items
+  const items = getItems('/')
+  const folders = Array
+    .from(breadcrumbs.values())
+    .map(breadcrumb => items.find(item => item.path === breadcrumb.path))
+    .filter(item => item !== undefined)
+    .filter(Boolean)
+
+  const merged = [...filtered.value, ...folders].sort(sortBySection)
+
+  // make the tree
+  return makeTree(merged, '/')
 })
+
+// ---------------------------------------------------------------------------------------------------------------------
+// flags
+// ---------------------------------------------------------------------------------------------------------------------
 
 const isFiltered = computed(() => {
   return query.text || query.tags.length > 0
@@ -168,6 +231,10 @@ const canReset = computed(() => {
   return query.text !== '' || query.tags.length > 0
 })
 
+// ---------------------------------------------------------------------------------------------------------------------
+// derived
+// ---------------------------------------------------------------------------------------------------------------------
+
 const searchTitle = computed(() => {
   const { text, tags } = query
   const parts = []
@@ -176,41 +243,36 @@ const searchTitle = computed(() => {
   return parts.join(' & ')
 })
 
-const pageDescription = computed(() => {
-  return isFiltered.value
-    ? plural(itemsAsList.value.length, 'item')
-    : 'Everything on the site'
-})
-
-// Watchers
-watch(query, (val) => {
-  router.replace({ path: '/search/', query: cleanQuery(val) }).catch(() => { })
-
-  // Options sync
-  options.showTags = query.tagsFilter !== 'off'
-}, { deep: true })
-
 watch(searchTitle, (val) => {
   if (import.meta.client) {
     document.title = `Search${val ? ' ' + val : ''} | Dave Stewart`
   }
 })
 
-// Methods
-const reset = () => {
+const pageDescription = computed(() => {
+  return isFiltered.value
+    ? plural(itemsAsList.value.length, 'item')
+    : 'Everything on the site'
+})
+
+// ---------------------------------------------------------------------------------------------------------------------
+// methods
+// ---------------------------------------------------------------------------------------------------------------------
+
+function reset () {
   const def = makeDefaultQuery()
   query.text = def.text
   query.tags = def.tags
   query.tagsFilter = def.tagsFilter
 }
 
-const toggleTag = (tag: string) => {
+function toggleTag (tag: string) {
   const idx = query.tags.indexOf(tag)
   if (idx === -1) query.tags.push(tag)
   else query.tags.splice(idx, 1)
 }
 
-const setTag = (tag: string) => {
+function setTag (tag: string) {
   query.tags = tag !== query.tags[0] ? [tag] : []
 }
 

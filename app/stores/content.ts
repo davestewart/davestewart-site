@@ -63,7 +63,7 @@ export interface ContentPage {
 /**
  * Breadcrumbs for a given path
  */
-type ContentBreadcrumb = {
+export type ContentBreadcrumb = {
   path: string
   title: string
   description?: string
@@ -214,26 +214,6 @@ export async function queryItems (): Promise<(ContentItem[])> {
       return []
     }) satisfies ContentItemRaw[]
 
-  // TODO add a sort by section helper
-  const sections = [
-    'products',
-    'projects',
-    'work',
-    'archive',
-    'blog',
-  ]
-
-  function sortSections (a: ContentItemRaw, b: ContentItemRaw) {
-    const aSection = a._path?.split('/')[1] || ''
-    const bSection = b._path?.split('/')[1] || ''
-    const aIndex = sections.indexOf(aSection)
-    const bIndex = sections.indexOf(bSection)
-    return (aIndex < 0 ? 1000 : aIndex) - (bIndex < 0 ? 1000 : bIndex)
-  }
-
-  // TODO sort by date for everything
-  // sort by section ONLY in surround?
-
   // build items
   return pages
     // if an order is defined, sort by order, otherwise, sort by date
@@ -260,7 +240,7 @@ export async function queryItems (): Promise<(ContentItem[])> {
     //   const dateB = new Date(b.date || 0).getTime()
     //   return dateB - dateA
     // })
-    .sort(sortSections)
+    .sort(sortBySection)
 
     // convert pages to items
     .map((page) => {
@@ -316,10 +296,7 @@ export function getItems (path = '/'): ContentItem[] {
   // if items not loaded yet, load them
   const { items } = useContentStore()
 
-  // normalise path
-  // const normalizedPath = path.endsWith('/') && path !== '/'
-  //   ? path.slice(0, -1)
-  //   : path
+  // normalise path (adds slash to end)
   const normalizedPath = normalizePath(path)
 
   // filter
@@ -357,6 +334,28 @@ export function getPosts (options: ContentItemOptions = {}): ContentPage[] {
   return items as ContentPage[]
 }
 
+// TODO add a sort by section helper
+const sections = [
+  'work',
+  'products',
+  'projects',
+  'blog',
+  'archive',
+]
+
+type HasPath = {
+  _path?: string
+  path?: string
+}
+
+export function sortBySection (a: HasPath, b: HasPath) {
+  const aSection = (a._path ?? a.path)?.split('/')[1] || ''
+  const bSection = (b._path ?? b.path)?.split('/')[1] || ''
+  const aIndex = sections.indexOf(aSection)
+  const bIndex = sections.indexOf(bSection)
+  return (aIndex < 0 ? 1000 : aIndex) - (bIndex < 0 ? 1000 : bIndex)
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // main functions
 // ---------------------------------------------------------------------------------------------------------------------
@@ -364,7 +363,7 @@ export function getPosts (options: ContentItemOptions = {}): ContentPage[] {
 /**
  * items from root to current page
  */
-export function getContentParents (path: string, fallbackTitle: string): ContentBreadcrumb[] {
+export function getContentParents (path: string, fallbackTitle = '404'): ContentBreadcrumb[] {
   // variables
   const items = getItems('/')
   const parents: ContentBreadcrumb[] = [{ title: 'Home', path: '/' }]

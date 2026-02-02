@@ -270,7 +270,7 @@ export function searchContent (query: Partial<SearchQuery>, options: SearchOptio
     items = items.slice(0, limit)
   }
 
-  // Sort by date or random
+  // Sort by date (items already sorted by path)
   if (query.sort === 'date') {
     items.sort((a, b) => {
       const da = a.type === 'post' && a.date ? new Date(a.date).getTime() : 0
@@ -290,12 +290,15 @@ export function makeTextFilter (text: string, useOr = true) {
     return () => true
   }
   const matches = text.toLowerCase().match(/\S+/g) || []
-  const predicates = matches.map((t) => {
-    return t.startsWith('/')
-      ? (item: ContentItem) => item.path && item.path.includes(t)
-      : (item: ContentItem) => {
-        return ((item.title || '') + (item.description || '')).toLowerCase().includes(t)
+  const predicates = matches.map((m) => {
+    if (m.includes('/')) {
+      return (item: ContentItem) => {
+        return item.path && item.path.includes(m)
       }
+    }
+    return (item: ContentItem) => {
+      return `${item.title || ''} ${item.description || ''}`.toLowerCase().includes(m)
+    }
   })
   return useOr
     ? (item: ContentItem) => predicates.some(fn => fn(item))
@@ -306,7 +309,9 @@ export function makeTextFilter (text: string, useOr = true) {
  * Create a tags filter function
  */
 export function makeTagsFilter (tags: string[], useOr = false) {
-  const orQuery = (page: ContentPage) => (page.tags ?? []).some((tag: string) => tags.includes(tag))
+  const orQuery = (page: ContentPage) => {
+    return (page.tags ?? []).some((tag: string) => tags.includes(tag))
+  }
   const andQuery = (page: ContentPage) => {
     const pageTags = (page.tags ?? [])
     return tags.every((tag: string) => pageTags.includes(tag))
@@ -335,14 +340,16 @@ export function makeDateFilter (year: string) {
 /**
  * Group items by a key
  */
-export function groupBy (array: ContentItem[], key: keyof ContentPage, iteratee?: (val: string) => string) {
-  const result: Record<string, ContentItem[]> = {}
+export function groupBy (array: ContentPage[], key: keyof ContentPage, iteratee?: (val: string) => string) {
+  const result: Record<string, ContentPage[]> = {}
   array.forEach((item) => {
     const itemValue = item[key]
     const val = (iteratee && itemValue
       ? iteratee(itemValue as string)
       : itemValue) ?? 'No Date'
-    if (!result[val]) result[val] = []
+    if (!result[val]) {
+      result[val] = []
+    }
     result[val].push(item)
   })
   return Object.keys(result).sort().reverse().map(k => ({ title: k, items: result[k] }))
