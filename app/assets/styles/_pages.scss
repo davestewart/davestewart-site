@@ -1,32 +1,19 @@
 @use "variables" as *;
 @use "layout/mixins" as *;
 
-#app[data-path="/"] .pageContent,
-#app[data-path^="/bio"] .pageContent {
+#app[data-path="/"] .pageContent {
 
-  // larger intro paragraph
-  p:nth-child(2) {
-    //@include introText;
-    //font-weight: 700;
-    //margin: .5em 0;
-  }
-
-  // hide external link marker
-  //a span {
-  //  display: none;
-  //}
-
-  img[src*="/bio/"] {
+  img[src*="/dave-wide.jpg"] {
     margin: 0 0 1rem;
   }
 
   // make 2:1 image 1:1 on small screens
   @include md-down {
-    p:has(img[src*="/bio/"]) {
+    p:has(img[src*="/dave-wide.jpg"]) {
       overflow: hidden;
     }
 
-    img[src*="/bio/"] {
+    img[src*="/dave-wide.jpg"] {
       display: block;
       aspect-ratio:1/1 !important;
       object-fit: cover;

@@ -8,7 +8,6 @@ import { isWithinDays } from '~/utils/time'
 function setPath (file: any) {
   if (file._path) {
     file._path = file._path.replace(/\/*$/, '/')
-    console.log(file._path)
   }
 }
 
