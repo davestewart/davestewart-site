@@ -2,8 +2,8 @@
   <div class="layout__search">
     <ClientOnly>
       <h1 class="search__title">
-        <span>Search</span>
-        <span v-if="searchTitle">: <span class="accent">{{ searchTitle }}</span></span>
+        <span v-if="!isFiltered">Search...</span>
+        <span v-else class="accent">{{ searchTitle }}</span>
       </h1>
 
       <!-- description -->
@@ -13,11 +13,15 @@
 
       <!-- parameters -->
       <div class="search__parameters">
-        <!-- clear
-        <button class="search__clear" :class="{ active: canReset }" @click.prevent="reset">
+        <!-- clear -->
+        <button
+          v-if="isFiltered"
+          class="search__clear"
+          :class="{ active: canReset }"
+          @click.prevent="reset"
+        >
           <span>&times;</span>
         </button>
-         -->
 
         <div class="searchControls">
           <UiControls class="only-sm">
@@ -37,7 +41,7 @@
             <!-- tags -->
             <div class="searchControls__tags">
               <UiRadio
-                v-model="query.filter"
+                v-model="query.tagsFilter"
                 name="filter"
                 label="Tags"
                 :count="query.tags.length ? query.tags.length : ''"
@@ -62,7 +66,7 @@
         <div v-show="options.showTags" class="search__tags-container">
           <TagMatrix
             class="search__tags"
-            :mode="query.filter"
+            :mode="query.tagsFilter"
             :selected="query.tags"
             :pages="filtered"
             @toggle="toggleTag"
@@ -118,167 +122,37 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { onKeyStroke } from '@vueuse/core'
 import { type ContentItem, makeTree } from '~/stores/content'
-
-// --- Types & Interfaces ---
-
-interface Query {
-  text: string
-  tags: string[]
-  textOp: 'and' | 'or'
-  tagsOp: 'and' | 'or'
-  filter: 'off' | 'list' | 'groups'
-  group: 'path' | 'date'
-  format: 'text' | 'image'
-  path: string
-  year: string
-}
-
-function groupBy (array: ContentItem[], key: string, iteratee?: (val: ContentItem) => any) {
-  const result: any = {}
-  array.forEach((item) => {
-    const val = (iteratee
-      ? iteratee(item[key])
-      : item[key]) ?? 'No Date'
-    if (!result[val]) result[val] = []
-    result[val].push(item)
-  })
-  return Object.keys(result).sort().reverse().map(k => ({ title: k, items: result[k] }))
-}
-
-function makeTextFilter (text: string, useOr = true) {
-  text = text.trim()
-  if (text === '') {
-    return () => true
-  }
-  const matches = text.toLowerCase().match(/\S+/g) || []
-  const predicates = matches.map((t) => {
-    return t.startsWith('/')
-      ? (page: any) => page.path && page.path.includes(t)
-      : (page: any) => {
-        return ((page.title || '') + (page.description || '')).toLowerCase().includes(t)
-      }
-  })
-  return useOr
-    ? (page: any) => predicates.some(fn => fn(page))
-    : (page: any) => predicates.every(fn => fn(page))
-}
-
-function makeTagsFilter (tags: string[], useOr = false) {
-  const orQuery = (page: ContentPage) => (page.tags ?? []).some((tag: string) => tags.includes(tag))
-  const andQuery = (page: ContentPage) => {
-    const pageTags = (page.tags ?? [])
-    return tags.every((tag: string) => pageTags.includes(tag))
-  }
-  const query = useOr ? orQuery : andQuery
-  return (item: ContentItem) => {
-    return item.type === 'folder' || query(item)
-  }
-}
-
-function makeDateFilter (year: string) {
-  return (item: ContentItem) => {
-    if (item.type === 'folder') {
-      return true
-    }
-    const pageYear = item.date
-      ? item.date.substring(0, 4)
-      : ''
-    return pageYear === year
-  }
-}
-
-const makeDefaultQuery = (): Query => ({
-  text: '',
-  textOp: 'and',
-  tags: [],
-  tagsOp: 'and',
-  filter: 'off',
-  group: 'path',
-  format: 'text',
-  path: '',
-  year: '',
-})
-
-// --- Component Logic ---
+import { type SearchQuery, searchContent, groupBy, parseQuery, makeDefaultQuery, cleanQuery, DEFAULT_SEARCH_PATHS } from '~/stores/search'
 
 const route = useRoute()
 const router = useRouter()
 const searchInput = ref<HTMLElement | null>(null)
 
-// Initial Query state from route
-const initialTags = route.query.tags || []
-const query = reactive<Query>({
+const query = reactive<SearchQuery>({
   ...makeDefaultQuery(),
-  ...route.query as any,
-  tags: Array.isArray(initialTags) ? initialTags : [initialTags],
+  ...parseQuery(route.query),
 })
 
-// Options
 const options = reactive({
   filter: ['off', 'list', 'groups'],
   group: ['date', 'path'],
   format: ['text', 'image'],
-  showTags: query.filter !== 'off',
-})
-
-// Data Fetching
-const allPages = computed(() => getItems('/'))
-
-// Filtering & Computed Props
-const paths = {
-  searchable: [
-    '/archive/',
-    '/products/',
-    '/projects/',
-    '/work/',
-    '/blog/',
-  ],
-}
-
-const prepared = computed(() => {
-  // Filter visible and searchable pages
-  let items = allPages.value.filter((p: any) => !p.draft) // basic visibility check
-
-  items = items.filter((item: any) => {
-    const path = item.path
-    return path === '/' || paths.searchable.some(p => path.startsWith(p))
-  })
-
-  // Sort by date desc
-  items.sort((a: any, b: any) => {
-    const da = new Date(a.date || 0).getTime()
-    const db = new Date(b.date || 0).getTime()
-    return db - da
-  })
-
-  return items
+  showTags: query.tagsFilter !== 'off',
 })
 
 const filtered = computed(() => {
-  let items = prepared.value
-  const { text, tags, year, tagsOp } = query
-
-  if (tags.length) {
-    items = items.filter(makeTagsFilter(tags as string[], tagsOp === 'or'))
-  }
-
-  if (text) {
-    items = items.filter(makeTextFilter(text))
-  }
-
-  if (year) {
-    // items = items.filter(makeDateFilter(year))
-  }
-
-  return items
+  return searchContent(query, {
+    paths: DEFAULT_SEARCH_PATHS,
+    excludeDrafts: true,
+  })
 })
 
 const itemsAsList = computed(() => {
-  return filtered.value.filter((item: any) => item.type === 'post')
+  return filtered.value.filter((item: ContentItem) => item.type === 'post')
 })
 
 const itemsByYear = computed(() => {
-  let items = itemsAsList.value.filter((item: any) => item.path !== '/')
+  const items = itemsAsList.value.filter((item: ContentItem) => item.path !== '/')
   return groupBy(items, 'date', (date: string) => date && date.substring(0, 4))
 })
 
@@ -286,11 +160,12 @@ const itemsAsTree = computed(() => {
   return makeTree(filtered.value, '/')
 })
 
-const isFiltered = computed(() => prepared.value.length === filtered.value.length)
+const isFiltered = computed(() => {
+  return query.text || query.tags.length > 0
+})
 
 const canReset = computed(() => {
-  const def = makeDefaultQuery()
-  return query.text !== def.text || query.tags.length > 0
+  return query.text !== '' || query.tags.length > 0
 })
 
 const searchTitle = computed(() => {
@@ -302,22 +177,17 @@ const searchTitle = computed(() => {
 })
 
 const pageDescription = computed(() => {
-  return isFiltered.value ? 'Everything on the site' : plural(itemsAsList.value.length, 'item')
+  return isFiltered.value
+    ? plural(itemsAsList.value.length, 'item')
+    : 'Everything on the site'
 })
 
 // Watchers
 watch(query, (val) => {
-  const cleanQuery: any = {}
-  const def: any = makeDefaultQuery()
-  for (const key in val) {
-    if (String((val as any)[key]) !== String(def[key])) {
-      cleanQuery[key] = (val as any)[key]
-    }
-  }
-  router.replace({ path: '/search/', query: cleanQuery }).catch(() => { })
+  router.replace({ path: '/search/', query: cleanQuery(val) }).catch(() => { })
 
   // Options sync
-  options.showTags = query.filter !== 'off'
+  options.showTags = query.tagsFilter !== 'off'
 }, { deep: true })
 
 watch(searchTitle, (val) => {
@@ -331,7 +201,7 @@ const reset = () => {
   const def = makeDefaultQuery()
   query.text = def.text
   query.tags = def.tags
-  query.filter = def.filter
+  query.tagsFilter = def.tagsFilter
 }
 
 const toggleTag = (tag: string) => {
@@ -345,10 +215,7 @@ const setTag = (tag: string) => {
 }
 
 // Keyboard
-onKeyStroke('Escape', (e) => {
-  // If input focused and has text, clear text
-  // We don't have direct ref to input element instance easily unless we use ref bindings
-  // Assuming generic behavior
+onKeyStroke('Escape', () => {
   if (query.text) {
     query.text = ''
     return
@@ -357,22 +224,10 @@ onKeyStroke('Escape', (e) => {
     reset()
     return
   }
-  // history.back() // removed for now
+  history.back()
 })
 
 onMounted(() => {
-  function onKeyDown (event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      if (!query.text) {
-        history.back()
-      }
-    }
-  }
-
-  document.addEventListener('keydown', onKeyDown)
-  onUnmounted(() => {
-    document.removeEventListener('keydown', onKeyDown)
-  })
   if (query.year) {
     query.group = 'date'
     setTimeout(() => {

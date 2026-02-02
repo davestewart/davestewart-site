@@ -215,23 +215,20 @@ export async function queryItems (): Promise<(ContentItem[])> {
     }) satisfies ContentItemRaw[]
 
   // TODO add a sort by section helper
-  const sections = {
-    bio: 1,
-    products: 2,
-    projects: 3,
-    work: 4,
-    archive: 5,
-    blog: 6,
-  } as const
+  const sections = [
+    'products',
+    'projects',
+    'work',
+    'archive',
+    'blog',
+  ]
 
   function sortSections (a: ContentItemRaw, b: ContentItemRaw) {
     const aSection = a._path?.split('/')[1] || ''
     const bSection = b._path?.split('/')[1] || ''
-    // @ts-ignore
-    const aIndex = sections[aSection] ?? 0
-    // @ts-ignore
-    const bIndex = sections[bSection] ?? 0
-    return aIndex - bIndex
+    const aIndex = sections.indexOf(aSection)
+    const bIndex = sections.indexOf(bSection)
+    return (aIndex < 0 ? 1000 : aIndex) - (bIndex < 0 ? 1000 : bIndex)
   }
 
   // TODO sort by date for everything
