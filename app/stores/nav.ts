@@ -29,13 +29,13 @@ export const useNavStore = defineStore('nav', () => {
   }
 
   // entries
-  const sitemap = createLink('/sitemap/', 'Site map', 'Full list of everything on the site')
+  const sitemap = createLink('/sitemap/', 'Sitemap', 'Full list of everything on the site')
   const search = createLink('/search/', 'Search', 'Search portfolio')
   const work = createLink('/work/', 'Work')
   const products = createLink('/products/', 'Products')
   const projects = createLink('/projects/', 'Projects')
   const archive = createLink('/archive/', 'Archive')
-  const info = createLink('/projects/personal/dave-stewart/', 'Site', 'Info and site source code')
+  const info = createLink('https://github.com/davestewart/davestewart-site', 'Site', 'Info and site source code')
   const blog = createLink('/blog/', 'Blog')
 
   // main sections

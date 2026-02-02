@@ -13,6 +13,7 @@
         v-for="link in section.links"
         :key="link.path"
         :to="link.path"
+        :target="link.path.startsWith('http') ? '_blank' : undefined"
         class="navSections__item"
         @click="$emit('click')"
       >

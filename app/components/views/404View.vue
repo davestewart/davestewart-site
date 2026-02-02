@@ -16,18 +16,8 @@
             </NuxtLink>
           </li>
           <li>
-            <NuxtLink :to="parent">
-              The parent page
-            </NuxtLink>
-          </li>
-          <li>
             <NuxtLink to="/">
               Home page
-            </NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/bio/">
-              Bio
             </NuxtLink>
           </li>
         </ul>
@@ -35,9 +25,7 @@
 
       <section style="margin-top: 2rem">
         <p>Or pick a random project!</p>
-        <ClientOnly>
-          <ThumbnailWall v-if="pages" :pages="pages" />
-        </ClientOnly>
+        <ThumbnailWall v-if="pages" :pages="pages" />
       </section>
     </div>
   </div>
@@ -53,15 +41,11 @@ useSeoMeta({
   title: '404',
 })
 
-const pages = computed(() => {
+const { data: pages } = useAsyncData('404', async () => {
   return getPosts({
     sort: 'random',
     limit: 3,
   })
-})
-
-const parent = computed(() => {
-  return getParentPath(route.path)
 })
 
 const path = computed(() => {

@@ -9,13 +9,13 @@
       <div class="layout__outer">
         <div class="layout__navSide">
           <div>
-            <div></div>
-<!--            <NavSide />-->
+            <div>
+<!--              <NavSide />-->
+            </div>
           </div>
         </div>
         <div class="layout__inner">
           <NuxtPage />
-          <transition name="page" mode="out-in"></transition>
         </div>
         <div class="layout__navPage">
           <div>

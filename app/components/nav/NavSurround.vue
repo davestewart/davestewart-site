@@ -59,7 +59,6 @@ onKeyStroke('ArrowUp', (e) => {
 }
 
 .navSurround {
-
   line-height: 1.4em;
   vertical-align: top;
 
