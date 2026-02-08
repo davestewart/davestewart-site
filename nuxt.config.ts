@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url'
 import ViteYaml from '@modyfi/vite-plugin-yaml'
+import SvgLoader from 'vite-svg-loader'
 
 function resolve (path: string) {
   return fileURLToPath(new URL(path, import.meta.url))
@@ -111,6 +112,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [
       ViteYaml(),
+      SvgLoader(),
     ],
     css: {
       preprocessorOptions: {

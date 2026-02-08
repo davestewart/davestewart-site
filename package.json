@@ -22,7 +22,8 @@
     "pinia": "^3.0.4",
     "remark-reading-time": "^2.0.2",
     "rss": "^1.2.2",
-    "throttle-debounce": "^5.0.2"
+    "throttle-debounce": "^5.0.2",
+    "vite-svg-loader": "^5.1.0"
   },
   "devDependencies": {
     "@modyfi/vite-plugin-yaml": "^1.1.1",
