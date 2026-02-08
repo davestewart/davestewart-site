@@ -2,7 +2,7 @@
   <footer class="siteFooter">
     <div class="layout__inner siteFooter__branding">
       <SiteBranding to="/" />
-      <FooterIcons />
+      <SocialLinks />
     </div>
 
     <div class="layout__inner siteFooter__sections">
