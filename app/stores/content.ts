@@ -416,7 +416,7 @@ export function getContentSiblings (path: string): ContentItem[] {
  */
 export function getContentSurround (path: string): Array<ContentPage | undefined> {
   const items = getPosts()
-  const index = items.findIndex((p: any) => p.path === path)
+  const index = items.findIndex((p: any) => p.permalink === path || p.path === path)
   if (index > -1) {
     return [
       items[index - 1],

@@ -35,6 +35,7 @@ body {
 .layout__inner {
   position: relative;
   max-width: $widthPage;
+  min-width: 0;
   margin: 0 auto;
   padding: 1rem;
   @include xl {

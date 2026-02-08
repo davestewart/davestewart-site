@@ -40,7 +40,7 @@ button {
 input[type="text"],
 textarea {
   padding: 4px 8px;
-  border: 1px solid $borderColor;
+  border: 2px solid $borderColor;
   border-radius: 2px;
 
   line-height: 20px;
@@ -51,7 +51,7 @@ textarea {
   caret-color: $accentColor;
 
   &:focus {
-    box-shadow: 0 0 0 2px $grey-lightest;
+    border-color: $grey-lighter;
   }
 
   &::placeholder {

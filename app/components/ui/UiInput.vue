@@ -60,15 +60,28 @@ defineExpose({ focus })
     right: 0;
     bottom: 0;
     width: 30px;
-    line-height: 30px !important;
-    font-size: 1.3rem;
+    line-height: 1 !important;
+    font-size: 1.7rem;
     font-weight: 600;
     vertical-align: middle;
     text-align: center;
     color: $grey-light;
     cursor: default;
+
     &:hover {
       color: unset;
+    }
+  }
+
+  @include md-down {
+    &__text[type="text"] {
+      font-size: 1.2rem;
+      padding: .5rem;
+    }
+
+    &__clear {
+      width: 40px;
+      font-size: 250%;
     }
   }
 }

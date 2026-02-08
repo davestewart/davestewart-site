@@ -2,21 +2,21 @@
   <nav class="navSurround">
     <div v-if="prev || next" class="layout__inner">
       <!-- prev -->
-      <div v-if="prev" class="navSurround__prev">
-        <span class="arrow" />
-        <NuxtLink class="navSurround__link" :to="prev.path">
+      <NuxtLink v-if="prev" :to="getPath(prev)" class="navSurround__link navSurround__prev">
+        <span class="navSurround__arrow" />
+        <div class="navSurround__text">
           {{ getTitle(prev) }}
-        </NuxtLink>
-      </div>
+        </div>
+      </NuxtLink>
       <span v-else />
 
       <!-- next -->
-      <div v-if="next" class="navSurround__next">
-        <NuxtLink class="navSurround__link" :to="next.path">
+      <NuxtLink v-if="next" :to="getPath(next)" class="navSurround__link navSurround__next">
+        <div class="navSurround__text">
           {{ getTitle(next) }}
-        </NuxtLink>
-        <span class="arrow" />
-      </div>
+        </div>
+        <span class="navSurround__arrow" />
+      </NuxtLink>
     </div>
   </nav>
 </template>
@@ -25,7 +25,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from '#app'
 import { onKeyStroke } from '@vueuse/core'
-import { getTitle } from '~/utils/content'
+import { getPath, getTitle } from '~/utils/content'
 
 const route = useRoute()
 const router = useRouter()
@@ -36,15 +36,21 @@ const next = computed(() => posts?.value.at(1))
 
 // Keyboard navigation
 onKeyStroke('ArrowLeft', (e) => {
-  if (e.shiftKey && prev.value?.path) router.push(prev.value.path)
+  if (e.shiftKey && prev.value) {
+    router.push(getPath(prev.value))
+  }
 })
 
 onKeyStroke('ArrowRight', (e) => {
-  if (e.shiftKey && next.value?.path) router.push(next.value.path)
+  if (e.shiftKey && next.value) {
+    router.push(getPath(next.value))
+  }
 })
 
 onKeyStroke('ArrowUp', (e) => {
-  if (e.shiftKey) router.push(getParentPath(route.path))
+  if (e.shiftKey) {
+    router.push(getParentPath(route.path))
+  }
 })
 </script>
 
@@ -67,39 +73,33 @@ onKeyStroke('ArrowUp', (e) => {
     justify-content: space-between;
     font-size: 14px;
     border-top: 1px solid $grey-lightest;
-  }
-
-  a,
-  span {
-    display: block;
+    padding: 0 1rem;
   }
 
   &__link {
+    display: flex;
+    padding: 1.5rem 0;
+    align-items: center;
+    gap: 8px;
     font-family: $titleFont;
     font-size: 1.1rem;
     letter-spacing: 0.02em;
   }
 
-  &__prev {
-    display: flex;
-    padding-right: .5rem;
-    padding-left: 0rem;
+  $scale: 1.7;
 
+  &__prev {
     span:before {
       @include arrow;
-      transform: scale(-1.4, 1.4) translate(5px, 3px);
+      transform: scale(-$scale, $scale) translateY(2px);
     }
   }
 
   &__next {
-    display: flex;
-    padding-left: .5rem;
-    padding-right: 0rem;
     text-align: right;
-
     span:after {
       @include arrow;
-      transform: scale(1.4, 1.4) translate(5px, 3px);
+      transform: scale($scale, $scale) translateY(2px);
     }
   }
 }

@@ -167,7 +167,10 @@ onMounted(() => {
   aspect-ratio: 840/400;
   user-select: none;
   pointer-events: all;
-  margin: -2rem 0;
+
+  @include md-up {
+    margin: -2rem 0;
+  }
 
   #logo, #hello, #splash {
     pointer-events: bounding-box;

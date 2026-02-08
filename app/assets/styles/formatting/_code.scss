@@ -34,6 +34,7 @@ code[class*="language-"] {
   hyphens: none;
 
   padding: .8rem 1rem !important;
+  overflow-x: auto;
 }
 
 pre,
@@ -67,7 +68,7 @@ code {
 }
 
 p code, li code {
-  line-break: anywhere;
+  line-break: loose;
 }
 
 pre>code {

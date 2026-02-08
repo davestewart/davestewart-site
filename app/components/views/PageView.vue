@@ -13,7 +13,7 @@
     />
 
     <!-- comments -->
-    <PageFeedback v-if="isPost && feedback !== false" />
+    <PageFeedback v-if="isPost" />
   </div>
 </template>
 
@@ -24,7 +24,6 @@ import PageFeedback from '~/components/page/PageFeedback.vue'
 const props = defineProps<{
   page: ParsedPage
   info?: boolean
-  feedback?: boolean
 }>()
 
 provideContent(ref(props.page))

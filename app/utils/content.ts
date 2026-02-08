@@ -2,6 +2,10 @@ export function getTitle (page: ContentPage) {
   return page.shortTitle || page.title
 }
 
+export function getPath (page: ContentPage) {
+  return page.permalink || page.path
+}
+
 /**
  * Ensure the path contains a trailing slash
  * @param path

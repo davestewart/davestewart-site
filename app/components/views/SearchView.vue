@@ -51,7 +51,7 @@
             </div>
 
             <!-- grouping -->
-            <div class="searchControls__group">
+            <div class="searchControls__group only-md-up">
               <label class="searchControls__label">Group: </label>
               <UiRadio v-model="query.group" name="group" :options="options.group" />
             </div>
@@ -428,9 +428,8 @@ onMounted(() => {
   }
 
   &__text {
-
     padding-right: 1rem;
-    padding-left: 0rem;
+    padding-left: 0;
 
     @include md-down {
       margin-bottom: .5rem;

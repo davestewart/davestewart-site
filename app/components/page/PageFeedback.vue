@@ -6,7 +6,7 @@
     </template>
 
     <template v-else>
-      <p>I hope you found this post interesting or perhaps useful.</p>
+      <p>I hope you found this post interesting or useful.</p>
     </template>
 
     <p>
@@ -20,7 +20,11 @@
     <SiteIcon size="32" fill="#EA4848" />
 
     <ClientOnly>
-      <Comments :website-id="6366" :settings="settings" />
+      <Comments
+        :website-id="6366"
+        :page-url="`https://davestewart.co.uk${$route.path}`"
+        :settings="settings"
+      />
     </ClientOnly>
   </div>
 </template>

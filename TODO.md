@@ -2,7 +2,7 @@
 
 ## Functionality
 
-Missing
+### Missing
 
 - [x] Fix header transition
 - [x] Set up gallery preview
@@ -10,14 +10,14 @@ Missing
 - [x] Share buttons
 - [x] Fix `useMedia()` for video
 
-SEO
+### SEO
 
 - [x] Configure title template
 - [x] Set up `useHead()` for all pages
 - [x] Add SEO module and configure it
 - [x] Add additional data for breadcrumbs
 
-Search
+### Search
 
 - Structure
   - [x] Build search service
@@ -30,30 +30,88 @@ Search
   - [x] Change sort to group
   - [ ] Add groups count
 
-- Implement
-  - [ ] Website presentation prefs
+### UX
 
-Vue Smart Header
+- [ ] Website presentation prefs
 
-- [ ] Separate trigger
-- [ ] Rename props / redesign numbers
-- [ ] Fix `visible` / trigger
-- [ ] Fix route navigation show when in trigger mode
-- [ ] Make route navigation opt-in
-- [ ] Package
-- [ ] Publish
-- [ ] Props
-  - selector
-  - $height keyword
-  - 'x2' expression
-  - support distance and time
-  - just ideas...
+### Bugs
 
-Content Store
+- [x] Gumroad button
+- [x] Transition full screen if link clicked, then navigate
+- [x] 404 page is missing?
+- [ ] Review all mobile pages for responsive bugs
 
-- [ ] Move all functions to store
+### Mobile
+
+- [x] Mobile needs Home and Up button
+- [x] Mobile menu missing Home
+- [x] Mobile overlay should hide on scroll
+- [x] ~~Nav could do with top level breadcrumb (Section)~~
+- [x] Search button needs more space
+- [x] Return text / images toggle in search
+- [x] Make Tags Group layout responsive
+
+### Responsive
+
+- [x] Strapline has bad beaks on mobile
+- [x] Search group by date has left margin on mobile
+- Surround navigation feels too small on mobile
+  - [x] Maybe make them look like buttons? 
+  - [ ] How about swipe to go to next/previous on mobile?
+
+### Styling
+
+- [x] Tighter line height on H3
+  - Alias on mobile
+
+### Components
+
+- [x] Tables break responsive layout
+  - MultiFlow
+  - Nuxt Layers
+- [x] Quotes break responsive layout
+- [x] Shiki breaks responsive layout
+  - ES Kit
+- [x] Sticky header is janky
+  - jittery scrolling
+    - Multiflow
+  - bounces to top twice on scroll up
+
+### Other
+
+- [ ] Review image compression
+
+## Design
+
+### Presentation
+
+- [x] Code highlighting theme
+- [ ] Add "intro" content to folders
+  - Could folders just be pages with `NavFolder` components?
+- [x] Add padding to bottom of page (check home, folder, page views)
+- [ ] Add intersection observer to Gallery keyboard control
+
+## Nuxt Content
+
+### Content
+
+- [ ] Landing pages don't have intro paragraphs
+- [ ] Missing alt text on images
+
+### Data
+
 - [ ] Decide on `page` or `post` for content `type`
   - [ ] Rename `type` to `view` 
+- Path control
+  - [ ] In transform, combine path and permalink 
+  - [ ] Include `_path` in returned
+- [ ] Move search query to server
+- [ ] Fix RSS feed content
+- [ ] Drafts are showing in Blog and Search
+
+### Content Store
+
+- [ ] Move all functions to store
 - [-] Implement sorting (number folders)
 - [ ] Review post filters
   - Review at frontmatter, consider hidden: true
@@ -69,63 +127,44 @@ Content Store
   - surround
   - tags
 
-Presentation
+## Site structure
 
-- [x] Code highlighting theme
-- [ ] Add "intro" content to folders
-  - Could folders just be pages with `NavFolder` components?
-- [x] Add padding to bottom of page (check home, folder, page views)
-- [ ] Add intersection observer to Gallery keyboard control
-
-Journeys
-
-- [ ] Routing
-- [ ] Layout
-  - [ ] Flexbox
-  - [ ] Modal
-- [ ] Content / components etc
-
-Structure
+### Structure
 
 - [ ] Migrate app to themes folder
 - [ ] Convert to monorepo
 - [ ] Migrate admin package here
 
-Bugs
+### Monorepo
 
-- [x] Gumroad button
-- [x] Transition full screen if link clicked, then navigate
-- [x] 404 page is missing?
-- [ ] Review all mobile pages for responsive bugs
+```scss
++- apps
+|   +- admin
+|   +- site
++- packages
+|   +- content
+|   +- layers
++- themes
+    +- main
+    +- nuxt-ui
+    +- tube-map
+```
 
-## New
 
-Side menus
+## Site Content
 
-- See https://brandontemplar.com/posts
-- [ ] Add all search filters
-- [ ] Improve search cancelling
-- [ ] Page TOC
-
-
-## Design
-
-Toolbar
-
--  Convert "Search" to icons (🔎 | ⚙️)
+### Design
 
 Home Page
 
 - [x] Combine home and bio
 - [ ] Figure out design
 
-## Content
-
 Tags
 
-- [ ] Add tags to blog posts 
+- [ ] Add tags to blog posts
 
-Structure
+### Structure
 
 - [ ] Convert to slashless URLs
 - [ ] 301 redirects
@@ -166,10 +205,47 @@ Structure
       - [x] Branding Experiment
     - Blog
       - [ ] Nuxt IKEA
+      - [ ] Nuxt Data Fetching
+        - add computed / watch for asyncData
+        - add only one asyncData function
+
+## New
+
+### Vue Smart Header
+
+- [ ] Separate trigger
+- [ ] Rename props / redesign numbers
+- [ ] Fix `visible` / trigger
+- [ ] Fix route navigation show when in trigger mode
+- [ ] Make route navigation opt-in
+- [ ] Package
+- [ ] Publish
+- [ ] Props
+  - selector
+  - $height keyword
+  - 'x2' expression
+  - support distance and time
+  - just ideas...
+
+### Side menus
+
+- See https://brandontemplar.com/posts
+- [ ] Add all search filters
+- [x] Improve search cancelling
+- [ ] Page TOC
 
 ## Ideas
 
-Small portfolio site:
+### Journeys
+
+- [ ] Routing
+- [ ] Layout
+  - [ ] Flexbox
+  - [ ] Modal
+- [ ] Content / components etc
+- [ ] Show Next / Prev buttons centralised in main margins
+
+### Small portfolio site:
 
 - show ONLY the things that matter
 - a pick projects and share them (via a URL)
@@ -205,19 +281,4 @@ BIO:
 - create logos
 - love the detail
 - always thinking about things
-- 
 
-## Monorepo
-
-```scss
-+- apps
-|   +- admin
-|   +- site
-+- packages
-|   +- content
-|   +- layers
-+- themes
-    +- main
-    +- nuxt-ui
-    +- tube-map
-```

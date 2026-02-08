@@ -51,6 +51,7 @@ p.description {
   font-family: $titleFont;
   margin-top: -.25em;
   margin-bottom: 2rem;
+  line-height: 1.25;
   font-size: 1.2em;
   color: $grey;
 }
@@ -236,8 +237,9 @@ video {
 }
 
 table {
-  margin: 2rem 1rem;
   width: 100%;
+  overflow-x: scroll;
+  min-width: 0;
 
   @include sm {
     margin: 2rem 0;
@@ -249,7 +251,6 @@ table {
 
   th,
   td {
-    text-align: left;
     padding: .25em .5em;
   }
 
@@ -260,8 +261,18 @@ table {
     vertical-align: middle;
   }
 
-  td:first-child {
-    white-space: nowrap;
+  th:not([align]) {
+    text-align: left;
+  }
+
+  thead th {
+    vertical-align: bottom;
+  }
+
+  @include lg {
+    td:first-child {
+      white-space: nowrap;
+    }
   }
 
   td a:has(code) {

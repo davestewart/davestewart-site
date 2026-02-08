@@ -19,6 +19,10 @@ defineProps<{
     margin-top: -.5rem;
   }
 
+  h2 {
+    line-height: 1.2;
+  }
+
   hr {
     border: none;
     height: 0;
