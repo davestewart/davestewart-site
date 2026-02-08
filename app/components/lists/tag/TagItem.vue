@@ -40,10 +40,6 @@ function onClick (event: MouseEvent) {
     vertical-align: middle;
     white-space: nowrap;
 
-    @include sm {
-      padding: .2em .5em;
-    }
-
     &.selected {
       background: var(--theme);
       color: white !important;

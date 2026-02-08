@@ -1,13 +1,22 @@
 <template>
   <div class="uiRadio">
+    <UiIcon
+      v-if="icon"
+      :size="20"
+      :icon="icon"
+      style="transform: translateY(1px)"
+    />
     <label
       v-if="label"
       class="uiRadio__label"
       :data-count="count"
       :data-count-state="countState"
-    >{{ label }}:</label>
+    >
+      {{ label }}:
+    </label>
     <span
       v-for="option in options"
+      :key="option"
       class="uiRadio__option"
     ><a
       :href="`/search/?${name}=${option}`"
@@ -19,10 +28,13 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+import type { Icon } from '~/components/ui/UiIcon.vue'
+
+defineProps<{
   label?: string
+  icon?: Icon
   name?: string
-  options?: any[]
+  options?: string[]
   modelValue?: string
   count?: number | string
   countState?: number | string

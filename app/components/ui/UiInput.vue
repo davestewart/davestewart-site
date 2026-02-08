@@ -47,7 +47,6 @@ defineExpose({ focus })
   color: $textColor;
   font-size: 14px;
   line-height: 1;
-  margin: 0 7px;
 
   &__text {
     width: 100%;

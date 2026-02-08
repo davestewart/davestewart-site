@@ -75,10 +75,33 @@ provide('handleTagClick', handleTagClick)
 
 <style lang="scss">
 .searchTags {
-  > * {
-    margin-left: 15px;
-    border-left: 4px solid $grey-lightest;
-    padding: 8px;
+
+  &__groups {
+    display: flex;
+    flex-direction: column;
+    padding-left: 4px;
+    gap: 6px;
+    @include md-down {
+      gap: 4px;
+    }
+  }
+
+  @include md-up {
+    &__groups {
+      padding-left: 15px;
+    }
+
+    > * {
+      margin-left: 15px;
+      border-left: 4px solid $grey-lightest;
+      padding: 8px;
+    }
+  }
+
+  @include md-down {
+    .tagList__tag {
+      //padding: .2em .5em;
+    }
   }
 
   a {
@@ -87,11 +110,9 @@ provide('handleTagClick', handleTagClick)
 
   .tagList__tag {
     display: inline-block;
-    margin: .1em .1em;
-  }
-
-  &__groups {
-    padding-left: 15px;
+    @include md-up {
+      margin: .1em .1em;
+    }
   }
 
   .tagGroup {
@@ -99,8 +120,10 @@ provide('handleTagClick', handleTagClick)
     font-size: 12px;
 
     label {
-      align-items: center;
       display: flex;
+      align-items: flex-start;
+      padding: .3em 0;
+      margin: .1em 0;
       min-width: 70px;
       font-weight: 600;
     }

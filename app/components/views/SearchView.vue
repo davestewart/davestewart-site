@@ -3,7 +3,7 @@
     <ClientOnly>
       <h1 class="search__title">
         <span v-if="!isFiltered">Search...</span>
-        <span v-else class="accent">{{ searchTitle }}</span>
+        <component :is="searchTitle" v-else />
       </h1>
 
       <!-- description -->
@@ -20,11 +20,11 @@
           :class="{ active: canReset }"
           @click.prevent="reset"
         >
-          <span>&times;</span>
+          <UiIcon icon="close" :size="24" />
         </button>
 
         <div class="searchControls">
-          <UiControls class="only-sm">
+          <UiControls class="only-md-down">
             <!-- search input -->
             <div class="searchControls__text">
               <UiInput v-model="query.text" placeholder="Type to filter..." />
@@ -34,16 +34,16 @@
           <!-- controls -->
           <UiControls>
             <!-- search input -->
-            <div class="searchControls__text only-md-up">
+            <div class="searchControls__text only-lg">
               <UiInput ref="searchInput" v-model="query.text" placeholder="Type to filter..." />
             </div>
 
             <!-- tags -->
             <div class="searchControls__tags">
+              <label class="searchControls__label">Tags: </label>
               <UiRadio
                 v-model="query.tagsFilter"
                 name="filter"
-                label="Tags"
                 :count="query.tags.length ? query.tags.length : ''"
                 :count-state="options.showTags ? 0 : 1"
                 :options="options.filter"
@@ -52,11 +52,13 @@
 
             <!-- grouping -->
             <div class="searchControls__group">
+              <label class="searchControls__label">Group: </label>
               <UiRadio v-model="query.group" name="group" :options="options.group" />
             </div>
 
             <!-- format -->
-            <div class="searchControls__format only-md-up">
+            <div class="searchControls__format">
+              <label class="searchControls__label">Format: </label>
               <UiRadio v-model="query.format" name="format" :options="options.format" />
             </div>
           </UiControls>
@@ -123,6 +125,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { onKeyStroke, useLocalStorage } from '@vueuse/core'
 import { type ContentBreadcrumb, type ContentItem, getItems, makeTree, sortBySection } from '~/stores/content'
 import { type SearchQuery, searchContent, groupBy, parseQuery, makeDefaultQuery, cleanQuery, DEFAULT_SEARCH_PATHS } from '~/stores/search'
+import { UiIcon } from '#components'
 
 const route = useRoute()
 const router = useRouter()
@@ -238,9 +241,21 @@ const canReset = computed(() => {
 const searchTitle = computed(() => {
   const { text, tags } = query
   const parts = []
-  if (text) parts.push(text)
-  if (tags.length) parts.push(tags.join(' + '))
-  return parts.join(' & ')
+  if (text) {
+    parts.push(h('span', { className: 'searchTokens__text' }, text))
+  }
+  if (tags.length) {
+    for (const tag of tags) {
+      if (parts.length) {
+        parts.push(h('span', { class: 'searchTokens__punctuation' }, '+'))
+      }
+      parts.push(h('span', { class: 'searchTokens__tag' }, [
+        // h(UiIcon, { icon: 'tag', color: 'black', size: 48 }),
+        tag,
+      ]))
+    }
+  }
+  return h('div', { class: 'searchTokens' }, parts)
 })
 
 watch(searchTitle, (val) => {
@@ -333,6 +348,10 @@ onMounted(() => {
     font-weight: 400;
     user-select: none;
 
+    @include md-down {
+      top: 15px;
+    }
+
     span {
       height: 0;
       width: 0;
@@ -359,7 +378,6 @@ onMounted(() => {
 
   &__tags-container {
     overflow: hidden;
-    /* transition? */
   }
 
   &__results {
@@ -396,12 +414,26 @@ onMounted(() => {
 
 .searchControls {
   @include md-up {
-    margin-left: -1rem;
+    //margin-left: -1rem;
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 600;
+    margin: 0 .5em;
+
+    @include md-down {
+      display: block;
+    }
   }
 
   &__text {
 
+    padding-right: 1rem;
+    padding-left: 0rem;
+
     @include md-down {
+      margin-bottom: .5rem;
 
       &,
       .uiInput {
@@ -409,20 +441,57 @@ onMounted(() => {
       }
     }
 
-    @include md-up {
+    @include lg {
       width: 150px;
     }
   }
 
-  @include sm {
+  @include md-down {
+
+    & {
+      margin-left: -.25rem;
+    }
+
     .uiControls {
       flex-wrap: nowrap;
-      margin: 0 -1rem .5rem;
+    }
+
+    &__tags {
+      padding-left: 0 !important;
+      word-break: break-word;
     }
 
     .uiControls > * {
       padding: 5px;
+      display: block;
+
+      label {
+        padding: 0 0 10px 1px;
+      }
     }
+  }
+}
+
+.searchTokens {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .2em;
+  word-break: break-word;
+
+  &__text {
+    color: $accentColor;
+  }
+
+  &__tag {
+    display: inline-flex;
+    align-items: center;
+    color: $accentColor;
+    letter-spacing: -.02em;
+  }
+
+  &__punctuation {
+    color: $grey-light;
   }
 }
 </style>
