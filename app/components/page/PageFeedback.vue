@@ -37,14 +37,27 @@ const settings = {
 .comment-writer {
   background: var(--ht-color-input);
   margin: 4px 10px;
-}`,
+}
+
+.comments-list .no-comments {
+  display: none;
+}
+
+.main-box-footer {
+  display: none;
+}
+`,
 }
 </script>
 
 <style lang="scss">
 .pageFeedback {
-  margin-top: 5rem;
+  //margin-top: 5rem;
   //border-top: 1px solid $grey-lightest;
+}
+
+.ht-comments-wrap {
+  margin-top: 3rem;
 }
 
 #hyvor-talk-view {
