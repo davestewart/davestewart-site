@@ -39,6 +39,10 @@
 
   &__sections {
     padding-top: 1rem;
+
+    a[href="/"] {
+      display: none;
+    }
   }
 
   &__link {

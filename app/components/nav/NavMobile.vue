@@ -1,83 +1,73 @@
 <template>
   <nav class="navMobile only-md-down">
     <!-- menu button -->
-    <div class="navMobile__button" @click="visible = !visible">
-      <svg width="20px" height="20px" viewBox="0 0 15 14">
-        <rect
-          id="bar-1"
-          fill="currentColor"
-          x="2"
-          y="3"
-          width="11"
-          height="2"
-        />
-        <rect
-          id="bar-2"
-          fill="currentColor"
-          x="2"
-          y="7"
-          width="11"
-          height="2"
-        />
-        <rect
-          id="bar-3"
-          fill="currentColor"
-          x="2"
-          y="11"
-          width="11"
-          height="2"
-        />
-      </svg>
+    <div
+      class="navMobile__link navMobile__button"
+      :class="{ 'router-link-active': visible }"
+      @click="visible = !visible"
+    >
+      <UiIcon icon="menu" :size="24" />
     </div>
 
-    <!-- search -->
-    <NuxtLink
-      to="/search/"
-      class="navTop__link navMobile__search"
-    >
-      <svg
-        width="20px"
-        height="20px"
-        viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg"
+    <div class="navMobile__links">
+      <NuxtLink
+        :to="up.path"
+        class="navMobile__link navMobile__up"
+        :class="up.class"
       >
-        <g
-          stroke="none"
-          stroke-width="1"
-          fill="currentColor"
-          fill-rule="evenodd"
-        >
-          <polygon id="handle" transform="translate(15.666905, 15.666905) rotate(-315.000000) translate(-15.666905, -15.666905) " points="11.6669048 14.0669048 19.6669048 14.0669048 19.6669048 17.2669048 11.6669048 17.2669048" />
-          <path id="Oval-2" d="M8,0 C12.418278,0 16,3.581722 16,8 C16,12.418278 12.418278,16 8,16 C3.581722,16 0,12.418278 0,8 C0,3.581722 3.581722,0 8,0 Z M8,2.35294118 C4.88121553,2.35294118 2.35294118,4.88121553 2.35294118,8 C2.35294118,11.1187845 4.88121553,13.6470588 8,13.6470588 C11.1187845,13.6470588 13.6470588,11.1187845 13.6470588,8 C13.6470588,4.88121553 11.1187845,2.35294118 8,2.35294118 Z" />
-        </g>
-      </svg>
-    </NuxtLink>
+        <UiIcon icon="up" :size="24" />
+      </NuxtLink>
+
+      <!-- search -->
+      <NuxtLink
+        to="/search/"
+        class="navMobile__link navMobile__search"
+      >
+        <UiIcon icon="search" :size="24" />
+      </NuxtLink>
+    </div>
 
     <!-- background -->
-    <div v-if="visible" class="navMobile__background" @mousedown="hide" />
+    <transition name="menu">
+      <div v-if="visible" class="navMobile__popover">
+        <div class="navMobile__background" @mousedown="hide" />
 
-    <!-- dropdown -->
-    <div v-if="visible" ref="dropdown" class="navMobile__dropdown">
-      <div class="navMobile__branding">
-        <SiteBranding @click="hide" />
+        <!-- dropdown -->
+        <div ref="dropdown" class="navMobile__dropdown">
+          <div class="navMobile__branding">
+            <SiteBranding @click="hide" />
+          </div>
+          <NavSections headers @click="hide" />
+          <p class="navMobile__promo">
+            Are you looking for a new <a href="https://controlspace.app" target="_blank">tab manager</a>?
+          </p>
+        </div>
       </div>
-      <NavSections headers @click="hide" />
-      <p class="navMobile__promo">
-        Are you looking for a new <a href="https://controlspace.app" target="_blank">tab manager</a>?
-      </p>
-    </div>
+    </transition>
   </nav>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useNavStore } from '~/stores/nav'
 
 const route = useRoute()
 const visible = ref(false)
 
+const { up } = storeToRefs(useNavStore())
+
 watch(() => route.path, () => {
   visible.value = false
+})
+
+watch(visible, (value) => {
+  if (value) {
+    window.addEventListener('scroll', hide)
+  }
+  else {
+    window.removeEventListener('scroll', hide)
+  }
 })
 
 function hide () {
@@ -95,30 +85,52 @@ function hide () {
   justify-content: space-between;
   width: 100%;
 
-  &__button {
+  &__links {
+    display: flex;
+    align-items: center;
+  }
+
+  &__link {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
-    min-width: 3rem;
-    min-height: 3rem;
-    border-right: 1px solid $grey-lightest;
     cursor: pointer;
     color: $grey-light;
     z-index: 100;
+    padding: .75rem .8rem;
 
-    &:hover {
-      color: $accentColor;
+    svg {
+      color: $grey-light;
+    }
+
+    &.hidden {
+      display: none;
+    }
+
+    &:hover svg {
+      color: black;
+    }
+
+    &.router-link-active svg {
+      color: $accentColor !important;
     }
   }
 
-  &__search.navTop__link {
-    padding: .75rem;
+  &__button {
+    border-right: 1px solid $grey-lightest;
   }
 
   // ---------------------------------------------------------------------------------------------------------------------
   // dropdown
   // ---------------------------------------------------------------------------------------------------------------------
+
+  &__popover {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    z-index: 100;
+  }
 
   &__background {
     @include fit;
@@ -130,30 +142,17 @@ function hide () {
   &__dropdown {
     box-sizing: border-box;
     position: fixed;
+    padding: .5rem;
+    font-size: 1.3em;
+    top: 45px;
+    left: 15px;
+    right: 15px;
     background: white;
     outline: 1px solid $grey-lightest;
     border-radius: 2px;
-    z-index: 110;
+    overflow: hidden;
 
     @include shadow-lg;
-
-    @include sm {
-      padding: .5rem;
-      width: calc(100% - 20px);
-      font-size: 1.3em;
-      top: 10px;
-      left: 10px;
-    }
-
-    @include md-up {
-      position: absolute;
-      max-width: calc(100% - 20px);
-      padding: 1rem .25rem;
-      top: 45px;
-      left: 10px;
-      height: auto;
-      font-size: 1.15em;
-    }
 
     @include full {
       left: -10px;
@@ -162,7 +161,7 @@ function hide () {
 
   &__branding {
     padding-bottom: 1rem;
-    margin: .25rem 1rem 1.25rem;
+    margin: .5rem .5rem 1.25rem;
     border-bottom: 1px dashed $grey-lightest;
 
     .siteBranding {
@@ -182,7 +181,7 @@ function hide () {
   &__promo {
     margin-top: 1rem;
     border-top: 1px dashed $grey-lightest;
-    padding: 1rem 1rem 0;
+    padding: 1rem 1rem .5rem;
     font-size: .85em;
 
     a {
@@ -224,11 +223,21 @@ function hide () {
 
     // hide some links in menu
     //.navSections__section[data-name="navigation"],
-    a[href="/"],
+    a[href="/sitemap/"],
     a[href="/search/"],
     a[href="/projects/personal/dave-stewart/"] {
       display: none;
     }
   }
+}
+
+.menu-enter-active,
+.menu-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.menu-enter-from,
+.menu-leave-to {
+  opacity: 0;
 }
 </style>

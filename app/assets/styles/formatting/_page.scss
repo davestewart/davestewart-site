@@ -310,10 +310,12 @@ a:hover {
   text-decoration: underline;
 }
 
-a span {
-  display: inline-block;
-  transform: translateY(-1px);
-  margin-left: 2px;
+.pageContent {
+  a span {
+    display: inline-block;
+    transform: translateY(-1px);
+    margin-left: 2px;
+  }
 }
 
 .pageContent {

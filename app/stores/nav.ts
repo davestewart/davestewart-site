@@ -29,6 +29,7 @@ export const useNavStore = defineStore('nav', () => {
   }
 
   // entries
+  const home = createLink('/', 'Home', 'Home page')
   const sitemap = createLink('/sitemap/', 'Sitemap', 'Full list of everything on the site')
   const search = createLink('/search/', 'Search', 'Search portfolio')
   const work = createLink('/work/', 'Work')
@@ -41,6 +42,7 @@ export const useNavStore = defineStore('nav', () => {
   // main sections
   const sections = [
     createSection('Navigation', [
+      home,
       sitemap,
       search,
     ]),
@@ -56,20 +58,23 @@ export const useNavStore = defineStore('nav', () => {
     ]),
   ]
 
+  const up = computed<Link>(() => {
+    const parents = getContentParents(content.path, 'Up')
+    return {
+      title: 'Up',
+      path: getParentPath(content.path),
+      description: `Go up to ${parents.at(-2)?.title}`,
+      class: `up ${parents.length > 2 ? '' : 'hidden'}`,
+    } satisfies Link
+  })
+
   const top = computed(() => {
     const left: Link[] = [
       work, products, projects, blog,
       { ...archive, class: content.path.startsWith('/archive/') ? '' : 'hidden' },
     ]
 
-    const parents = getContentParents(content.path, 'Up')
-    const up: Link = {
-      title: 'Up',
-      path: getParentPath(content.path),
-      description: `Go up to ${parents.at(-2)?.title}`,
-      class: `up ${parents.length > 2 ? '' : 'hidden'}`,
-    }
-    const right: Link[] = [up, search]
+    const right: Link[] = [up.value, search]
 
     return [
       createSection('Content', left),
@@ -80,5 +85,6 @@ export const useNavStore = defineStore('nav', () => {
   return {
     sections,
     top,
+    up,
   }
 })
