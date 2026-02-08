@@ -67,12 +67,13 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { resolveMedia, useMedia } from '../../composables/useMedia'
-import type { MediaItem } from '../../composables/useMedia'
+import type { MediaItem } from '~/composables/useMedia'
+import { usePreview } from '~/composables/usePreview'
+import { useActiveGallery } from '~/composables/useActiveGallery'
+import { resolveMedia, useMedia } from '~/composables/useMedia'
 import { getKeys, isNotModifier, stopEvent } from '~/utils/events'
 import { offset } from '~/utils/array'
 import { storage } from '~/utils/storage'
-import { usePreview } from '~/composables/usePreview'
 import MediaImage from './MediaImage.vue'
 
 interface Props {
@@ -201,9 +202,27 @@ function onClickLink (event: MouseEvent, link: string) {
 
 // Hooks
 const rootEl = ref<HTMLElement | null>(null)
+const galleryService = useActiveGallery()
+let galleryHandle: ReturnType<typeof galleryService.register> | null = null
+
+function onKeyDownWrapper (event: KeyboardEvent) {
+  if (galleryHandle?.isActive()) {
+    onKeyDown(event)
+  }
+}
 
 onMounted(() => {
-  document.addEventListener('keydown', onKeyDown)
+  document.addEventListener('keydown', onKeyDownWrapper)
+
+  if (rootEl.value) {
+    galleryHandle = galleryService.register(rootEl.value)
+  }
+
+  onUnmounted(() => {
+    document.removeEventListener('keydown', onKeyDownWrapper)
+    galleryHandle?.cleanup()
+  })
+
   if (props.keepAlive) {
     nextTick(() => loading.value = false)
     const savedIndex = storage.get(storageKey.value)
@@ -212,10 +231,6 @@ onMounted(() => {
       index.value = savedIndex
     }
   }
-})
-
-onUnmounted(() => {
-  document.removeEventListener('keydown', onKeyDown)
 })
 </script>
 

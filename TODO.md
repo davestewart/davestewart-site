@@ -89,7 +89,7 @@
 - [ ] Add "intro" content to folders
   - Could folders just be pages with `NavFolder` components?
 - [x] Add padding to bottom of page (check home, folder, page views)
-- [ ] Add intersection observer to Gallery keyboard control
+- [x] Add intersection observer to Gallery keyboard control
 
 ## Nuxt Content
 
