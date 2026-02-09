@@ -29,7 +29,7 @@ import { getPath, getTitle } from '~/utils/content'
 
 const route = useRoute()
 const router = useRouter()
-const { surround: posts } = storeToRefs(useContentStore())
+const { surround: posts } = storeToRefs(useNavStore())
 
 const prev = computed(() => posts?.value.at(0))
 const next = computed(() => posts?.value.at(1))

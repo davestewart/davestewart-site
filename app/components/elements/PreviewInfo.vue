@@ -20,8 +20,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { PostStatus } from '~/stores/config/status'
-import { isProd } from '../../utils/config'
+import { isProd } from '~/utils/config'
+import { PostStatus } from '~/stores/api'
 
 const props = defineProps<{
   page: ParsedPage

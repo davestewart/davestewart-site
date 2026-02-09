@@ -1,5 +1,5 @@
+import { queryItems } from './api'
 import { getParentPath, normalizePath } from '~/utils/content'
-import { computed } from 'vue'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // types
@@ -8,10 +8,9 @@ import { computed } from 'vue'
 /**
  * Raw data from Content API
  */
-interface ContentItemRaw {
+export interface ContentItemRaw {
   _path?: string
-  type: 'folder' | 'post'
-  // parentPath: string
+  type: 'folder' | 'post' | 'home' | 'showcase'
   title?: string
   shortTitle?: string
   description?: string
@@ -60,27 +59,17 @@ export interface ContentPage {
   }
 }
 
-/**
- * Breadcrumbs for a given path
- */
-export type ContentBreadcrumb = {
-  path: string
-  title: string
-  description?: string
-}
-
 // ---------------------------------------------------------------------------------------------------------------------
 // store
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
- * Content store for managing current page and navigation data
+ * Manages:
+ *
+ * - all metadata
+ * - current page
  */
 export const useContentStore = defineStore('content', () => {
-  // ---------------------------------------------------------------------------------------------------------------------
-  // page content
-  // ---------------------------------------------------------------------------------------------------------------------
-
   // page route
   const route = useRoute()
 
@@ -89,6 +78,9 @@ export const useContentStore = defineStore('content', () => {
 
   // page object
   const page = ref<ParsedPage | null>(null)
+
+  // all content items (metadata only)
+  const items = ref<ContentItem[]>([])
 
   // load the current page
   async function loadPage (path: string) {
@@ -103,52 +95,9 @@ export const useContentStore = defineStore('content', () => {
     return page.value
   }
 
-  // ---------------------------------------------------------------------------------------------------------------------
-  // navigation items
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  // all content items (metadata only)
-  const items = ref<ContentItem[]>([])
-
-  // computed
-  const breadcrumbs = computed(() => {
-    return getContentParents(path.value, page.value?.title ?? '')
-  })
-
-  const siblings = computed(() => {
-    return getContentSiblings(path.value)
-  })
-
-  const surround = computed(() => {
-    return getContentSurround(path.value)
-  })
-
-  // ---------------------------------------------------------------------------------------------------------------------
-  // query functions (may move to search store)
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  // Computed getters for your navigation functions
-  const getItems = computed(() => (path = '/') => {
-    return items.value?.filter(item => item.path.startsWith(path)) ?? []
-  })
-
-  const getPosts = computed(() => (options = {}) => {
-    // Your existing logic
-  })
-
-  const getPost = computed(() => (path: string): ContentPage | undefined => {
-    return items.value
-      ?.filter(item => item.type === 'post')
-      .find(item => item.path === path || item.permalink === path) ?? undefined
-  })
-
-  // ---------------------------------------------------------------------------------------------------------------------
-  // initializers
-  // ---------------------------------------------------------------------------------------------------------------------
-
   async function initServer () {
     path.value = route.path
-    items.value = await queryItems()
+    items.value = await queryItems() // process.env.NODE_ENV as any
   }
 
   function initClient () {
@@ -159,121 +108,14 @@ export const useContentStore = defineStore('content', () => {
   }
 
   return {
-    // current page
     path,
     page,
-
-    // items
     items,
-    breadcrumbs,
-    siblings,
-    surround,
-
-    // methods
     loadPage,
-    getItems,
-    getPosts,
-    getPost,
-
-    // initializers
     initServer,
     initClient,
   }
 })
-
-// ---------------------------------------------------------------------------------------------------------------------
-// main state and query function
-// ---------------------------------------------------------------------------------------------------------------------
-
-/**
- * Makes the required query to the api via queryContent
- */
-export async function queryItems (): Promise<(ContentItem[])> {
-  const pages = await queryContent()
-    .only([
-      '_path',
-      // 'parentPath',
-      'permalink',
-      'type',
-      'title',
-      'shortTitle',
-      'description',
-      'order',
-      'date',
-      'status',
-      'tags',
-      'media',
-      'github',
-    ])
-    .where({
-      _extension: 'md',
-    })
-    .find()
-    .catch((err) => {
-      console.error('[useFolder] Error:', err)
-      return []
-    }) satisfies ContentItemRaw[]
-
-  // build items
-  return pages
-    // if an order is defined, sort by order, otherwise, sort by date
-    // .sort((a, b) => {
-    //   return a._path!.localeCompare(b._path!)
-    // })
-    .sort((a, b) => {
-      const orderA = a.order ?? 9999
-      const orderB = b.order ?? 9999
-      if (orderA !== orderB) {
-        return orderA - orderB
-      }
-      const dateA = new Date(a.date || 0).getTime()
-      const dateB = new Date(b.date || 0).getTime()
-      return dateB - dateA
-    })
-    // .sort((a: any, b: any) => {
-    //   const orderA = a.order ?? 9999
-    //   const orderB = b.order ?? 9999
-    //   return orderA - orderB
-    // })
-    // .sort((a: any, b: any) => {
-    //   const dateA = new Date(a.date || 0).getTime()
-    //   const dateB = new Date(b.date || 0).getTime()
-    //   return dateB - dateA
-    // })
-    .sort(sortBySection)
-
-    // convert pages to items
-    .map((page) => {
-      if (page.type === 'folder') {
-        return {
-          path: page._path!,
-          type: page.type,
-          // parentPath: page.parentPath!,
-          title: page.title ?? '',
-          description: page.description ?? '',
-          order: page.order,
-          items: [],
-        } as ContentFolder
-      }
-      return {
-        path: page._path!,
-        type: page.type,
-        // parentPath: page.parentPath!,
-        permalink: page.permalink,
-        title: page.title ?? '',
-        shortTitle: page.shortTitle,
-        description: page.description ?? '',
-        media: {
-          thumbnail: page.media?.thumbnail,
-        },
-        github: page.github,
-        order: page.order,
-        date: page.date,
-        status: page.status,
-        tags: page.tags,
-      } as ContentPage
-    })
-}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // item functions
@@ -284,14 +126,11 @@ interface ContentItemOptions {
   sort?: 'date' | 'path' | 'random'
 }
 
-function filterVisible (items: ContentPage[]) {
-  return items
-    .filter(item => item.status !== 'draft')
-    .filter(item => item.status !== 'unlisted')
-    .filter(item => item.status !== 'hidden')
-    .filter(item => item.date)
-}
-
+/**
+ * Get all items from the target path down
+ *
+ * @param path
+ */
 export function getItems (path = '/'): ContentItem[] {
   // if items not loaded yet, load them
   const { items } = useContentStore()
@@ -303,17 +142,17 @@ export function getItems (path = '/'): ContentItem[] {
   return items.filter(item => item.path.startsWith(normalizedPath))
 }
 
+/**
+ * Get posts with a few filtering options
+ *
+ * @param options
+ */
 export function getPosts (options: ContentItemOptions = {}): ContentPage[] {
   // options
-  const sort = options.sort
-  const limit = options.limit
+  const { sort, limit } = options
 
   // initial posts
-  let items: ContentPage[] = getItems()
-    .filter(item => item.type === 'post')
-
-  // filter to visible
-  items = filterVisible(items)
+  let items: ContentPage[] = getItems().filter(item => item.type === 'post')
 
   // options
   if (sort) {
@@ -328,103 +167,19 @@ export function getPosts (options: ContentItemOptions = {}): ContentPage[] {
       items = items.sort(() => Math.random() > 0.5 ? 1 : -1)
     }
   }
+
+  // finally, slice if limit is set
   if (limit) {
     items = items.slice(0, limit)
   }
+
+  // return
   return items as ContentPage[]
-}
-
-// TODO add a sort by section helper
-const sections = [
-  'work',
-  'products',
-  'projects',
-  'blog',
-  'archive',
-]
-
-type HasPath = {
-  _path?: string
-  path?: string
-}
-
-export function sortBySection (a: HasPath, b: HasPath) {
-  const aSection = (a._path ?? a.path)?.split('/')[1] || ''
-  const bSection = (b._path ?? b.path)?.split('/')[1] || ''
-  const aIndex = sections.indexOf(aSection)
-  const bIndex = sections.indexOf(bSection)
-  return (aIndex < 0 ? 1000 : aIndex) - (bIndex < 0 ? 1000 : bIndex)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // main functions
 // ---------------------------------------------------------------------------------------------------------------------
-
-/**
- * items from root to current page
- */
-export function getContentParents (path: string, fallbackTitle = '404'): ContentBreadcrumb[] {
-  // variables
-  const items = getItems('/')
-  const parents: ContentBreadcrumb[] = [{ title: 'Home', path: '/' }]
-  let currentPath = '/'
-
-  // build segments
-  const segments = path.split('/').filter(Boolean)
-  for (const segment of segments) {
-    // variables
-    currentPath += segment + '/'
-    const item = items.find((p) => {
-      return p.type === 'folder'
-        ? p.path === currentPath
-        : p.path === currentPath || p.permalink === currentPath
-    })
-
-    // page found
-    if (item) {
-      parents.push({
-        path: item.path,
-        title: (('shortTitle' in item) && item.shortTitle) || item.title,
-        description: item.description,
-      })
-    }
-
-    // 404
-    else {
-      return [
-        parents[0] as ContentBreadcrumb,
-        { title: fallbackTitle } as ContentBreadcrumb,
-      ]
-    }
-  }
-
-  // return
-  return parents
-}
-
-/**
- * items at the same level as current page
- */
-export function getContentSiblings (path: string): ContentItem[] {
-  const parentPath = getParentPath(path)
-  const items = getItems(parentPath)
-  return items.filter(p => getParentPath(p.path) === parentPath)
-}
-
-/**
- * items before and after current page
- */
-export function getContentSurround (path: string): Array<ContentPage | undefined> {
-  const items = getPosts()
-  const index = items.findIndex((p: any) => p.permalink === path || p.path === path)
-  if (index > -1) {
-    return [
-      items[index - 1],
-      items[index + 1],
-    ]
-  }
-  return [undefined, undefined]
-}
 
 /**
  * items from the target path down

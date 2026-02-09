@@ -123,9 +123,18 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { onKeyStroke, useLocalStorage } from '@vueuse/core'
-import { type ContentBreadcrumb, type ContentItem, getItems, makeTree, sortBySection } from '~/stores/content'
-import { type SearchQuery, searchContent, groupBy, parseQuery, makeDefaultQuery, cleanQuery, DEFAULT_SEARCH_PATHS } from '~/stores/search'
+import { type ContentItem, getItems, makeTree } from '~/stores/content'
+import {
+  cleanQuery,
+  DEFAULT_SEARCH_PATHS,
+  groupBy,
+  makeDefaultQuery,
+  parseQuery,
+  searchContent,
+  type SearchQuery,
+} from '~/stores/search'
 import { UiIcon } from '#components'
+import type { Link } from '~/stores/nav'
 
 const route = useRoute()
 const router = useRouter()
@@ -197,7 +206,7 @@ const itemsAsTree = computed(() => {
   // TODO: the following code is crap; look to filter tree in main search
 
   // use existing breadcrumbs function to get all parents for filtered items
-  const breadcrumbs: Map<string, ContentBreadcrumb> = new Map()
+  const breadcrumbs: Map<string, Link> = new Map()
   for (const page of filtered.value) {
     const parents = getContentParents(page.path)
     parents.pop()
@@ -216,7 +225,7 @@ const itemsAsTree = computed(() => {
     .filter(item => item !== undefined)
     .filter(Boolean)
 
-  const merged = [...filtered.value, ...folders].sort(sortBySection)
+  const merged = [...filtered.value, ...folders]//.sort(sortBySection)
 
   // make the tree
   return makeTree(merged, '/')
@@ -305,11 +314,13 @@ onKeyStroke('Escape', () => {
 })
 
 onMounted(() => {
-  if (query.year) {
-    query.group = 'date'
-    setTimeout(() => {
-      document.querySelector(`#year_${query.year}`)?.scrollIntoView({ behavior: 'smooth' })
-    }, 750)
+  if (query.show) {
+    if (/^\d{4}$/.test(query.show)) {
+      query.group = 'date'
+      setTimeout(() => {
+        document.querySelector(`#year_${query.show}`)?.scrollIntoView({ behavior: 'smooth' })
+      }, 750)
+    }
   }
   nextTick(() => {
     searchInput.value?.focus()

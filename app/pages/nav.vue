@@ -1,11 +1,9 @@
 <script lang="ts" setup>
 import {
-  getContentParents,
-  getContentSiblings,
-  getContentSurround,
   getContentTree,
   getItems,
 } from '~/stores/content'
+import { getContentParents, getContentSiblings, getContentSurround } from '~/stores/nav'
 
 const methods = {
   Items: getItems,

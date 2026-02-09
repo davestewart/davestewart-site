@@ -16,23 +16,43 @@ interface Tag {
 }
 
 export interface SearchQuery {
-  path: string
-  text: string
-  tags: string[]
-  textOp: 'and' | 'or'
-  tagsOp: 'and' | 'or'
-  tagsFilter: 'off' | 'list' | 'groups'
-  group: 'path' | 'date'
-  sort: 'path' | 'date'
-  random: boolean
-  format: 'text' | 'image'
-  year: string
+  // the path from which to search from
+  path?: string
+  // any text from title and description to match
+  text?: string
+  // any tags to match
+  tags?: string[]
+  // match all or some text fragments
+  textOp?: 'and' | 'or'
+  // match all or some text tags
+  tagsOp?: 'and' | 'or'
+  // group by path (default) or date (year)
+  group?: 'path' | 'date'
+  // sort by path (default) or date
+  sort?: 'path' | 'date'
+  // whether to randomize results once filtered and sorted
+  random?: boolean
+  // limit the number of results returned
+  limit?: number
+
+  /// perhaps these should be in search options?
+
+  // format to display results in - image (default) or text
+  format?: 'image' | 'text'
+  // whether to show the tags filter
+  tagsFilter?: 'off' | 'list' | 'groups'
+  // page anchor to scroll to once filtered
+  show?: string
 }
 
 export interface SearchOptions {
+  // which paths to include in the search
   paths?: string[]
+  // whether to exclude drafts from results
   excludeDrafts?: boolean
+  // whether to include only items with thumbnails
   hasThumbnail?: boolean
+  // limit the number of results returned
   limit?: number
 }
 
@@ -72,7 +92,6 @@ export const useSearchStore = defineStore('search', () => {
     searchContent,
     makeTextFilter,
     makeTagsFilter,
-    makeDateFilter,
     groupBy,
   }
 })
@@ -109,8 +128,8 @@ export function makeDefaultQuery (): SearchQuery {
     format: 'text',
     tagsFilter: 'off',
     path: '',
-    year: '',
     sort: 'date',
+    show: '',
     random: false,
   }
 }
@@ -159,22 +178,40 @@ export function parseQuery (input: Record<string, any> | string): Partial<Search
     query.path = params.path
   }
 
-  // Parse year
-  if (params.year) {
-    query.year = params.year
-  }
-
   // Parse sort
   if (params.sort) {
     query.sort = params.sort
   }
 
   // Parse other query fields
-  if (params.tagsFilter) query.tagsFilter = params.tagsFilter
-  if (params.textOp) query.textOp = params.textOp
-  if (params.tagsOp) query.tagsOp = params.tagsOp
-  if (params.group) query.group = params.group
-  if (params.format) query.format = params.format
+  if (params.tagsFilter) {
+    query.tagsFilter = params.tagsFilter
+  }
+
+  if (params.textOp) {
+    query.textOp = params.textOp
+  }
+
+  if (params.tagsOp) {
+    query.tagsOp = params.tagsOp
+  }
+
+  if (params.group) {
+    query.group = params.group
+  }
+
+  if (params.format) {
+    query.format = params.format
+  }
+
+  if (params.limit) {
+    query.limit = Number(params.limit)
+  }
+
+  // Parse show
+  if (params.show) {
+    query.show = params.show
+  }
 
   return query
 }
@@ -257,10 +294,6 @@ export function searchContent (query: Partial<SearchQuery>, options: SearchOptio
     items = items.filter(makeTextFilter(query.text, query.textOp === 'or'))
   }
 
-  if (query.year) {
-    items = items.filter(makeDateFilter(query.year))
-  }
-
   if (query.random) {
     items = items.slice().sort(() => Math.random() - 0.5)
   }
@@ -319,21 +352,6 @@ export function makeTagsFilter (tags: string[], useOr = false) {
   const query = useOr ? orQuery : andQuery
   return (item: ContentItem) => {
     return item.type === 'folder' || query(item)
-  }
-}
-
-/**
- * Create a date filter function
- */
-export function makeDateFilter (year: string) {
-  return (item: ContentItem) => {
-    if (item.type === 'folder') {
-      return true
-    }
-    const pageYear = item.date
-      ? item.date.substring(0, 4)
-      : ''
-    return pageYear === year
   }
 }
 

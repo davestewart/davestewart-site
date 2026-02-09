@@ -1,5 +1,5 @@
-import { PostStatus } from '~/stores/config/status'
 import { isWithinDays } from '~/utils/time'
+import { PostStatus } from '~/stores/api'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // helpers
