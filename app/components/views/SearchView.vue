@@ -40,9 +40,9 @@
 
             <!-- tags -->
             <div class="searchControls__tags">
-              <label class="searchControls__label">Tags: </label>
               <UiRadio
                 v-model="query.tagsFilter"
+                label="Tags"
                 name="filter"
                 :count="query.tags.length ? query.tags.length : ''"
                 :count-state="options.showTags ? 0 : 1"
@@ -51,71 +51,49 @@
             </div>
 
             <!-- grouping -->
-            <div class="searchControls__group only-md-up">
-              <label class="searchControls__label">Group: </label>
-              <UiRadio v-model="query.group" name="group" :options="options.group" />
+            <div class="searchControls__group">
+              <UiRadio
+                v-model="query.group"
+                label="Group"
+                name="group"
+                :options="options.group"
+              />
             </div>
 
             <!-- format -->
             <div class="searchControls__format">
-              <label class="searchControls__label">Format: </label>
-              <UiRadio v-model="query.format" name="format" :options="options.format" />
+              <UiRadio
+                v-model="query.format"
+                label="Format"
+                name="format"
+                :options="options.format"
+              />
             </div>
           </UiControls>
         </div>
 
         <!-- tags -->
-        <div v-show="options.showTags" class="search__tags-container">
+        <SlideUpDown :active="options.showTags" :duration="400" class="search__tags-container">
           <TagMatrix
             class="search__tags"
             :mode="query.tagsFilter"
             :selected="query.tags"
-            :pages="filtered"
+            :valid="results.tags"
             @toggle="toggleTag"
             @click="setTag"
           />
-        </div>
+        </SlideUpDown>
       </div>
 
       <div class="layout__folder">
-        <div v-if="itemsAsList.length" class="search__results">
-          <!-- by date -->
-          <div v-if="query.group === 'date'" class="search__date">
-            <div
-              v-for="group in itemsByYear"
-              :key="group.title"
-              class="pageTree"
-              :data-mode="query.format"
-            >
-              <div class="pageTree__header">
-                <h2 :id="`year_${group.title}`" class="pageTree__title">
-                  {{ group.title }}
-                </h2>
-              </div>
-              <div class="pageTree__pages">
-                <ThumbnailWall v-if="query.format === 'image'" :pages="group.items" />
-                <PageList v-else :pages="group.items" />
-              </div>
-            </div>
-          </div>
-
-          <!-- by path -->
-          <div v-else-if="query.group === 'path'" class="search__tree">
-            <PageTree :format="query.format" :items="itemsAsTree" />
-          </div>
-
-          <!-- thumbnails -->
-          <div v-else-if="query.group === 'thumbs'" class="search__list">
-            <ThumbnailWall :pages="itemsAsList as ContentPage[]" />
-          </div>
+        <div v-if="results.items.length" class="search__results">
+          <PageTree :format="query.format" :items="results.items" />
         </div>
-
         <div v-else class="search__noResults">
           <p>No results for those search parameters!</p>
         </div>
       </div>
     </ClientOnly>
-    <!-- header -->
   </div>
 </template>
 
@@ -123,8 +101,15 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { onKeyStroke, useLocalStorage } from '@vueuse/core'
-import { type ContentBreadcrumb, type ContentItem, getItems, makeTree, sortBySection } from '~/stores/content'
-import { type SearchQuery, searchContent, groupBy, parseQuery, makeDefaultQuery, cleanQuery, DEFAULT_SEARCH_PATHS } from '~/stores/search'
+import SlideUpDown from 'vue-slide-up-down'
+
+import {
+  cleanQuery,
+  makeSearchFilters,
+  parseQuery,
+  searchContent,
+  type SearchQuery,
+} from '~/stores/search'
 import { UiIcon } from '#components'
 
 const route = useRoute()
@@ -136,14 +121,16 @@ const router = useRouter()
 
 const searchInput = ref<HTMLElement | null>(null)
 
-const storedOptions = useLocalStorage<Pick<SearchQuery, 'group' | 'format' | 'tagsFilter'>>('searchOptions', {
+type StoredOptions = Required<Pick<SearchQuery, 'group' | 'format' | 'tagsFilter'>>
+
+const storedOptions = useLocalStorage<StoredOptions>('searchOptions', {
   group: 'path',
   format: 'image',
   tagsFilter: 'off',
 })
 
-const query = reactive<SearchQuery>({
-  ...makeDefaultQuery(),
+const query = reactive<Required<SearchFilters & StoredOptions>>({
+  ...makeSearchFilters(),
   ...storedOptions.value,
   ...parseQuery(route.query),
 })
@@ -156,7 +143,12 @@ const options = reactive({
 })
 
 watch(query, (val) => {
-  router.replace({ path: '/search/', query: cleanQuery(val) }).catch(() => { })
+  router
+    // TODO fix this any
+    .replace({ path: '/search/', query: cleanQuery(val) as any })
+    .catch((err) => {
+      console.log(err)
+    })
 
   // Persist layout options to localStorage
   storedOptions.value = {
@@ -170,68 +162,19 @@ watch(query, (val) => {
 }, { deep: true })
 
 // ---------------------------------------------------------------------------------------------------------------------
-// data
-// ---------------------------------------------------------------------------------------------------------------------
-
-const filtered = computed(() => {
-  return searchContent(query, {
-    paths: DEFAULT_SEARCH_PATHS,
-    excludeDrafts: true,
-  })
-})
-
-const itemsAsList = computed(() => {
-  return filtered.value.filter((item: ContentItem) => item.type === 'post')
-})
-
-const itemsByYear = computed(() => {
-  const items = itemsAsList.value.filter((item: ContentItem) => item.path !== '/')
-  return groupBy(items, 'date', (date: string) => date && date.substring(0, 4))
-})
-
-const itemsAsTree = computed(() => {
-  if (!isFiltered.value) {
-    return makeTree(filtered.value, '/')
-  }
-
-  // TODO: the following code is crap; look to filter tree in main search
-
-  // use existing breadcrumbs function to get all parents for filtered items
-  const breadcrumbs: Map<string, ContentBreadcrumb> = new Map()
-  for (const page of filtered.value) {
-    const parents = getContentParents(page.path)
-    parents.pop()
-    for (const parent of parents) {
-      if (!breadcrumbs.has(parent.path)) {
-        breadcrumbs.set(parent.path, parent)
-      }
-    }
-  }
-
-  // convert breadcrumbs to content items
-  const items = getItems('/')
-  const folders = Array
-    .from(breadcrumbs.values())
-    .map(breadcrumb => items.find(item => item.path === breadcrumb.path))
-    .filter(item => item !== undefined)
-    .filter(Boolean)
-
-  const merged = [...filtered.value, ...folders].sort(sortBySection)
-
-  // make the tree
-  return makeTree(merged, '/')
-})
-
-// ---------------------------------------------------------------------------------------------------------------------
 // flags
 // ---------------------------------------------------------------------------------------------------------------------
 
+const hasTags = computed(() => {
+  return Array.isArray(query.tags) && query.tags.length > 0
+})
+
 const isFiltered = computed(() => {
-  return query.text || query.tags.length > 0
+  return query.text || hasTags.value
 })
 
 const canReset = computed(() => {
-  return query.text !== '' || query.tags.length > 0
+  return query.text !== '' || hasTags.value
 })
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -244,7 +187,7 @@ const searchTitle = computed(() => {
   if (text) {
     parts.push(h('span', { className: 'searchTokens__text' }, text))
   }
-  if (tags.length) {
+  if (tags?.length) {
     for (const tag of tags) {
       if (parts.length) {
         parts.push(h('span', { class: 'searchTokens__punctuation' }, '+'))
@@ -266,8 +209,23 @@ watch(searchTitle, (val) => {
 
 const pageDescription = computed(() => {
   return isFiltered.value
-    ? plural(itemsAsList.value.length, 'item')
+    ? plural(results.value.total, 'item')
     : 'Everything on the site'
+})
+
+// ---------------------------------------------------------------------------------------------------------------------
+// data
+// ---------------------------------------------------------------------------------------------------------------------
+
+const searchQuery = computed(() => {
+  return {
+    ...query,
+    excludeDrafts: true,
+  }
+})
+
+const results = computed(() => {
+  return searchContent(searchQuery.value)
 })
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -275,7 +233,10 @@ const pageDescription = computed(() => {
 // ---------------------------------------------------------------------------------------------------------------------
 
 function reset () {
-  const def = makeDefaultQuery()
+  const def = {
+    ...makeSearchFilters(),
+    ...makeSearchOptions(),
+  }
   query.text = def.text
   query.tags = def.tags
   query.tagsFilter = def.tagsFilter
@@ -305,10 +266,14 @@ onKeyStroke('Escape', () => {
 })
 
 onMounted(() => {
-  if (query.year) {
-    query.group = 'date'
+  const hash = useRoute().hash
+  if (hash) {
+    const slug = hash.substring(1)
+    if (/^\d{4}$/.test(slug)) {
+      query.group = 'date'
+    }
     setTimeout(() => {
-      document.querySelector(`#year_${query.year}`)?.scrollIntoView({ behavior: 'smooth' })
+      document.querySelector(`#tree-${slug}`)?.scrollIntoView({ behavior: 'smooth' })
     }, 750)
   }
   nextTick(() => {
@@ -417,16 +382,6 @@ onMounted(() => {
     //margin-left: -1rem;
   }
 
-  &__label {
-    font-size: 11px;
-    font-weight: 600;
-    margin: 0 .5em;
-
-    @include md-down {
-      display: block;
-    }
-  }
-
   &__text {
     padding-right: 1rem;
     padding-left: 0;
@@ -463,10 +418,6 @@ onMounted(() => {
     .uiControls > * {
       padding: 5px;
       display: block;
-
-      label {
-        padding: 0 0 10px 1px;
-      }
     }
   }
 }

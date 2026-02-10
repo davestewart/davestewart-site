@@ -3,7 +3,7 @@
     <!-- list -->
     <div v-if="component === 'list'" class="searchTags__list">
       <TagList
-        :tags="allTags"
+        :tags="tagList"
         :selected="selected"
         :valid="valid"
       />
@@ -11,7 +11,7 @@
 
     <!-- groups -->
     <div v-if="component === 'groups'" class="searchTags__groups">
-      <div v-for="group in groups" :key="group.title" class="tagGroup">
+      <div v-for="group in tagGroups" :key="group.title" class="tagGroup">
         <label>{{ group.title }}:</label>
         <TagList
           :tags="group.tags"
@@ -25,27 +25,24 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, provide } from 'vue'
-import { useSearchStore } from '~/stores/search'
 
 const components = ['list', 'groups']
 
 const props = defineProps<{
   mode?: string
   selected?: string[]
-  pages?: any[]
+  visible?: string[]
+  valid?: string[]
 }>()
 
 const emit = defineEmits(['click', 'toggle'])
 
-const store = useSearchStore()
-
-// Get all tags from store replacement
-const allTags = computed(() => store.tagList)
+const { tagList, tagGroups } = storeToRefs(useContentStore())
 
 const component = ref('list')
-const groups = computed(() => store.tagGroups)
 
 // Valid tags are those that appear in the filtered pages
+/*
 const valid = computed(() => {
   return props.pages?.reduce((output: string[], page: any) => {
     const tags = page.frontmatter?.tags || page.tags
@@ -59,6 +56,7 @@ const valid = computed(() => {
     return output
   }, []) || []
 })
+*/
 
 watch(() => props.mode, (value) => {
   if (value && components.includes(value)) {
@@ -80,7 +78,7 @@ provide('handleTagClick', handleTagClick)
     display: flex;
     flex-direction: column;
     padding-left: 4px;
-    gap: 6px;
+    gap: 4px;
     @include md-down {
       gap: 4px;
     }

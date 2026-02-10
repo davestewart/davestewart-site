@@ -1,7 +1,9 @@
 <template>
   <div class="page-sitemap">
-    <h1>Sitemap</h1>
-    <PageTree :items="data?.tree" format="text" :depth="0" />
+    <div class="pageContent">
+      <h1>Sitemap</h1>
+      <PageTree :items="items" format="text" :depth="0" />
+    </div>
   </div>
 </template>
 
@@ -10,5 +12,8 @@ definePageMeta({
   title: 'Sitemap',
 })
 
-const data = computed(() => getContentTree('/'))
+const { items } = searchContent({
+  path: '/',
+  group: 'path',
+})
 </script>

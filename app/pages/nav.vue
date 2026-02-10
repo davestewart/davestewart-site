@@ -1,32 +1,43 @@
 <script lang="ts" setup>
-import {
-  getContentParents,
-  getContentSiblings,
-  getContentSurround,
-  getContentTree,
-  getItems,
-} from '~/stores/content'
+import { getContentParents, getContentSiblings, getContentSurround } from '~/stores/nav'
+import { searchContent } from '~/stores/search'
+
+definePageMeta({
+  layout: 'wide',
+})
+
+const store = useContentStore()
 
 const methods = {
-  Items: getItems,
+  Items: store.getItems,
   Siblings: getContentSiblings,
   Surround: getContentSurround,
   Parents: getContentParents,
-  Tree: getContentTree,
+  Tree: () => {
+    return searchContent({
+      path: path.value,
+    })
+  },
 }
 const method = ref<keyof typeof methods>('Items')
 
-const paths = [
-  '/',
-  '/archive/',
-  '/products/',
-  '/blog/',
-  '/blog/software/',
-  '/products/control-space/',
-  '/blog/software/mac-finder-tips/',
-  '/archive/projects/open-source/3dsmax/',
-] as const
-const path = ref(paths[0])
+const paths = {
+  Folders: [
+    '/',
+    '/archive/',
+    '/products/',
+    '/projects/',
+    '/blog/',
+    '/blog/software/',
+  ],
+  Pages: [
+    '/products/control-space/',
+    '/blog/software/mac-finder-tips/',
+    '/archive/projects/open-source/3dsmax/',
+  ],
+} as const
+
+const path = ref(paths.Folders[0])
 
 const data = computed(() => {
   const key = method.value as keyof typeof methods
@@ -37,38 +48,51 @@ const data = computed(() => {
 
 <template>
   <section class="nav">
+    <!-- controls -->
     <section class="nav__method">
       <section class="nav__method">
-        <div class="nav__group">
-          <label v-for="name in paths" :key="name" class="nav__radio">
-            <input
-              v-model="path"
-              type="radio"
-              :value="name"
-            />
-            {{ name }}
-          </label>
+        <div v-for="(names, type) in paths" :key="type" class="nav__section">
+          <label for="">{{ type }}</label>
+          <div class="nav__radios">
+            <label v-for="name in names" :key="name" class="nav__radio">
+              <input
+                v-model="path"
+                type="radio"
+                :value="name"
+              />
+              <code>{{ name }}</code>
+            </label>
+          </div>
+        </div>
+        <div>
         </div>
 
-        <div class="nav__group">
-          <label v-for="(_, name) in methods" :key="name" class="nav__radio">
-            <input
-              v-model="method"
-              type="radio"
-              :value="name"
-            />
-            {{ name }}
-          </label>
+        <div class="nav__section">
+          <label for="">Function</label>
+          <div class="nav__radios">
+            <label v-for="(_, name) in methods" :key="name" class="nav__radio">
+              <input
+                v-model="method"
+                type="radio"
+                :value="name"
+              />
+              {{ name }}
+            </label>
+          </div>
         </div>
       </section>
     </section>
-    <pre>{{ path }}</pre>
-    <section v-if="data && ('tree' in data) && 'pages' in data">
-      <pre>{{ data.tree }}</pre>
-      <pre>{{ data.pages }}</pre>
+
+    <!-- tree view -->
+    <section v-if="data && ('tree' in data) && 'pages' in data" class="tree">
+      <pre>Pages: {{ data.pages }}</pre>
+      <pre>Tree: {{ data.tree }}</pre>
+      <pre>Headers: {{ data.headers }}</pre>
     </section>
+
+    <!-- data view -->
     <section v-else>
-      <pre>{{ data }}</pre>
+      <pre>Pages: {{ data }}</pre>
     </section>
   </section>
 </template>
@@ -78,11 +102,20 @@ const data = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: 3rem;
 
-  &__group {
+  &__section {
+    padding-bottom: 1rem;
+    & > label {
+      display: block;
+      margin-bottom: .5rem;
+      font-weight: 600;
+    }
+  }
+
+  &__radios {
     display: flex;
     flex-direction: column;
+    gap: 4px;
   }
 
   &__method {
@@ -90,14 +123,19 @@ const data = computed(() => {
     gap: 10px;
   }
 
+  pre {
+    overflow-x: auto;
+    flex-grow: 1;
+  }
+
   section {
     display: flex;
     gap: 1rem;
+  }
 
-    pre {
-      overflow-x: auto;
-      flex-grow: 1;
-    }
+  section.tree {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
   }
 }
 </style>
