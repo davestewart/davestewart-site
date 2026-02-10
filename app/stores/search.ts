@@ -1,21 +1,16 @@
-import { computed, ref } from 'vue'
-import { type ContentItem, type ContentPage, getItems } from './content'
+import { type ContentFolder, type ContentItem, type ContentPage, makeHeaders, useContentStore } from './content'
+import { getParentPath } from '~/utils/content'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // types
 // ---------------------------------------------------------------------------------------------------------------------
 
-interface TagGroup {
-  title: string
-  tags: string[]
-}
-
-interface Tag {
-  text: string
-  count: number
-}
-
-export interface SearchQuery {
+/**
+ * Options to filter the search
+ *
+ * @public
+ */
+export interface SearchFilters {
   // the path from which to search from
   path?: string
   // any text from title and description to match
@@ -28,76 +23,39 @@ export interface SearchQuery {
   tagsOp?: 'and' | 'or'
   // group by path (default) or date (year)
   group?: 'path' | 'date'
-  // sort by path (default) or date
-  sort?: 'path' | 'date'
-  // whether to randomize results once filtered and sorted
-  random?: boolean
+  // whether to pick random items (different from sort, as items can still be sorted)
+  randomize?: boolean
   // limit the number of results returned
   limit?: number
-
-  /// perhaps these should be in search options?
-
-  // format to display results in - image (default) or text
-  format?: 'image' | 'text'
-  // whether to show the tags filter
-  tagsFilter?: 'off' | 'list' | 'groups'
-  // page anchor to scroll to once filtered
-  show?: string
+  // sort by path (default) or date
+  sort?: 'path' | 'date' | 'random'
 }
 
+/**
+ * Options to control search behaviour and display
+ *
+ * @internal
+ */
 export interface SearchOptions {
   // which paths to include in the search
-  paths?: string[]
+  searchPaths?: string[]
   // whether to exclude drafts from results
   excludeDrafts?: boolean
   // whether to include only items with thumbnails
   hasThumbnail?: boolean
-  // limit the number of results returned
-  limit?: number
+  // whether to show the tag filter
+  tagsFilter?: 'off' | 'list' | 'groups'
+  // format to display results in - image (default) or text
+  format?: 'image' | 'text'
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
-// store
-// ---------------------------------------------------------------------------------------------------------------------
-
-export const useSearchStore = defineStore('search', () => {
-  const tagGroups = ref<TagGroup[]>([])
-
-  const tagList = computed(() => {
-    return tagGroups.value
-      .map(group => group.tags)
-      .flat()
-      .sort()
-  })
-
-  // initializers
-  async function initServer () {
-    tagGroups.value = await queryTags()
-  }
-
-  function initClient () {
-    // nothing, for now
-  }
-
-  return {
-    // values
-    tagGroups,
-    tagList,
-
-    // initializers
-    initServer,
-    initClient,
-
-    // search functions
-    searchContent,
-    makeTextFilter,
-    makeTagsFilter,
-    groupBy,
-  }
-})
+/**
+ * Combined type for overall search query
+ */
+export type SearchQuery = SearchFilters & SearchOptions
 
 // ---------------------------------------------------------------------------------------------------------------------
-// constants
+// query utilities
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -111,32 +69,36 @@ export const DEFAULT_SEARCH_PATHS = [
   '/blog/',
 ]
 
-// ---------------------------------------------------------------------------------------------------------------------
-// query utilities
-// ---------------------------------------------------------------------------------------------------------------------
-
 /**
  * Create a default search query
  */
-export function makeDefaultQuery (): SearchQuery {
+export function makeSearchFilters (): Required<SearchFilters> {
   return {
     text: '',
-    textOp: 'and',
     tags: [],
+    textOp: 'and',
     tagsOp: 'and',
     group: 'path',
-    format: 'text',
-    tagsFilter: 'off',
     path: '',
     sort: 'date',
-    show: '',
-    random: false,
+    randomize: false,
+    limit: 0,
+  }
+}
+
+export function makeSearchOptions (): Required<SearchOptions> {
+  return {
+    format: 'image',
+    tagsFilter: 'off',
+    searchPaths: DEFAULT_SEARCH_PATHS,
+    excludeDrafts: true,
+    hasThumbnail: false,
   }
 }
 
 /**
  * Parse query from URL query params or hash
- * Supports both route.query and URLSearchParams format
+ * Supports both `route.query` and URLSearchParams format
  */
 export function parseQuery (input: Record<string, any> | string): Partial<SearchQuery> {
   let params: Record<string, any>
@@ -168,9 +130,11 @@ export function parseQuery (input: Record<string, any> | string): Partial<Search
     query.text = params.text
   }
 
-  // Parse tags (can be array or single value)
+  // Parse tags (can be an array or single value)
   if (params.tags) {
-    query.tags = Array.isArray(params.tags) ? params.tags : [params.tags]
+    query.tags = Array.isArray(params.tags)
+      ? params.tags
+      : [params.tags]
   }
 
   // Parse path
@@ -204,13 +168,11 @@ export function parseQuery (input: Record<string, any> | string): Partial<Search
     query.format = params.format
   }
 
-  if (params.limit) {
-    query.limit = Number(params.limit)
-  }
-
-  // Parse show
-  if (params.show) {
-    query.show = params.show
+  if (params.limit !== undefined) {
+    const limit = Number(params.limit)
+    if (limit > 0) {
+      query.limit = limit
+    }
   }
 
   return query
@@ -219,12 +181,13 @@ export function parseQuery (input: Record<string, any> | string): Partial<Search
 /**
  * Clean query by removing default values
  */
-export function cleanQuery (query: SearchQuery): Record<string, any> {
+export function cleanQuery (query: SearchQuery): Partial<SearchQuery> {
   const cleaned: Record<string, any> = {}
-  const defaults = makeDefaultQuery()
+  const defaults = makeSearchFilters()
 
   for (const key in query) {
     const queryKey = key as keyof SearchQuery
+    // @ts-ignore
     if (String(query[queryKey]) !== String(defaults[queryKey])) {
       cleaned[key] = query[queryKey]
     }
@@ -237,111 +200,151 @@ export function cleanQuery (query: SearchQuery): Record<string, any> {
 // search functionality
 // ---------------------------------------------------------------------------------------------------------------------
 
-export function searchFeatured (query: Partial<SearchQuery>, random = false) {
-  return searchContent(
-    { ...query, sort: 'date', random },
-    {
-      paths: ['/products/', '/projects/', '/work/', '/blog/'],
-      excludeDrafts: true,
-      hasThumbnail: true,
-      limit: 6,
-    },
-  )
-}
-
 /**
  * Search and filter content based on query parameters
  */
-export function searchContent (query: Partial<SearchQuery>, options: SearchOptions = {}): ContentItem[] {
+export function searchContent (query: SearchQuery = {}) {
   const {
-    paths = [],
+    searchPaths = DEFAULT_SEARCH_PATHS,
     excludeDrafts = true,
     hasThumbnail = false,
     limit,
-  } = options
+  } = query
 
   // Get all pages
-  let items = getItems('/')
+  const store = useContentStore()
+  const allItems = store.getItems('/')
+  let posts = allItems.filter(item => item.type === 'post')
 
   // Filter drafts
   if (excludeDrafts) {
-    items = items.filter((item) => {
-      return item.type === 'folder' || !('draft' in item) || !(item as any).draft
+    posts = posts.filter((item) => {
+      return !('draft' in item) || !(item as any).draft
     })
   }
 
   // Filter by path - use query.path if specified, otherwise use options.paths
-  const pathsToSearch = query.path ? [query.path] : paths
+  const pathsToSearch = query.path ? [query.path] : searchPaths
   if (pathsToSearch.length > 0) {
-    items = items.filter((item) => {
+    posts = posts.filter((item) => {
       return pathsToSearch.some(p => item.path === p || item.path.startsWith(p))
     })
   }
 
   // Filter by thumbnail
   if (hasThumbnail) {
-    items = items.filter((item) => {
+    posts = posts.filter((item) => {
       return item.type === 'post' && item.media?.thumbnail
     })
   }
 
   // Apply query filters
   if (query.tags && query.tags.length > 0) {
-    items = items.filter(makeTagsFilter(query.tags, query.tagsOp === 'or'))
+    posts = posts.filter(makeTagsFilter(query.tags, query.tagsOp === 'or'))
   }
 
   if (query.text) {
-    items = items.filter(makeTextFilter(query.text, query.textOp === 'or'))
+    posts = posts.filter(makeTextFilter(query.text, query.textOp === 'or'))
   }
 
-  if (query.random) {
-    items = items.slice().sort(() => Math.random() - 0.5)
+  if (query.randomize) {
+    posts = posts.slice().sort(() => Math.random() - 0.5)
   }
 
   // Apply limit
-  if (limit) {
-    items = items.slice(0, limit)
+  if (limit && limit > 0) {
+    posts = posts.slice(0, limit)
   }
 
-  // Sort by date (items already sorted by path)
-  if (query.sort === 'date') {
-    items.sort((a, b) => {
+  // Sort by date (items pre-sorted by path)
+  if (query.sort === 'date' && query.group !== 'path') {
+    posts.sort((a, b) => {
       const da = a.type === 'post' && a.date ? new Date(a.date).getTime() : 0
       const db = b.type === 'post' && b.date ? new Date(b.date).getTime() : 0
       return db - da
     })
   }
-  return items
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // results
+  // ---------------------------------------------------------------------------------------------------------------------
+
+  let items: ContentItem[] = posts
+
+  // collate tags
+  const tags = posts.reduce((tags, item) => {
+    if (item.tags) {
+      item.tags.forEach(tag => tags.add(tag))
+    }
+    return tags
+  }, new Set<string>())
+
+  // group by date
+  if (query.group === 'date') {
+    items = groupBy(posts, item => item.date && item.date.substring(0, 4))
+  }
+
+  // group by path
+  if (query.group === 'path') {
+    // collate all parent paths
+    const paths = new Set<string>()
+    for (const item of posts) {
+      // traverse up parent path
+      const segments = item.path.split('/').filter(Boolean)
+      let currentPath = '/'
+      for (const segment of segments) {
+        currentPath = `${currentPath}${segment}/`
+        paths.add(currentPath)
+      }
+    }
+    const nested = allItems.filter(item => paths.has(item.path))
+    items = makeTree(nested, query.path || '/')
+  }
+
+  return {
+    total: posts.length,
+    query,
+    tags: Array.from(tags),
+    items,
+  }
 }
 
 /**
  * Create a text filter function
  */
-export function makeTextFilter (text: string, useOr = true) {
+function makeTextFilter (text: string, useOr = true) {
   text = text.trim()
   if (text === '') {
     return () => true
   }
+  // filter on tokens
   const matches = text.toLowerCase().match(/\S+/g) || []
+
+  // predicates
   const predicates = matches.map((m) => {
+    // filter on path
     if (m.includes('/')) {
       return (item: ContentItem) => {
         return item.path && item.path.includes(m)
       }
     }
+
+    // filter on text
     return (item: ContentItem) => {
       return `${item.title || ''} ${item.description || ''}`.toLowerCase().includes(m)
     }
   })
+
+  // return
   return useOr
     ? (item: ContentItem) => predicates.some(fn => fn(item))
     : (item: ContentItem) => predicates.every(fn => fn(item))
 }
 
 /**
- * Create a tags filter function
+ * Create a tag filter function
  */
-export function makeTagsFilter (tags: string[], useOr = false) {
+function makeTagsFilter (tags: string[], useOr = false) {
   const orQuery = (page: ContentPage) => {
     return (page.tags ?? []).some((tag: string) => tags.includes(tag))
   }
@@ -355,92 +358,96 @@ export function makeTagsFilter (tags: string[], useOr = false) {
   }
 }
 
-/**
- * Group items by a key
- */
-export function groupBy (array: ContentPage[], key: keyof ContentPage, iteratee?: (val: string) => string) {
-  const result: Record<string, ContentPage[]> = {}
-  array.forEach((item) => {
-    const itemValue = item[key]
-    const val = (iteratee && itemValue
-      ? iteratee(itemValue as string)
-      : itemValue) ?? 'No Date'
-    if (!result[val]) {
-      result[val] = []
+function groupBy<T extends ContentPage, K extends keyof T> (
+  pages: T[],
+  // eslint-disable-next-line
+  key: K | ((item: T) => string),
+): ContentFolder[] {
+  const result: Record<any, ContentPage[]> = {}
+  pages.forEach((item) => {
+    const groupKey = typeof key === 'function'
+      ? key(item)
+      : key
+    if (groupKey && !result[groupKey]) {
+      result[groupKey] = []
     }
-    result[val].push(item)
+    result[groupKey].push(item)
   })
-  return Object.keys(result).sort().reverse().map(k => ({ title: k, items: result[k] }))
+  return Object
+    .keys(result)
+    .sort()
+    .reverse()
+    .map(key => ({
+      type: 'folder',
+      path: '',
+      title: key,
+      description: '',
+      items: result[key] ?? [],
+    }))
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// helpers
+// tree functionality
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
- * Query Nuxt Content for tags.json
+ * Replicate legacy tree building logic adapted for Nuxt Content documents
+ *
+ * @param nodes
+ * @param rootPath
  */
-export async function queryTags (): Promise<TagGroup[]> {
-  // grab raw data
-  const data = await queryContent('tags')
-    .where({ _extension: 'yaml' })
-    .findOne()
-    .catch((err) => {
-      console.error('[queryTags] Error:', err)
-      return {} as Record<string, string[]>
+function makeTree (nodes: (ContentFolder | ContentPage)[], rootPath: string): ContentItem[] {
+  // Filter and clone so we don't affect originals
+  const validNodes = nodes
+    .filter(n => n.path !== rootPath && n.path.startsWith(rootPath))
+    .map((p) => {
+      return clone(p)
     })
 
-  // grab tag data only
-  const keys = Object.keys(data)
-  const tags = keys.reduce((acc, key) => {
-    if (/^[A-Z]/.test(key)) {
-      acc[key] = data[key]
+  // Create a map for lookup
+  const map: Record<string, ContentItem> = {}
+  for (const n of validNodes) {
+    map[n.path] = n
+  }
+
+  const tree: ContentItem[] = []
+
+  validNodes.forEach((node: ContentItem) => {
+    // Find parent logic
+    const parentPath = getParentPath(node.path)
+
+    // Check if directly under root path
+    if (parentPath === rootPath) {
+      tree.push(node)
     }
-    return acc
-  }, {} as Record<string, string[]>)
-
-  // return tags with titles, etc
-  return Object.entries(tags).map(([title, tags]) => ({ title, tags }))
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-// deprecated
-// ---------------------------------------------------------------------------------------------------------------------
-
-/**
- * Sorted list of all tags used in posts
- */
-export async function usePostsTags () {
-  const posts = await getPosts()
-
-  const set = new Set<string>()
-  posts.forEach((post: any) => {
-    const tags = post.tags || []
-    tags.forEach((tag: string) => set.add(tag))
+    else {
+      if (map[parentPath]) {
+        const parent = map[parentPath] as ContentFolder
+        if (!parent.items) {
+          parent.items = []
+        }
+        parent.items.push(node)
+        // Auto-promote to folder if it has children
+        if (map[parentPath].type !== 'folder') {
+          // map[parentPath].type = 'folder'
+        }
+      }
+    }
   })
 
-  const tags = Array.from(set).sort()
-
-  return {
-    tags: computed(() => tags || []),
+  // depth-first search where we remove folders with no items
+  // TODO we shouldn't need this when the filtering is correct
+  function pruneEmptyFolders (nodes: ContentItem[]): ContentItem[] {
+    return nodes
+      .filter((node: ContentItem) => {
+        if (node.type === 'folder') {
+          const folder = node as ContentFolder
+          folder.items = pruneEmptyFolders(folder.items)
+          return folder.items.length > 0
+        }
+        return true
+      })
   }
-}
 
-/**
- * Hash of all tags and their counts
- */
-export async function useTagCounts () {
-  const items = await getPosts()
-
-  const counts: Record<string, number> = {}
-  items.forEach((page: any) => {
-    const tags = page.tags || []
-    tags.forEach((tag: string) => {
-      counts[tag] = (counts[tag] || 0) + 1
-    })
-  })
-
-  return {
-    counts: computed(() => counts.value || {}),
-  }
+  return pruneEmptyFolders(tree)
 }

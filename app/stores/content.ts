@@ -1,5 +1,7 @@
-import { queryItems } from './api'
-import { getParentPath, normalizePath } from '~/utils/content'
+import { computed, ref } from 'vue'
+import type { LocationQuery } from 'vue-router'
+import { queryItems, queryTags } from './api'
+import { normalizePath } from '~/utils/content'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // types
@@ -59,22 +61,42 @@ export interface ContentPage {
   }
 }
 
+export interface TagGroup {
+  title: string
+  tags: string[]
+}
+
+export interface Tag {
+  text: string
+  count: number
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // store
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
- * Manages:
+ * Raw content store
  *
- * - all metadata
- * - current page
+ * Loads and manages raw content from the Content API, including:
+ *
+ * - all metadata items
+ * - resolved path
+ * - resolved page
  */
 export const useContentStore = defineStore('content', () => {
+  // ---------------------------------------------------------------------------------------------------------------------
+  // properties
+  // ---------------------------------------------------------------------------------------------------------------------
+
   // page route
   const route = useRoute()
 
   // page path, but *only* once the page has finished loading (this is later that route navigation)
   const path = ref('/')
+
+  // page query, but *only* once the page has finished loading (this is later that route navigation)
+  const query = ref<LocationQuery>()
 
   // page object
   const page = ref<ParsedPage | null>(null)
@@ -82,7 +104,39 @@ export const useContentStore = defineStore('content', () => {
   // all content items (metadata only)
   const items = ref<ContentItem[]>([])
 
-  // load the current page
+  // tag groups from json
+  const tagGroups = ref<TagGroup[]>([])
+
+  // flattened tag list
+  const tagList = computed(() => {
+    return tagGroups.value
+      .map(group => group.tags)
+      .flat()
+      .sort()
+  })
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // actions
+  // ---------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * Get all folder and posts from the target path down
+   */
+  function getItems (path = '/'): ContentItem[] {
+    const normalizedPath = normalizePath(path)
+    return items.value.filter(item => item.path.startsWith(normalizedPath))
+  }
+
+  /**
+   * Get all posts from the target path down
+   */
+  function getPosts (path = '/'): ContentPage[] {
+    return getItems(path).filter(p => p.type === 'post')
+  }
+
+  /**
+   * Load a page from the content api
+   */
   async function loadPage (path: string) {
     page.value = await queryContent<ParsedPage>()
       .where({
@@ -95,124 +149,74 @@ export const useContentStore = defineStore('content', () => {
     return page.value
   }
 
+  // ---------------------------------------------------------------------------------------------------------------------
+  // initialisation
+  // ---------------------------------------------------------------------------------------------------------------------
+
   async function initServer () {
+    // set initial path value
     path.value = route.path
-    items.value = await queryItems() // process.env.NODE_ENV as any
+    query.value = route.query
+
+    // load all data
+    const results = await Promise.all([
+      // Can't have more than one await @see https://www.youtube.com/watch?v=ofuKRZLtOdY
+      queryItems(), // process.env.NODE_ENV as any
+      queryTags(),
+    ])
+    items.value = results[0]
+    tagGroups.value = results[1]
   }
 
   function initClient () {
-    const nuxtApp = useNuxtApp()
-    nuxtApp.hook('page:finish', () => {
+    // update path when page resolves
+    useNuxtApp().hook('page:finish', () => {
       path.value = route.path
+      query.value = route.query
     })
   }
 
   return {
+    // route
     path,
-    page,
+    query,
+
+    // tags
+    tagGroups,
+    tagList,
+
+    // items
     items,
+    getItems,
+    getPosts,
+
+    // page
+    page,
     loadPage,
+
+    // initialisation
     initServer,
     initClient,
   }
 })
 
 // ---------------------------------------------------------------------------------------------------------------------
-// item functions
+// deprecated
 // ---------------------------------------------------------------------------------------------------------------------
 
-interface ContentItemOptions {
-  limit?: number
-  sort?: 'date' | 'path' | 'random'
+type Header = {
+  level: number
+  title: string
+  slug: string
 }
 
 /**
- * Get all items from the target path down
- *
- * @param path
- */
-export function getItems (path = '/'): ContentItem[] {
-  // if items not loaded yet, load them
-  const { items } = useContentStore()
-
-  // normalise path (adds slash to end)
-  const normalizedPath = normalizePath(path)
-
-  // filter
-  return items.filter(item => item.path.startsWith(normalizedPath))
-}
-
-/**
- * Get posts with a few filtering options
- *
- * @param options
- */
-export function getPosts (options: ContentItemOptions = {}): ContentPage[] {
-  // options
-  const { sort, limit } = options
-
-  // initial posts
-  let items: ContentPage[] = getItems().filter(item => item.type === 'post')
-
-  // options
-  if (sort) {
-    if (sort === 'date' || sort === 'path') {
-      items = items.sort((a, b) => {
-        const aValue = (sort in a) ? a[sort] : 0
-        const bValue = (sort in b) ? b[sort] : 0
-        return aValue < bValue ? 1 : -1
-      })
-    }
-    else if (sort === 'random') {
-      items = items.sort(() => Math.random() > 0.5 ? 1 : -1)
-    }
-  }
-
-  // finally, slice if limit is set
-  if (limit) {
-    items = items.slice(0, limit)
-  }
-
-  // return
-  return items as ContentPage[]
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-// main functions
-// ---------------------------------------------------------------------------------------------------------------------
-
-/**
- * items from the target path down
- */
-export function getContentTree (path: string) {
-  const items = getItems(path)
-  const tree = makeTree(items, path)
-
-  // Build headers for TOC (folder structure)
-  const currentPage = items.find(p => p.path === path)
-  const rootTitle = currentPage?.title || 'Untitled Folder'
-  const headers = makeHeaders(tree, rootTitle)
-
-  return { tree, pages: items, headers }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-// helpers
-// ---------------------------------------------------------------------------------------------------------------------
-
-/**
- * Logic to generate section headers from nested items
+ * Logic to generate a flat array of section headers from nested items
  *
  * @param items       An array of potentially nested items
  * @param rootTitle
  */
-export function makeHeaders (items: ContentItem[], rootTitle: string) {
-  type Header = {
-    level: number
-    title: string
-    slug: string
-  }
-
+export function makeHeaders (items: ContentItem[], rootTitle: string): Header[] {
   function process (item: ContentItem, level = 1) {
     if (item.type === 'folder' || level === 0) { // level 0 is root wrapper
       if (level > 0) {
@@ -234,61 +238,41 @@ export function makeHeaders (items: ContentItem[], rootTitle: string) {
 }
 
 /**
- * Replicate legacy tree building logic adapted for Nuxt Content documents
- * @param nodes
- * @param rootPath
+ * Sorted list of all tags used in posts
  */
-export function makeTree (nodes: (ContentFolder | ContentPage)[], rootPath: string): ContentItem[] {
-  // Filter and clone so we don't affect originals
-  const validNodes = nodes
-    .filter(n => n.path !== rootPath && n.path.startsWith(rootPath))
-    .map((p) => {
-      return clone(p)
-    })
+export async function usePostsTags () {
+  const store = useContentStore()
+  const posts = store.getPosts()
 
-  // Create a map for lookup
-  const map: Record<string, ContentItem> = {}
-  for (const n of validNodes) {
-    map[n.path] = n
-  }
-
-  const tree: ContentItem[] = []
-
-  validNodes.forEach((node: ContentItem) => {
-    // Find parent logic
-    const parentPath = getParentPath(node.path)
-
-    // Check if directly under root path
-    if (parentPath === rootPath) {
-      tree.push(node)
-    }
-    else {
-      if (map[parentPath]) {
-        const parent = map[parentPath] as ContentFolder
-        if (!parent.items) {
-          parent.items = []
-        }
-        parent.items.push(node)
-        // Auto-promote to folder if it has children
-        if (map[parentPath].type !== 'folder') {
-          // map[parentPath].type = 'folder'
-        }
-      }
-    }
+  const set = new Set<string>()
+  posts.forEach((post: any) => {
+    const tags = post.tags || []
+    tags.forEach((tag: string) => set.add(tag))
   })
 
-  // depth-first search where we remove folders with no items
-  function pruneEmptyFolders (nodes: ContentItem[]): ContentItem[] {
-    return nodes
-      .filter((node: ContentItem) => {
-        if (node.type === 'folder') {
-          const folder = node as ContentFolder
-          folder.items = pruneEmptyFolders(folder.items)
-          return folder.items.length > 0
-        }
-        return true
-      })
-  }
+  const tags = Array.from(set).sort()
 
-  return pruneEmptyFolders(tree)
+  return {
+    tags: computed(() => tags || []),
+  }
+}
+
+/**
+ * Hash of all tags and their counts
+ */
+export async function useTagCounts () {
+  const store = useContentStore()
+  const items = store.getPosts()
+
+  const counts: Record<string, number> = {}
+  items.forEach((page: any) => {
+    const tags = page.tags || []
+    tags.forEach((tag: string) => {
+      counts[tag] = (counts[tag] || 0) + 1
+    })
+  })
+
+  return {
+    counts: computed(() => counts.value || {}),
+  }
 }

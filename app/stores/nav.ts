@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { type ContentItem, getItems, getPosts } from './content'
 import { getParentPath } from '~/utils/content'
+import { type ContentItem } from './content'
 
 export type Link = {
   path: string
@@ -24,7 +24,7 @@ export const useNavStore = defineStore('nav', () => {
   // ---------------------------------------------------------------------------------------------------------------------
 
   function getItem (path: string) {
-    return getItems().find(item => item.path === path)
+    return content.getItems().find(item => item.path === path)
   }
 
   function createLink (path: string, title: string, description = '', cssClass = ''): Link {
@@ -126,7 +126,7 @@ export const useNavStore = defineStore('nav', () => {
  */
 export function getContentParents (path: string, fallbackTitle = '404'): Link[] {
   // variables
-  const items = getItems('/')
+  const items = useContentStore().getItems('/')
   const parents: Link[] = [{ title: 'Home', path: '/' }]
   let currentPath = '/'
 
@@ -168,7 +168,8 @@ export function getContentParents (path: string, fallbackTitle = '404'): Link[] 
  */
 export function getContentSiblings (path: string): ContentItem[] {
   const parentPath = getParentPath(path)
-  const items = getItems(parentPath)
+  const store = useContentStore()
+  const items = store.getItems(parentPath)
   return items.filter(p => getParentPath(p.path) === parentPath)
 }
 
@@ -176,12 +177,13 @@ export function getContentSiblings (path: string): ContentItem[] {
  * items before and after current page
  */
 export function getContentSurround (path: string) {
-  const items = getPosts()
-  const index = items.findIndex((p: any) => p.permalink === path || p.path === path)
+  const store = useContentStore()
+  const posts = store.getPosts()
+  const index = posts.findIndex((p: any) => p.permalink === path || p.path === path)
   if (index > -1) {
     return [
-      items[index - 1],
-      items[index + 1],
+      posts[index - 1],
+      posts[index + 1],
     ] as const
   }
   return [undefined, undefined] as const

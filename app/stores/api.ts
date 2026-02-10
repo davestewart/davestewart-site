@@ -1,5 +1,5 @@
 import { isDev } from '~/utils/config'
-import type { ContentFolder, ContentItem, ContentItemRaw, ContentPage } from '~/stores/content'
+import type { ContentFolder, ContentItem, ContentItemRaw, ContentPage, TagGroup } from '~/stores/content'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // types
@@ -117,7 +117,7 @@ function sortHierarchical (a: ContentItemRaw, b: ContentItemRaw, orderMap: Map<s
  *
  * @param input
  */
-function clean<T extends Recprd<string, any>> (input: T): Partial<T> {
+function clean<T extends Record<string, any>> (input: T): Partial<T> {
   const keys = Object.keys(input) as (keyof T)[]
   const output: Partial<T> = {}
   for (const key of keys) {
@@ -209,4 +209,30 @@ export async function queryItems (mode: 'development' | 'production' = 'producti
         tags: item.tags,
       }) as ContentPage
     })
+}
+
+/**
+ * Query Nuxt Content for tags.json
+ */
+export async function queryTags (): Promise<TagGroup[]> {
+  // grab raw data
+  const data = await queryContent('tags')
+    .where({ _extension: 'yaml' })
+    .findOne()
+    .catch((err) => {
+      console.error('[queryTags] Error:', err)
+      return {} as Record<string, string[]>
+    })
+
+  // grab tag data only
+  const keys = Object.keys(data)
+  const tags = keys.reduce((acc, key) => {
+    if (/^[A-Z]/.test(key)) {
+      acc[key] = data[key]
+    }
+    return acc
+  }, {} as Record<string, string[]>)
+
+  // return tags with titles, etc
+  return Object.entries(tags).map(([title, tags]) => ({ title, tags }))
 }
