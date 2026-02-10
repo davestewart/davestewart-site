@@ -25,7 +25,7 @@
 
       <section style="margin-top: 2rem">
         <p>Or pick a random project!</p>
-        <ThumbnailWall v-if="pages" :pages="pages" />
+        <ThumbnailWall v-if="data" :pages="data.items" />
       </section>
     </div>
   </div>
@@ -41,9 +41,9 @@ useSeoMeta({
   title: '404',
 })
 
-const { data: pages } = useAsyncData('404', async () => {
-  return getPosts({
-    sort: 'random',
+const { data } = useAsyncData('404', async () => {
+  return searchContent({
+    randomize: true,
     limit: 3,
   })
 })

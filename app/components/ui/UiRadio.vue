@@ -1,29 +1,25 @@
 <template>
   <div class="uiRadio">
-    <UiIcon
-      v-if="icon"
-      :size="20"
-      :icon="icon"
-      style="transform: translateY(1px)"
-    />
     <label
       v-if="label"
       class="uiRadio__label"
-      :data-count="count"
+      :data-count="count || undefined"
       :data-count-state="countState"
     >
       {{ label }}:
     </label>
-    <span
-      v-for="option in options"
-      :key="option"
-      class="uiRadio__option"
-    ><a
-      :href="`/search/?${name}=${option}`"
-      :class="{ selected: option === modelValue }"
-      @click.prevent="click(option)"
-    >{{ option }}</a>
-    </span>
+    <div>
+      <span
+        v-for="option in options"
+        :key="option"
+        class="uiRadio__option"
+      ><a
+        :href="`/search/?${name}=${option}`"
+        :class="{ selected: option === modelValue }"
+        @click.prevent="click(option)"
+      >{{ option.replace(/\w/, c => c.toUpperCase()) }}</a>
+      </span>
+    </div>
   </div>
 </template>
 
@@ -32,7 +28,6 @@ import type { Icon } from '~/components/ui/UiIcon.vue'
 
 defineProps<{
   label?: string
-  icon?: Icon
   name?: string
   options?: string[]
   modelValue?: string
@@ -54,21 +49,41 @@ const click = (val: string) => {
   white-space: nowrap;
   color: $textColor;
   font-size: 14px;
-  text-transform: capitalize;
   line-height: 1;
+
+  @include md-down {
+    flex-direction: column;
+    align-items: flex-start;
+
+    label {
+      font-weight: 600;
+    }
+  }
 
   &__label {
     position: relative;
     padding: .5em;
+    font-size: 12px;
     font-weight: 600;
+
+    @include md-down {
+      display: block;
+      padding: 0 8px 10px 6px;
+    }
 
     &[data-count]:after {
       position: absolute;
       content: attr(data-count);
       font-size: .8em;
-      color: $accentColor;
-      top: 1px;
-      right: -1px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      top: -5px;
+      right: -4px;
+    }
+
+    &[data-count][data-count-state="1"]:after {
+      background: $accentColor;
+      color: white;
     }
 
     &[data-count][data-count-state="0"]:after {
@@ -81,10 +96,10 @@ const click = (val: string) => {
   }
 
   &__option {
-
     a {
-      color: $grey-light;
       padding: 3px 7px;
+      color: $grey-light;
+      text-transform: capitalize !important;
       &.selected {
         color: $accentColor;
       }

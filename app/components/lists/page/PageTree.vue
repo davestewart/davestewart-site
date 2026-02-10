@@ -1,27 +1,18 @@
 <template>
   <div
+    :id="`tree-${id}`"
     class="pageTree"
     :data-format="format"
     :data-depth="depth"
     :data-pages="pages.length"
     :data-folders="folders.length"
   >
-    <!--
-    <pre>{{ items?.map(item => {
-      return {
-        title: item.title,
-        path: item.path,
-        layout: item.layout,
-        type: item.type,
-      }
-    }) }}</pre>
-    -->
     <div v-if="title && items?.length" class="pageTree__header">
       <component :is="headingTag" class="pageTree__title">
-        <a :id="id"></a>
-        <NuxtLink :to="path">
+        <NuxtLink v-if="path" :to="path">
           {{ title }}
         </NuxtLink>
+        <span v-else>{{ title }}</span>
       </component>
       <span v-if="desc" class="pageTree__desc">{{ desc }}</span>
     </div>
@@ -57,7 +48,7 @@ const props = withDefaults(defineProps<{
   title?: string
   path?: string
   desc?: string
-  items?: any[]
+  items?: ContentItem[]
   format?: 'image' | 'text'
   depth?: number
 }>(), {
@@ -66,19 +57,19 @@ const props = withDefaults(defineProps<{
   depth: 0,
 })
 
-// Simple slugify
-const slugify = (text: string) => text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-+|-+$/g, '')
+function slugify (text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^\w]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
 
 const id = computed(() => props.title ? slugify(props.title) : '')
-// slug logic in original was relative to page path?
-// path.replace(this.$page.path, '')
-// Let's stick to simple ID for now.
 
 const folders = computed(() => props.items.filter(item => item.type === 'folder'))
-const pages = computed(() => props.items.filter(item => item.type === 'post')) // assume already filtered for visibility
 
-// Heading component replacement
-// Use <component :is="h..." />
+const pages = computed(() => props.items.filter(item => item.type === 'post'))
+
 const headingTag = computed(() => `h${props.depth + 1}`)
 </script>
 

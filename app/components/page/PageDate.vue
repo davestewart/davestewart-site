@@ -2,7 +2,7 @@
   <div v-if="date" class="pageDate">
     <NuxtLink
       class="pageDate__text"
-      :href="`/search/?show=${year}`"
+      :href="`/search/?group=date#${year}`"
       :title="relative"
     >
       {{ dateShort }}
