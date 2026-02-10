@@ -47,6 +47,9 @@ importers:
       vite-svg-loader:
         specifier: ^5.1.0
         version: 5.1.0(vue@3.5.26(typescript@5.9.3))
+      vue-slide-up-down:
+        specifier: ^3.0.0
+        version: 3.0.0(vue@3.5.26(typescript@5.9.3))
     devDependencies:
       '@modyfi/vite-plugin-yaml':
         specifier: ^1.1.1
@@ -4735,6 +4738,11 @@ packages:
     resolution: {integrity: sha512-Hz9q5sa33Yhduglwz6g9skT8OBPii+4bFn88w6J+J4MfEo4KRRpmiNG/hHHkdbRFlLBOqxN8y8gf2Fb0MTUgVg==}
     peerDependencies:
       vue: ^3.5.0
+
+  vue-slide-up-down@3.0.0:
+    resolution: {integrity: sha512-4ckwKgpkPfjDmwVKdu5UANvxt7nKemIKpqbRGhcekgDuvEwep8YFwkb8G9dix4lL+Wt2G73X1Z90c1oPJvXdOQ==}
+    peerDependencies:
+      vue: '>=3.0.0'
 
   vue@3.5.26:
     resolution: {integrity: sha512-SJ/NTccVyAoNUJmkM9KUqPcYlY+u8OVL1X5EW9RIs3ch5H2uERxyyIUI4MRxVCSOiEcupX9xNGde1tL9ZKpimA==}
@@ -10355,6 +10363,10 @@ snapshots:
   vue-router@4.6.4(vue@3.5.26(typescript@5.9.3)):
     dependencies:
       '@vue/devtools-api': 6.6.4
+      vue: 3.5.26(typescript@5.9.3)
+
+  vue-slide-up-down@3.0.0(vue@3.5.26(typescript@5.9.3)):
+    dependencies:
       vue: 3.5.26(typescript@5.9.3)
 
   vue@3.5.26(typescript@5.9.3):

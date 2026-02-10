@@ -1,6 +1,6 @@
 <template>
   <UiControls class="pageInfo">
-    <PageDate v-if="page.date" :date="page.date"/>
+    <PageDate v-if="page.date" :date="page.date" />
     <PageStats v-if="page.path?.startsWith('/blog/') && page.readingTime" v-bind="page.readingTime" />
     <PageShare v-if="isVisible(page)" :page="page" />
     <Shield v-if="page.github" :github="page.github" class="only-md-up" />

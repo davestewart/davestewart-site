@@ -73,7 +73,7 @@
         </div>
 
         <!-- tags -->
-        <div v-show="options.showTags" class="search__tags-container">
+        <SlideUpDown :active="options.showTags" :duration="400" class="search__tags-container">
           <TagMatrix
             class="search__tags"
             :mode="query.tagsFilter"
@@ -82,7 +82,7 @@
             @toggle="toggleTag"
             @click="setTag"
           />
-        </div>
+        </SlideUpDown>
       </div>
 
       <div class="layout__folder">
