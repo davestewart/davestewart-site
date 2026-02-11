@@ -1,5 +1,5 @@
 import { isDev } from '~/utils/config'
-import type { ContentFolder, ContentItem, ContentItemRaw, ContentPage, TagGroup } from '~/stores/content'
+import type { ContentFolder, ContentItem, ContentItemRaw, ContentPage, TagGroup } from './content'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // types

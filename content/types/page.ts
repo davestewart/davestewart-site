@@ -1,6 +1,6 @@
 import type { ParsedContent } from '@nuxt/content'
 import type { MediaSource, MediaSourceOption } from '~/composables/useMedia'
-import type { StatusType } from '~/stores/api'
+import type { StatusType } from '../stores/api'
 
 /**
  * Base content item returned from Nuxt Content queries
@@ -21,8 +21,8 @@ export interface ParsedPage extends ParsedContent {
   /** Content type classification */
   type?: 'folder' | 'post'
 
-  /** Layout type */
-  layout?: 'folder' | 'post'
+  /** View file to use */
+  view?: 'folder' | 'post'
 
   /** Custom order for sorting */
   order?: number

@@ -1,6 +1,7 @@
-import { computed } from 'vue'
-import { getParentPath } from '~/utils/content'
-import { type ContentItem } from './content'
+import { defineStore, computed, toRef } from '#imports'
+import { getParentPath } from '../utils/content'
+import { useContentStore } from './content'
+import type { ContentItem } from './content'
 
 export type Link = {
   path: string

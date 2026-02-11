@@ -1,5 +1,7 @@
-import { isWithinDays } from '~/utils/time'
-import { PostStatus } from '~/stores/api'
+import { defineNitroPlugin } from 'nitropack/runtime'
+import { ParsedContent } from '@nuxt/content'
+import { isWithinDays } from '../../../app/utils/time'
+import { PostStatus } from '../../stores/api'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // helpers
@@ -13,10 +15,8 @@ function setPath (file: any) {
 
 /**
  * Set the type of the file so it can be filtered in search, etc
- *
- * @param {Page}  file
  */
-function setType (file: any) {
+function setType (file: ParsedContent) {
   if (!file.type) {
     if (file.layout === 'folder') {
       file.type = 'folder'
@@ -43,10 +43,8 @@ function setDate (file: any) {
 
 /**
  * Set the visibility status so it can be omitted from production
- *
- * @param {Page}  file
  */
-function setStatus (file: any) {
+function setStatus (file: ParsedContent) {
   const { layout, date, visibility } = file // hidden, preview
 
   // default status
@@ -80,10 +78,8 @@ function setStatus (file: any) {
 
 /**
  * Optionally set permalinks
- *
- * @param {Page}  file
  */
-function setPermalink (file: any) {
+function setPermalink (file: ParsedContent) {
   // permalink blog articles to a flat hierarchy
   if (file._path?.startsWith('/blog/') && file.type === 'post' && !file.permalink) {
     const slug = file._stem.replace(/\/index/, '').split('/').pop()
@@ -92,19 +88,9 @@ function setPermalink (file: any) {
 }
 
 /**
- * Set parent path so file can be placed in a hierarchy
- *
- * @param {Page}  file
- * @deprecated ?
+ * Modify file content
  */
-function setParentPath (file: any) {
-  file.parentPath = file._path
-    ?.replace('/index.md', '')
-    .split('/').slice(0, -1).join('/') || '/'
-  return
-}
-
-function setContent (file: any) {
+function setContent (file: ParsedContent) {
   const elements = file.body?.children || []
   const index = elements.findIndex((element: any) => element.tag === 'h1' && !element.props.className)
   if (index > -1) {
@@ -113,13 +99,12 @@ function setContent (file: any) {
 }
 
 export default defineNitroPlugin((nitroApp) => {
-  nitroApp.hooks.hook('content:file:afterParse', (file: any) => {
+  nitroApp.hooks.hook('content:file:afterParse' as any, (file: any) => {
     setPath(file)
     setType(file)
     setStatus(file)
     setDate(file)
     setPermalink(file)
-    // setParentPath(file)
     setContent(file)
   })
 })

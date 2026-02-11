@@ -1,5 +1,6 @@
-import { type ContentFolder, type ContentItem, type ContentPage, makeHeaders, useContentStore } from './content'
-import { getParentPath } from '~/utils/content'
+import { useContentStore } from './content'
+import { getParentPath } from '../utils/content'
+import type { ContentFolder, ContentItem, ContentPage } from './content'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // types

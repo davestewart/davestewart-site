@@ -1,5 +1,5 @@
 import { defineNuxtPlugin } from 'nuxt/app'
-import { useContentStore } from '#imports'
+import { useContentStore } from '../stores/content'
 
 export default defineNuxtPlugin({
   name: 'content',

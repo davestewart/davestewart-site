@@ -1,7 +1,8 @@
+import { queryContent, defineStore, useRoute, useNuxtApp } from '#imports'
 import { computed, ref } from 'vue'
 import type { LocationQuery } from 'vue-router'
 import { queryItems, queryTags } from './api'
-import { normalizePath } from '~/utils/content'
+import { normalizePath } from '../utils/content'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // types

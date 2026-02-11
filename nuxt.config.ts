@@ -6,34 +6,14 @@ function resolve (path: string) {
   return fileURLToPath(new URL(path, import.meta.url))
 }
 
-function source (name: string, dir = '') {
-  if (process.env.NODE_ENV === 'production') {
-    return {
-      driver: 'github',
-      repo: `davestewart/${name}`,
-      token: process.env.GITHUB_TOKEN,
-      dir,
-    }
-  }
-  return {
-    driver: 'fs',
-    base: resolve(`../${name}/${dir}`),
-  }
-}
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   extends: [
-    'themes/core',
+    'content',
+    resolve('themes/core'),
   ],
 
-  dir: {
-    public: resolve('./public'),
-  },
-
   modules: [
-    'nuxt-content-assets',
-    '@nuxt/content',
     '@nuxt/eslint',
     '@pinia/nuxt',
   ],
@@ -69,33 +49,12 @@ export default defineNuxtConfig({
     '~/assets/styles/index.scss',
   ],
 
-  content: {
-    sources: {
-      content: source('davestewart-content', 'content'),
-      showcase: source('davestewart-showcase'),
-    },
-    navigation: {
-      fields: [
-        'title', 'description',
-      ],
-    },
-    markdown: {
-      anchorLinks: false,
-      remarkPlugins: [
-        'remark-reading-time',
-      ],
-    },
-    highlight: {
-      theme: 'min-light',
-      langs: [
-        'bash',
-        'ts', 'js',
-        'json', 'yaml',
-        'html', 'css', 'scss',
-        'vue', 'vue-html',
-        'xml', 'python', 'dotenv',
-      ],
-    },
+  dir: {
+    public: resolve('./public'),
+  },
+
+  alias: {
+    '@content': resolve('content'),
   },
 
   experimental: {
@@ -114,6 +73,11 @@ export default defineNuxtConfig({
       ViteYaml(),
       SvgLoader(),
     ],
+    resolve: {
+      alias: {
+        '@content': resolve('content'),
+      },
+    },
     css: {
       preprocessorOptions: {
         scss: {
@@ -124,14 +88,6 @@ export default defineNuxtConfig({
         },
       },
     },
-  },
-
-  contentAssets: {
-    // add image size hints
-    imageSize: 'style src',
-
-    // show debug messages
-    debug: false,
   },
 
   eslint: {
