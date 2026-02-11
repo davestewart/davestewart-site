@@ -16,6 +16,5 @@ const { data } = await useAsyncData('home', async () => {
   return await store.loadPage('/')
 })
 
-provideContent(data.value)
 usePageSeo(data.value)
 </script>

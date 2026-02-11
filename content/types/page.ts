@@ -1,6 +1,6 @@
 import type { ParsedContent } from '@nuxt/content'
-import type { MediaSource, MediaSourceOption } from '~/composables/useMedia'
 import type { StatusType } from '../stores/api'
+import type { MediaSource, MediaSourceOption } from './media'
 
 /**
  * Base content item returned from Nuxt Content queries

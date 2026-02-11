@@ -24,7 +24,6 @@ const { data, error } = await useAsyncData(`page-${route.path}`, () => {
   return store.loadPage(route.path)
 })
 
-provideContent(data)
 usePageSeo(data)
 
 const getViewComponent = (content: ParsedPage | undefined) => {

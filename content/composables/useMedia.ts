@@ -1,80 +1,6 @@
-import { isImage, isVideo } from '~/utils/assert'
+import { isImage, isVideo } from '../utils'
+import type { MediaItem, MediaKey, MediaSource, MediaSourceOption, ResolveMedia } from '../types'
 
-// ---------------------------------------------------------------------------------------------------------------------
-// utility types
-// ---------------------------------------------------------------------------------------------------------------------
-
-/**
- * Utility type to allow known string literals plus any other string
- *
- * @usage
- *
- * ```ts
- * type MyType = LooseUnion<'option1' | 'option2'>
- * const a: MyType = 'option1' // valid
- * const b: MyType = 'custom'  // also valid
- * ```
- */
-type LooseUnion<T extends string> = T | (string & {})
-
-/**
- * Utility type to create media props which allow either a media key or a set of attributes
- */
-export type MediaProps<TKey extends string, TValue, TProps extends Record<string, any>> =
-  // eslint-disable-next-line no-unused-vars
-  | ({ [K in TKey]: TValue } & { [K in keyof TProps]?: never })
-  // eslint-disable-next-line no-unused-vars
-  | ({ [K in TKey]?: never } & TProps)
-
-/**
- * Utility function to resolve single or array media sources based on the key name
- */
-type ResolveMedia<T extends MediaKey> = T extends 'gallery'
-  ? Array<MediaSource | string>
-  : MediaSource | string
-
-// ---------------------------------------------------------------------------------------------------------------------
-// types
-// ---------------------------------------------------------------------------------------------------------------------
-
-/**
- * List of known media keys, plus the option for user defined ones
- */
-export type MediaKey = LooseUnion<'thumbnail' | 'featured' | 'opengraph' | 'gallery' | 'video'>
-
-/**
- * Union type of all media source types
- */
-export type MediaSourceOption = string | MediaSource | Array<string | MediaSource>
-
-/**
- * A base media object with optional width and height
- */
-export interface MediaBase {
-  src: string
-  width?: number | string
-  height?: number | string
-}
-
-/**
- * An expanded media object with additional optional properties
- */
-export interface MediaSource extends MediaBase {
-  type?: 'image' | 'video' | 'embed'
-  text?: string
-  href?: string
-}
-
-/**
- * Final parsed media item
- */
-export interface MediaItem extends MediaSource {
-  style?: string
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-// main functions
-// ---------------------------------------------------------------------------------------------------------------------
 
 /**
  * Resolve a media source object from the page
@@ -85,7 +11,7 @@ export interface MediaItem extends MediaSource {
 export function resolveMedia<K extends MediaKey> (key: K, page?: { media?: Record<string, any> } | undefined): ResolveMedia<K> | undefined {
   // grab the injected page if not supplied
   const target = !page
-    ? usePage().page
+    ? useContentStore().page
     : page
 
   // return with the correct type, based on key; i.e. `gallery` will always be an array

@@ -1,14 +1,5 @@
-import { inject, type InjectionKey, provide, type Ref } from 'vue'
-import type { ParsedPage } from '@content/types/page'
-
-const ContentKey: InjectionKey<ParsedPage | undefined> = Symbol('Content')
-
-/**
- * Provides page content to descendant components
- */
-export const provideContent = (content: ParsedPage | undefined) => {
-  provide(ContentKey, content)
-}
+import { type Ref } from 'vue'
+import type { ParsedPage } from '../types'
 
 interface PageSeoMeta {
   title?: string
@@ -88,27 +79,4 @@ export function usePageSeo (pageOrMeta?: Ref<ParsedPage | undefined> | ParsedPag
   }
 
   useSeoMeta(payload)
-}
-
-/**
- * Composable for accessing page content and metadata
- * Use this in descendant components to access page data
- */
-export function usePage () {
-  const route = useRoute()
-  const page = inject(ContentKey, undefined)
-
-  const title = computed(() => {
-    return page?.value?.title ?? <string>route.meta.title ?? ''
-  })
-
-  const description = computed(() => {
-    return page?.value?.description ?? <string>route.meta.description ?? ''
-  })
-
-  return {
-    page,
-    title,
-    description,
-  }
 }

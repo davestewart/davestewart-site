@@ -25,15 +25,6 @@ export function isEmpty (value: any): boolean {
   return false
 }
 
-export function isImage (path: string = ''): boolean {
-  const src = path.split('?').shift()!
-  return /\.(ico|gif|bmp|svg|png|jpe?g)$/.test(src)
-}
-
-export function isVideo (path: string = ''): boolean {
-  return /\.(mp4|mpeg|avi)$/.test(path) || /youtube|youtu\.be|vimeo/.test(path)
-}
-
 // export function isLocal(path: string = ''): boolean {
 //     return /\..+/.test(path)
 // }
