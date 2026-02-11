@@ -109,7 +109,7 @@ import {
   parseQuery,
   searchContent,
   type SearchQuery,
-} from '~/stores/search'
+} from '@content/stores/search'
 import { UiIcon } from '#components'
 
 const route = useRoute()

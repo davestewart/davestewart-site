@@ -1,5 +1,5 @@
 import { useContentStore } from './content'
-import { getParentPath } from '../utils/content'
+import { getParentPath } from '../utils'
 import type { ContentFolder, ContentItem, ContentPage } from './content'
 
 // ---------------------------------------------------------------------------------------------------------------------

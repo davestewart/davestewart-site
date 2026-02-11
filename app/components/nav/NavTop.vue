@@ -28,7 +28,6 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { useNavStore } from '~/stores/nav'
 
 const route = useRoute()
 const { top } = storeToRefs(useNavStore())

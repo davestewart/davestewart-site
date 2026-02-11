@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { isProd } from '~/utils/config'
-import { PostStatus } from '~/stores/api'
+import { PostStatus } from '@content/stores/api'
 
 const props = defineProps<{
   page: ParsedPage

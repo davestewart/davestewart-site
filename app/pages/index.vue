@@ -9,7 +9,6 @@
 
 <script setup lang="ts">
 import HomeView from '~/components/views/HomeView.vue'
-import { useContentStore } from '#imports'
 
 const store = useContentStore()
 

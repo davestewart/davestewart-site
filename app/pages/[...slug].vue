@@ -11,7 +11,7 @@
 import PageView from '~/components/views/PageView.vue'
 import FolderView from '~/components/views/FolderView.vue'
 import NotFound from '~/components/views/404View.vue'
-import type { ParsedPage } from '#shared/types/content'
+import type { ParsedPage } from '@content/types/page'
 import { useContentStore } from '#imports'
 
 const route = useRoute()

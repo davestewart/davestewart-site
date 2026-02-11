@@ -17,15 +17,13 @@
         :href="`/search/?${name}=${option}`"
         :class="{ selected: option === modelValue }"
         @click.prevent="click(option)"
-      >{{ option.replace(/\w/, c => c.toUpperCase()) }}</a>
+      >{{ capitalize(option) }}</a>
       </span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Icon } from '~/components/ui/UiIcon.vue'
-
 defineProps<{
   label?: string
   name?: string

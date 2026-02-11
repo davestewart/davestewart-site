@@ -85,7 +85,7 @@ export interface MediaItem extends MediaSource {
 export function resolveMedia<K extends MediaKey> (key: K, page?: { media?: Record<string, any> } | undefined): ResolveMedia<K> | undefined {
   // grab the injected page if not supplied
   const target = !page
-    ? usePage().page?.value
+    ? usePage().page
     : page
 
   // return with the correct type, based on key; i.e. `gallery` will always be an array

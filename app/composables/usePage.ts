@@ -1,5 +1,5 @@
 import { inject, type InjectionKey, provide, type Ref } from 'vue'
-import type { ParsedPage } from '#shared/types/content'
+import type { ParsedPage } from '@content/types/page'
 
 const ContentKey: InjectionKey<ParsedPage | undefined> = Symbol('Content')
 

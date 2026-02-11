@@ -124,7 +124,7 @@ const captionText = computed(() => currentImage.value?.text)
 const captionLink = computed(() => currentImage.value?.href)
 
 const containerStyle = computed(() => {
-  const image = images?.at(-1)!
+  const image = Array.isArray(images) ? images.at(-1) : images
   return `${image?.style}`
 })
 

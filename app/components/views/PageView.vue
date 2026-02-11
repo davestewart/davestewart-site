@@ -26,7 +26,7 @@ const props = defineProps<{
   info?: boolean
 }>()
 
-provideContent(ref(props.page))
+provideContent(props.page)
 
 const isPost = computed(() => {
   const ignore = [

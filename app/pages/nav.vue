@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { getContentParents, getContentSiblings, getContentSurround } from '~/stores/nav'
-import { searchContent } from '~/stores/search'
+import { getContentParents, getContentSiblings, getContentSurround } from '@content/stores/nav'
+import { searchContent } from '@content/stores/search'
 
 definePageMeta({
   layout: 'wide',

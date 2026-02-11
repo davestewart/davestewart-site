@@ -1,5 +1,5 @@
 import { defineStore, computed, toRef } from '#imports'
-import { getParentPath } from '../utils/content'
+import { getParentPath } from '../utils'
 import { useContentStore } from './content'
 import type { ContentItem } from './content'
 
