@@ -19,14 +19,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import PageFeedback from '~/components/page/PageFeedback.vue'
+import PageFeedback from '../page/PageFeedback.vue'
 
 const props = defineProps<{
   page: ParsedPage
   info?: boolean
 }>()
-
-provideContent(props.page)
 
 const isPost = computed(() => {
   const ignore = [

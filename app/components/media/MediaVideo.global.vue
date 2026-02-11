@@ -10,7 +10,8 @@
 </template>
 
 <script setup lang="ts">
-import { type MediaBase, resolveMedia, useMedia } from '~/composables/useMedia'
+import { resolveMedia, useMedia } from '@content/composables/useMedia'
+import type { MediaBase } from '@content/types'
 
 // Either a media key, or base media properties
 type MediaEmbedProps =
