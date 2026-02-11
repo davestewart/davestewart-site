@@ -2,6 +2,8 @@
 export type Icon =
   | 'menu'
   | 'search'
+  | 'share'
+  | 'share-alt'
   | 'up'
   | 'close'
   | 'tag'
