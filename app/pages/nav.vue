@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { getContentParents, getContentSiblings, getContentSurround } from '@content/stores/nav'
-import { searchContent } from '@content/stores/search'
+// import { searchContent } from '@content/stores/search'
 
 definePageMeta({
   layout: 'wide',
@@ -87,7 +87,6 @@ const data = computed(() => {
     <section v-if="data && ('tree' in data) && 'pages' in data" class="tree">
       <pre>Pages: {{ data.pages }}</pre>
       <pre>Tree: {{ data.tree }}</pre>
-      <pre>Headers: {{ data.headers }}</pre>
     </section>
 
     <!-- data view -->
