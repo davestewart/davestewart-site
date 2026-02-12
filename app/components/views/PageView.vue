@@ -22,7 +22,7 @@ import { computed } from 'vue'
 import PageFeedback from '../page/PageFeedback.vue'
 
 const props = defineProps<{
-  page: ParsedPage
+  page: PageContent
   info?: boolean
 }>()
 

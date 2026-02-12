@@ -24,7 +24,7 @@ const { data, error } = await useAsyncData(`page-${route.path}`, () => {
 
 usePageSeo(data)
 
-const getViewComponent = (content: ParsedPage | undefined) => {
+const getViewComponent = (content: PageContent | undefined) => {
   if (error.value || !content) {
     return NotFound
   }

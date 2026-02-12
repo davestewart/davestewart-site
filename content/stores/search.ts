@@ -1,6 +1,6 @@
 import { useContentStore } from './content'
 import { getParentPath } from '../utils'
-import type { ContentFolder, ContentItem, ContentPage } from './content'
+import type { MetaFolder, MetaItem, MetaPost } from '../types'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // types
@@ -270,7 +270,7 @@ export function searchContent (query: SearchQuery = {}) {
   // results
   // ---------------------------------------------------------------------------------------------------------------------
 
-  let items: ContentItem[] = posts
+  let items: MetaItem[] = posts
 
   // collate tags
   const tags = posts.reduce((tags, item) => {
@@ -325,46 +325,46 @@ function makeTextFilter (text: string, useOr = true) {
   const predicates = matches.map((m) => {
     // filter on path
     if (m.includes('/')) {
-      return (item: ContentItem) => {
+      return (item: MetaItem) => {
         return item.path && item.path.includes(m)
       }
     }
 
     // filter on text
-    return (item: ContentItem) => {
+    return (item: MetaItem) => {
       return `${item.title || ''} ${item.description || ''}`.toLowerCase().includes(m)
     }
   })
 
   // return
   return useOr
-    ? (item: ContentItem) => predicates.some(fn => fn(item))
-    : (item: ContentItem) => predicates.every(fn => fn(item))
+    ? (item: MetaItem) => predicates.some(fn => fn(item))
+    : (item: MetaItem) => predicates.every(fn => fn(item))
 }
 
 /**
  * Create a tag filter function
  */
 function makeTagsFilter (tags: string[], useOr = false) {
-  const orQuery = (page: ContentPage) => {
+  const orQuery = (page: MetaPost) => {
     return (page.tags ?? []).some((tag: string) => tags.includes(tag))
   }
-  const andQuery = (page: ContentPage) => {
+  const andQuery = (page: MetaPost) => {
     const pageTags = (page.tags ?? [])
     return tags.every((tag: string) => pageTags.includes(tag))
   }
   const query = useOr ? orQuery : andQuery
-  return (item: ContentItem) => {
+  return (item: MetaItem) => {
     return item.type === 'folder' || query(item)
   }
 }
 
-function groupBy<T extends ContentPage, K extends keyof T> (
+function groupBy<T extends MetaPost, K extends keyof T> (
   pages: T[],
   // eslint-disable-next-line
   key: K | ((item: T) => string),
-): ContentFolder[] {
-  const result: Record<any, ContentPage[]> = {}
+): MetaFolder[] {
+  const result: Record<any, MetaPost[]> = {}
   pages.forEach((item) => {
     const groupKey = typeof key === 'function'
       ? key(item)
@@ -397,7 +397,7 @@ function groupBy<T extends ContentPage, K extends keyof T> (
  * @param nodes
  * @param rootPath
  */
-function makeTree (nodes: (ContentFolder | ContentPage)[], rootPath: string): ContentItem[] {
+function makeTree (nodes: (MetaFolder | MetaPost)[], rootPath: string): MetaItem[] {
   // Filter and clone so we don't affect originals
   const validNodes = nodes
     .filter(n => n.path !== rootPath && n.path.startsWith(rootPath))
@@ -406,14 +406,14 @@ function makeTree (nodes: (ContentFolder | ContentPage)[], rootPath: string): Co
     })
 
   // Create a map for lookup
-  const map: Record<string, ContentItem> = {}
+  const map: Record<string, MetaItem> = {}
   for (const n of validNodes) {
     map[n.path] = n
   }
 
-  const tree: ContentItem[] = []
+  const tree: MetaItem[] = []
 
-  validNodes.forEach((node: ContentItem) => {
+  validNodes.forEach((node: MetaItem) => {
     // Find parent logic
     const parentPath = getParentPath(node.path)
 
@@ -423,7 +423,7 @@ function makeTree (nodes: (ContentFolder | ContentPage)[], rootPath: string): Co
     }
     else {
       if (map[parentPath]) {
-        const parent = map[parentPath] as ContentFolder
+        const parent = map[parentPath] as MetaFolder
         if (!parent.items) {
           parent.items = []
         }
@@ -438,11 +438,11 @@ function makeTree (nodes: (ContentFolder | ContentPage)[], rootPath: string): Co
 
   // depth-first search where we remove folders with no items
   // TODO we shouldn't need this when the filtering is correct
-  function pruneEmptyFolders (nodes: ContentItem[]): ContentItem[] {
+  function pruneEmptyFolders (nodes: MetaItem[]): MetaItem[] {
     return nodes
-      .filter((node: ContentItem) => {
+      .filter((node: MetaItem) => {
         if (node.type === 'folder') {
-          const folder = node as ContentFolder
+          const folder = node as MetaFolder
           folder.items = pruneEmptyFolders(folder.items)
           return folder.items.length > 0
         }

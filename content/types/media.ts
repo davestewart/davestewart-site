@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------
-// utility types
+// utilities
 // ---------------------------------------------------------------------------------------------------------------------
 
 import type { LooseUnion } from './index'
@@ -8,9 +8,7 @@ import type { LooseUnion } from './index'
  * Utility type to create media props which allow either a media key or a set of attributes
  */
 export type MediaProps<TKey extends string, TValue, TProps extends Record<string, any>> =
-  // eslint-disable-next-line no-unused-vars
   | ({ [K in TKey]: TValue } & { [K in keyof TProps]?: never })
-  // eslint-disable-next-line no-unused-vars
   | ({ [K in TKey]?: never } & TProps)
 
 /**
@@ -21,7 +19,7 @@ export type ResolveMedia<T extends MediaKey> = T extends 'gallery'
   : MediaSource | string
 
 // ---------------------------------------------------------------------------------------------------------------------
-// types
+// media types
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**

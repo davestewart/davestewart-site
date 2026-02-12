@@ -1,49 +1,13 @@
 import { isDev } from '~/utils/config'
-import type { ContentFolder, ContentItem, ContentItemRaw, ContentPage, TagGroup } from './content'
-
-// ---------------------------------------------------------------------------------------------------------------------
-// types
-// ---------------------------------------------------------------------------------------------------------------------
-
-export type PostVisibility = 'public' | 'preview' | 'unlisted'
-
-export const PostStatus = {
-  // has a date, is published, and within 30 days of being published
-  NEW: 'new',
-
-  // has a date, but not yet published, so hidden on production
-  SCHEDULED: 'scheduled',
-
-  // no date, but visible on production
-  PREVIEW: 'preview',
-
-  // hidden on production, visible in development
-  DRAFT: 'draft',
-
-  // visible on production, but hidden in lists
-  UNLISTED: 'unlisted',
-
-  // hidden everywhere
-  HIDDEN: 'hidden',
-} as const
-
-export type StatusType = typeof PostStatus[keyof typeof PostStatus]
-
-export interface PageWithStatus {
-  status?: StatusType
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-// helpers
-// ---------------------------------------------------------------------------------------------------------------------
+import type { MetaFolder, MetaItem, MetaItemRaw, MetaPost, PageWithStatus, StatusType, TagGroup } from '../types'
 
 export function isPublished (page: PageWithStatus): boolean {
-  const unpublishedStatuses = [PostStatus.DRAFT, PostStatus.HIDDEN, PostStatus.SCHEDULED] as readonly StatusType[]
+  const unpublishedStatuses = ['draft', 'hidden', 'scheduled'] as readonly StatusType[]
   return !unpublishedStatuses.includes(page.status!)
 }
 
 export function isListed (page: PageWithStatus): boolean {
-  return page.status !== PostStatus.UNLISTED || isDev
+  return page.status !== 'unlisted' || isDev
 }
 
 export function isVisible (page: PageWithStatus): boolean {
@@ -51,7 +15,7 @@ export function isVisible (page: PageWithStatus): boolean {
 }
 
 export function isPreview (page: PageWithStatus): boolean {
-  return page?.status === PostStatus.PREVIEW
+  return page?.status === 'preview'
 }
 
 /**
@@ -60,7 +24,7 @@ export function isPreview (page: PageWithStatus): boolean {
  * 1. Check explicit order property at each path level
  * 2. Fall back to date ordering within same directory
  */
-function sortHierarchical (a: ContentItemRaw, b: ContentItemRaw, orderMap: Map<string, number>) {
+function sortHierarchical (a: MetaItemRaw, b: MetaItemRaw, orderMap: Map<string, number>) {
   const aPath = a._path || ''
   const bPath = b._path || ''
 
@@ -136,7 +100,7 @@ function clean<T extends Record<string, any>> (input: T): Partial<T> {
 /**
  * Makes the required query to the api via queryContent
  */
-export async function queryItems (mode: 'development' | 'production' = 'production'): Promise<(ContentItem[])> {
+export async function queryItems (mode: 'development' | 'production' = 'production'): Promise<(MetaItem[])> {
   // initial query
   const items = await queryContent()
     .only([
@@ -156,7 +120,7 @@ export async function queryItems (mode: 'development' | 'production' = 'producti
     .where({
       _extension: 'md',
     })
-    .find() satisfies ContentItemRaw[]
+    .find() satisfies MetaItemRaw[]
 
   // build order map for hierarchical sorting
   const orderMap = new Map<string, number>()
@@ -191,7 +155,7 @@ export async function queryItems (mode: 'development' | 'production' = 'producti
           title: item.title ?? '',
           description: item.description ?? '',
           items: [],
-        }) as ContentFolder
+        }) as MetaFolder
       }
       return clean({
         path: item._path!,
@@ -207,7 +171,7 @@ export async function queryItems (mode: 'development' | 'production' = 'producti
         date: item.date,
         status: item.status,
         tags: item.tags,
-      }) as ContentPage
+      }) as MetaPost
     })
 }
 

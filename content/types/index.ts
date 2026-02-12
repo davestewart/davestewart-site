@@ -1,5 +1,6 @@
-export * from './page'
 export * from './media'
+export * from './meta'
+export * from './page'
 
 /**
  * Utility type to allow known string literals plus any other string

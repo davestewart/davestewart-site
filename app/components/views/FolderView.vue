@@ -15,7 +15,7 @@
 import { computed } from 'vue'
 
 defineProps<{
-  page: ParsedPage
+  page: PageContent
 }>()
 
 const { path, query } = storeToRefs(useContentStore())

@@ -1,5 +1,5 @@
 import { type Ref } from 'vue'
-import type { ParsedPage } from '../types'
+import type { PageContent } from '../types'
 
 interface PageSeoMeta {
   title?: string
@@ -10,12 +10,12 @@ interface PageSeoMeta {
  * Sets SEO metadata for a page
  * Call this once in each page component
  *
- * @param pageOrMeta - Either a ParsedPage ref or a plain object with title/description
+ * @param pageOrMeta - Either a PageContent ref or a plain object with title/description
  */
-export function usePageSeo (pageOrMeta?: Ref<ParsedPage | undefined> | ParsedPage | PageSeoMeta) {
-  // Check if it's a ref (ParsedPage) or plain object (PageSeoMeta)
+export function usePageSeo (pageOrMeta?: Ref<PageContent | undefined> | PageContent | PageSeoMeta) {
+  // Check if it's a ref (PageContent) or plain object (PageSeoMeta)
   const isRef = pageOrMeta && 'value' in pageOrMeta
-  const page = isRef ? pageOrMeta as Ref<ParsedPage | undefined> : undefined
+  const page = isRef ? pageOrMeta as Ref<PageContent | undefined> : undefined
   const meta = !isRef ? pageOrMeta as PageSeoMeta : undefined
 
   const route = useRoute()

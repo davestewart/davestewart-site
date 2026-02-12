@@ -48,7 +48,7 @@ const props = withDefaults(defineProps<{
   title?: string
   path?: string
   desc?: string
-  items?: ContentItem[]
+  items?: MetaItem[]
   format?: 'image' | 'text'
   depth?: number
 }>(), {

@@ -1,7 +1,8 @@
 import { defineStore, computed, toRef } from '#imports'
 import { getParentPath } from '../utils'
 import { useContentStore } from './content'
-import type { ContentItem } from './content'
+
+import type { MetaItem } from '../types'
 
 export type Link = {
   path: string
@@ -167,7 +168,7 @@ export function getContentParents (path: string, fallbackTitle = '404'): Link[] 
 /**
  * items at the same level as current page
  */
-export function getContentSiblings (path: string): ContentItem[] {
+export function getContentSiblings (path: string): MetaItem[] {
   const parentPath = getParentPath(path)
   const store = useContentStore()
   const items = store.getItems(parentPath)

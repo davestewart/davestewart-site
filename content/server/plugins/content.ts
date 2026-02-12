@@ -1,7 +1,8 @@
 import { defineNitroPlugin } from 'nitropack/runtime'
 import { ParsedContent } from '@nuxt/content'
 import { isWithinDays } from '../../../app/utils/time'
-import { PostStatus } from '../../stores/api'
+
+import { PostStatus } from '../../types'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // helpers

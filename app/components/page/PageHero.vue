@@ -16,7 +16,7 @@ import { MediaEmbed, MediaGallery, MediaFeatured, MediaVideo } from '#components
 import { isImage, isVideo } from '@content/utils'
 
 const props = defineProps<{
-  page: ParsedPage
+  page: PageContent
 }>()
 
 // Computed
