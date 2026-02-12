@@ -1,6 +1,5 @@
 import { computed, defineStore, toRef } from '#imports'
 import { getParentPath, getPath } from '../utils'
-import { queryItems, queryTags } from './api'
 import { usePageStore } from './page'
 
 import type { MetaItem } from '../types'
@@ -75,10 +74,11 @@ export const useMetaStore = defineStore('meta', () => {
   // ---------------------------------------------------------------------------------------------------------------------
 
   async function initServer () {
+    // Can't have more than one await
+    // @see https://www.youtube.com/watch?v=ofuKRZLtOdY
     const results = await Promise.all([
-      // Can't have more than one await @see https://www.youtube.com/watch?v=ofuKRZLtOdY
-      queryItems(), // process.env.NODE_ENV as any
-      queryTags(),
+      $fetch('/api/content/meta'), // , { query: { mode: process.env.NODE_ENV } }
+      $fetch('/api/content/tags'),
     ])
     items.value = results[0]
     tagGroups.value = results[1]
