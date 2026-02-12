@@ -11,7 +11,7 @@ import type { MediaItem, MediaKey, MediaSource, MediaSourceOption, ResolveMedia 
 export function resolveMedia<K extends MediaKey> (key: K, page?: { media?: Record<string, any> } | undefined): ResolveMedia<K> | undefined {
   // grab the injected page if not supplied
   const target = !page
-    ? useContentStore().page
+    ? usePageStore().page
     : page
 
   // return with the correct type, based on key; i.e. `gallery` will always be an array

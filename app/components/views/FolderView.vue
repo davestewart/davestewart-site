@@ -18,7 +18,7 @@ defineProps<{
   page: PageContent
 }>()
 
-const { path, query } = storeToRefs(useContentStore())
+const { path, query } = storeToRefs(usePageStore())
 
 // Options
 const options = computed<Partial<SearchOptions>>(() => {

@@ -32,7 +32,7 @@ Effectively, everything flows from the original markdown. The final data are mad
 
 ```ts
 // get the content store, which makes available ContentItems
-const content = useContentStore()
+const content = usePageStore()
 
 // get the content store, which makes available ContentItems
 const search = useSearchStore()

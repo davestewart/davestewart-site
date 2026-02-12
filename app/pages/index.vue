@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import HomeView from '~/components/views/HomeView.vue'
 
-const store = useContentStore()
+const store = usePageStore()
 
 const { data } = await useAsyncData('home', async () => {
   return await store.loadPage('/')

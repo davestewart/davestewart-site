@@ -1,7 +1,7 @@
 import { computed, defineStore, toRef } from '#imports'
 import { getParentPath, getPath } from '../utils'
 import { queryItems, queryTags } from './api'
-import { useContentStore } from './content'
+import { usePageStore } from './page'
 
 import type { MetaItem } from '../types'
 
@@ -13,14 +13,21 @@ export type Link = {
 }
 
 /**
- * Manages site navigation
+ * # Meta Store
+ *
+ * Loads and manages metadata from all folders and posts in the Content API
+ *
+ * This allows the site to build navigation, related links, and other metadata-driven
+ * features from site load, rather than having to wait for individual page loads.
+ *
+ * It also allows search to be instant, via `searchContent()`.
  */
 export const useMetaStore = defineStore('meta', () => {
   // ---------------------------------------------------------------------------------------------------------------------
   // dependencies
   // ---------------------------------------------------------------------------------------------------------------------
 
-  const content = useContentStore()
+  const content = usePageStore()
 
   const path = toRef(content, 'path')
 

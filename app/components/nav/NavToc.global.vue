@@ -71,7 +71,7 @@ const items = computed(() => {
   if (props.headers) {
     return props.headers
   }
-  const toc = useContentStore().page.body.toc
+  const toc = usePageStore().page.body.toc
   return makeHeaders(toc)
 })
 
