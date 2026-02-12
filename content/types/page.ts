@@ -29,6 +29,15 @@ export type PageWithStatus = {
   status?: StatusType
 }
 
+export interface PageMedia {
+  thumbnail?: string
+  featured?: string | MediaSource
+  opengraph?: string | MediaSource
+  video?: string | MediaSource
+  gallery?: string[] | MediaSource[]
+  [key: string]: MediaSourceOption | undefined
+}
+
 /**
  * Base content item returned from Nuxt Content queries
  */
@@ -67,12 +76,5 @@ export interface PageContent extends ParsedContent {
   hero?: 'featured' | 'opengraph' | 'video' | 'gallery'
 
   /** Page media **/
-  media?: {
-    thumbnail?: string
-    featured?: string | MediaSource
-    opengraph?: string | MediaSource
-    video?: string | MediaSource
-    gallery?: string[] | MediaSource[]
-    [key: string]: MediaSourceOption | undefined
-  }
+  media?: PageMedia
 }

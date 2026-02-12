@@ -1,6 +1,7 @@
 import { isImage, isVideo } from '../utils'
-import type { MediaItem, MediaKey, MediaSource, MediaSourceOption, ResolveMedia } from '../types'
+import type { MediaItem, MediaKey, MediaSource, MediaSourceOption, ResolveMedia, PageMedia } from '../types'
 
+type HasMedia = { media?: PageMedia }
 
 /**
  * Resolve a media source object from the page
@@ -8,10 +9,10 @@ import type { MediaItem, MediaKey, MediaSource, MediaSourceOption, ResolveMedia 
  * @param key   A valid MediaKey, or a custom string
  * @param page  Optionally pass a page object to resolve from
  */
-export function resolveMedia<K extends MediaKey> (key: K, page?: { media?: Record<string, any> } | undefined): ResolveMedia<K> | undefined {
+export function resolveMedia<K extends MediaKey> (key: K, page?: HasMedia | undefined): ResolveMedia<K> | undefined {
   // grab the injected page if not supplied
-  const target = !page
-    ? usePageStore().page
+  const target: HasMedia = !page
+    ? usePageStore().page?.value
     : page
 
   // return with the correct type, based on key; i.e. `gallery` will always be an array

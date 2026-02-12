@@ -129,9 +129,10 @@ const containerStyle = computed(() => {
 })
 
 const widthStyle = computed(() => {
+  const image = Array.isArray(images) ? images.at(-1) : images
   const maxWidth = props.width
     ? props.width
-    : images?.at(-1)?.width + 'px'
+    : image?.width + 'px'
   return maxWidth
     ? `max-width: ${maxWidth}; margin: inherit auto;`
     : ''

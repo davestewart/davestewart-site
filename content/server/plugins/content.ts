@@ -83,7 +83,10 @@ function setStatus (file: ParsedContent) {
 function setPermalink (file: ParsedContent) {
   // permalink blog articles to a flat hierarchy
   if (file._path?.startsWith('/blog/') && file.type === 'post' && !file.permalink) {
-    const slug = file._stem.replace(/\/index/, '').split('/').pop()
+    const slug = file._path
+      .replace('index/', '')
+      .replace(/\/$/, '')
+      .split('/').pop()
     file.permalink = `/blog/${slug}/`
   }
 }

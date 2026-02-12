@@ -12,7 +12,7 @@
 import PageItem from './PageItem.vue'
 
 defineProps<{
-  pages: PageContent[]
+  pages: MetaPost[]
 }>()
 </script>
 

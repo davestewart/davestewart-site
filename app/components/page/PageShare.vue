@@ -46,7 +46,7 @@
 import { ref, computed, nextTick } from 'vue'
 
 const props = defineProps<{
-  page: ParsedPage
+  page: PageContent
 }>()
 
 const popup = ref(false)
