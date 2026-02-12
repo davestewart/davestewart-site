@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 defineProps<{
-  page: ParsedPage
+  page: MetaPost
 }>()
 </script>
 

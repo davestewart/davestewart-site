@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 defineProps<{
-  page: ParsedPage
+  page: PageContent
 }>()
 </script>
 

@@ -1,14 +1,21 @@
-export function getTitle (page: ContentPage) {
+import type { MetaPost } from '../types'
+
+/**
+ * Get the correct title, resolving shortTitle if available
+ */
+export function getTitle (page: MetaPost) {
   return page.shortTitle || page.title
 }
 
-export function getPath (page: ContentPage) {
+/**
+ * Get the correct path, resolving permalink if available
+ */
+export function getPath (page: MetaPost) {
   return page.permalink || page.path
 }
 
 /**
  * Ensure the path contains a trailing slash
- * @param path
  */
 export function normalizePath (path: string) {
   return path.replace(/\/*$/, '/')
@@ -16,15 +23,7 @@ export function normalizePath (path: string) {
 
 /**
  * Get parent path by removing last segment
- * @param path
  */
 export function getParentPath (path: string) {
   return path.replace(/[^/]+\/?$/, '')
-}
-
-export function slicePath (path: string, reduce: number = 1): string {
-  return path
-    .split('/')
-    .slice(0, -reduce)
-    .join('/') + '/'
 }

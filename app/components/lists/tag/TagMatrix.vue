@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, provide } from 'vue'
+import { ref, watch, provide } from 'vue'
 
 const components = ['list', 'groups']
 
@@ -37,7 +37,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['click', 'toggle'])
 
-const { tagList, tagGroups } = storeToRefs(useContentStore())
+const { tagList, tagGroups } = storeToRefs(useMetaStore())
 
 const component = ref('list')
 

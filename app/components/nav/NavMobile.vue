@@ -50,12 +50,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useNavStore } from '~/stores/nav'
 
 const route = useRoute()
 const visible = ref(false)
 
-const { up } = storeToRefs(useNavStore())
+const { up } = storeToRefs(useMetaStore())
 
 watch(() => route.path, () => {
   visible.value = false

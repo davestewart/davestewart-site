@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 defineProps<{
-  pages: ContentPage[]
+  pages: MetaPost[]
 }>()
 </script>
 

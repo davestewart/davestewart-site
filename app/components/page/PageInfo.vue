@@ -10,10 +10,10 @@
 
 <script setup lang="ts">
 defineProps<{
-  page: ParsedPage
+  page: PageContent
 }>()
 
-function isVisible (post: ParsedPage) {
+function isVisible (post: PageContent) {
   return !!post
 }
 </script>

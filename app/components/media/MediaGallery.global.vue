@@ -67,14 +67,14 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import type { MediaItem } from '~/composables/useMedia'
 import { usePreview } from '~/composables/usePreview'
 import { useActiveGallery } from '~/composables/useActiveGallery'
-import { resolveMedia, useMedia } from '~/composables/useMedia'
+import { resolveMedia, useMedia } from '@content/composables/useMedia'
 import { getKeys, isNotModifier, stopEvent } from '~/utils/events'
 import { offset } from '~/utils/array'
 import { storage } from '~/utils/storage'
 import MediaImage from './MediaImage.vue'
+import type { MediaItem } from '@content/types'
 
 interface Props {
   // media props
@@ -124,14 +124,15 @@ const captionText = computed(() => currentImage.value?.text)
 const captionLink = computed(() => currentImage.value?.href)
 
 const containerStyle = computed(() => {
-  const image = images?.at(-1)!
+  const image = Array.isArray(images) ? images.at(-1) : images
   return `${image?.style}`
 })
 
 const widthStyle = computed(() => {
+  const image = Array.isArray(images) ? images.at(-1) : images
   const maxWidth = props.width
     ? props.width
-    : images?.at(-1)?.width + 'px'
+    : image?.width + 'px'
   return maxWidth
     ? `max-width: ${maxWidth}; margin: inherit auto;`
     : ''

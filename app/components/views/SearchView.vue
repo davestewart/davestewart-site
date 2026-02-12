@@ -109,7 +109,7 @@ import {
   parseQuery,
   searchContent,
   type SearchQuery,
-} from '~/stores/search'
+} from '@content/stores/search'
 import { UiIcon } from '#components'
 
 const route = useRoute()
@@ -199,12 +199,6 @@ const searchTitle = computed(() => {
     }
   }
   return h('div', { class: 'searchTokens' }, parts)
-})
-
-watch(searchTitle, (val) => {
-  if (import.meta.client) {
-    document.title = `Search${val ? ' ' + val : ''} | Dave Stewart`
-  }
 })
 
 const pageDescription = computed(() => {

@@ -21,10 +21,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMedia } from '~/composables/useMedia'
+import { useMedia } from '@content/composables/useMedia'
 
 const props = defineProps<{
-  page: ContentPage
+  page: MetaPost
 }>()
 
 const source = useMedia(props.page?.media?.thumbnail)

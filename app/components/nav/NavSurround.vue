@@ -25,11 +25,11 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from '#app'
 import { onKeyStroke } from '@vueuse/core'
-import { getPath, getTitle } from '~/utils/content'
+import { getPath, getParentPath, getTitle } from '@content/utils'
 
 const route = useRoute()
 const router = useRouter()
-const { surround: posts } = storeToRefs(useNavStore())
+const { surround: posts } = storeToRefs(useMetaStore())
 
 const prev = computed(() => posts?.value.at(0))
 const next = computed(() => posts?.value.at(1))

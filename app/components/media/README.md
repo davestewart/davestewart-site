@@ -9,7 +9,7 @@ This file is designed to help you understand the relationship between content an
 The types below are used to represent content and media:
 
 ```ts
-+- ParsedPage               // full page content
++- PageContent               // full page content
 |                           // ⚡️ Transformed in server/plugins/content.ts 
 |                           // 📄 Queried per page load  
 |
@@ -32,7 +32,7 @@ Effectively, everything flows from the original markdown. The final data are mad
 
 ```ts
 // get the content store, which makes available ContentItems
-const content = useContentStore()
+const content = usePageStore()
 
 // get the content store, which makes available ContentItems
 const search = useSearchStore()

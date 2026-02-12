@@ -97,6 +97,7 @@
 
 - [ ] Landing pages don't have intro paragraphs
 - [ ] Missing alt text on images
+- [ ] Fix RSS page
 
 ### Data
 
@@ -107,7 +108,8 @@
   - [ ] Include `_path` in returned
 - [ ] Move search query to server
 - [ ] Fix RSS feed content
-- [ ] Drafts are showing in Blog and Search
+- [x] Drafts are showing in Blog and Search
+- [ ] Review how `status` works
 
 ### Content Store
 

@@ -64,5 +64,4 @@ const items = computed(() => [
     }
   }
 }
-
 </style>

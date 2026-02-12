@@ -11,11 +11,9 @@
 import PageView from '~/components/views/PageView.vue'
 import FolderView from '~/components/views/FolderView.vue'
 import NotFound from '~/components/views/404View.vue'
-import type { ParsedPage } from '#shared/types/content'
-import { useContentStore } from '#imports'
 
 const route = useRoute()
-const store = useContentStore()
+const store = usePageStore()
 
 /**
  * All content pages
@@ -24,10 +22,9 @@ const { data, error } = await useAsyncData(`page-${route.path}`, () => {
   return store.loadPage(route.path)
 })
 
-provideContent(data)
-usePageSeo(data)
+usePageSeo(data.value)
 
-const getViewComponent = (content: ParsedPage | undefined) => {
+const getViewComponent = (content: PageContent | undefined) => {
   if (error.value || !content) {
     return NotFound
   }
