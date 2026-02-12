@@ -282,7 +282,7 @@ export function searchContent (query: SearchQuery = {}) {
 
   // group by date
   if (query.group === 'date') {
-    items = groupBy(posts, item => item.date && item.date.substring(0, 4))
+    items = groupBy(posts, item => item.date ? item.date.substring(0, 4) : 'No date')
   }
 
   // group by path
