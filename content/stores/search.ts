@@ -1,4 +1,4 @@
-import { useContentStore } from './content'
+import { useMetaStore } from './meta'
 import { getParentPath } from '../utils'
 import type { MetaFolder, MetaItem, MetaPost } from '../types'
 
@@ -213,7 +213,7 @@ export function searchContent (query: SearchQuery = {}) {
   } = query
 
   // Get all pages
-  const store = useContentStore()
+  const store = useMetaStore()
   const allItems = store.getItems('/')
   let posts = allItems.filter(item => item.type === 'post')
 

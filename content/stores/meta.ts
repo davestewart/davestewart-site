@@ -1,5 +1,6 @@
-import { defineStore, computed, toRef } from '#imports'
-import { getParentPath } from '../utils'
+import { computed, defineStore, toRef } from '#imports'
+import { getParentPath, getPath } from '../utils'
+import { queryItems, queryTags } from './api'
 import { useContentStore } from './content'
 
 import type { MetaItem } from '../types'
@@ -15,6 +16,10 @@ export type Link = {
  * Manages site navigation
  */
 export const useMetaStore = defineStore('meta', () => {
+  // ---------------------------------------------------------------------------------------------------------------------
+  // dependencies
+  // ---------------------------------------------------------------------------------------------------------------------
+
   const content = useContentStore()
 
   const path = toRef(content, 'path')
@@ -22,11 +27,62 @@ export const useMetaStore = defineStore('meta', () => {
   const page = toRef(content, 'page')
 
   // ---------------------------------------------------------------------------------------------------------------------
+  // properties
+  // ---------------------------------------------------------------------------------------------------------------------
+
+  // all content items (metadata only)
+  const items = ref<MetaItem[]>([])
+
+  // tag groups from json
+  const tagGroups = ref<TagGroup[]>([])
+
+  // flattened tag list
+  const tagList = computed(() => {
+    return tagGroups.value
+      .map(group => group.tags)
+      .flat()
+      .sort()
+  })
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // actions
+  // ---------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * Get all folder and posts from the target path down
+   */
+  function getItems (path = '/'): MetaItem[] {
+    const normalizedPath = normalizePath(path)
+    return items.value.filter(item => item.path.startsWith(normalizedPath))
+  }
+
+  /**
+   * Get all posts from the target path down
+   */
+  function getPosts (path = '/'): MetaPost[] {
+    return getItems(path).filter(p => p.type === 'post')
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // initialisation
+  // ---------------------------------------------------------------------------------------------------------------------
+
+  async function initServer () {
+    const results = await Promise.all([
+      // Can't have more than one await @see https://www.youtube.com/watch?v=ofuKRZLtOdY
+      queryItems(), // process.env.NODE_ENV as any
+      queryTags(),
+    ])
+    items.value = results[0]
+    tagGroups.value = results[1]
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------------
   // navigation
   // ---------------------------------------------------------------------------------------------------------------------
 
   function getItem (path: string) {
-    return content.getItems().find(item => item.path === path)
+    return items.value.find(item => item.path === path)
   }
 
   function createLink (path: string, title: string, description = '', cssClass = ''): Link {
@@ -72,8 +128,23 @@ export const useMetaStore = defineStore('meta', () => {
     ]),
   ]
 
+  // computed
+  const surround = computed(() => {
+    return getMetaSurround(getPosts(), path.value)
+  })
+
+  const siblings = computed(() => {
+    const parentPath = getParentPath(path.value)
+    const items = getItems(parentPath)
+    return getMetaSiblings(items, parentPath)
+  })
+
+  const breadcrumbs = computed(() => {
+    return getMetaParents(items.value, path.value, page.value?.title ?? '')
+  })
+
   const up = computed<Link>(() => {
-    const parents = getMetaParents(content.path, 'Up')
+    const parents = getMetaParents(items.value, content.path, 'Up')
     return {
       title: 'Up',
       path: getParentPath(content.path),
@@ -96,26 +167,26 @@ export const useMetaStore = defineStore('meta', () => {
     ]
   })
 
-  // computed
-  const surround = computed(() => {
-    return getMetaSurround(path.value)
-  })
-
-  const siblings = computed(() => {
-    return getMetaSiblings(path.value)
-  })
-
-  const breadcrumbs = computed(() => {
-    return getMetaParents(path.value, page.value?.title ?? '')
-  })
-
   return {
+    // items
+    items,
+    getItems,
+    getPosts,
+
+    // tags
+    tagGroups,
+    tagList,
+
+    // navigation
     sections,
     surround,
     siblings,
     breadcrumbs,
     top,
     up,
+
+    // initialisation
+    initServer,
   }
 })
 
@@ -126,9 +197,8 @@ export const useMetaStore = defineStore('meta', () => {
 /**
  * items from root to current page
  */
-export function getMetaParents (path: string, fallbackTitle = '404'): Link[] {
+export function getMetaParents (items: MetaItem[], path: string, fallbackTitle = '404'): Link[] {
   // variables
-  const items = useContentStore().getItems('/')
   const parents: Link[] = [{ title: 'Home', path: '/' }]
   let currentPath = '/'
 
@@ -140,7 +210,7 @@ export function getMetaParents (path: string, fallbackTitle = '404'): Link[] {
     const item = items.find((p) => {
       return p.type === 'folder'
         ? p.path === currentPath
-        : p.path === currentPath || p.permalink === currentPath
+        : getPath(p) === currentPath
     })
 
     // page found
@@ -168,20 +238,15 @@ export function getMetaParents (path: string, fallbackTitle = '404'): Link[] {
 /**
  * items at the same level as current page
  */
-export function getMetaSiblings (path: string): MetaItem[] {
-  const parentPath = getParentPath(path)
-  const store = useContentStore()
-  const items = store.getItems(parentPath)
+export function getMetaSiblings (items: MetaItem[], parentPath: string): MetaItem[] {
   return items.filter(p => getParentPath(p.path) === parentPath)
 }
 
 /**
  * items before and after current page
  */
-export function getMetaSurround (path: string) {
-  const store = useContentStore()
-  const posts = store.getPosts()
-  const index = posts.findIndex((p: any) => p.permalink === path || p.path === path)
+export function getMetaSurround (posts: MetaPost[], path: string) {
+  const index = posts.findIndex(p => p.permalink === path || p.path === path)
   if (index > -1) {
     return [
       posts[index - 1],

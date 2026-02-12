@@ -1,4 +1,5 @@
 import { defineNuxtPlugin } from 'nuxt/app'
+import { useMetaStore } from '../stores/meta'
 import { useContentStore } from '../stores/content'
 
 export default defineNuxtPlugin({
@@ -6,6 +7,7 @@ export default defineNuxtPlugin({
   parallel: false,
   async setup () {
     await Promise.all([
+      useMetaStore().initServer(),
       useContentStore().initServer(),
     ])
   },
