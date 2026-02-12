@@ -10,6 +10,7 @@
         :to="link.path"
         :title="link.description"
         class="breadcrumb__link"
+        :class="index === links.length - 2 ? 'breadcrumb__link--last' : ''"
       >{{ link.title }}</NuxtLink>
       <span v-else class="breadcrumb__text">{{ link.title }}</span>
     </span>
@@ -23,11 +24,10 @@ const { breadcrumbs: links } = storeToRefs(useMetaStore())
 <style lang="scss">
 .navBreadcrumbs {
   width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  padding: .5rem;
+  padding: .5rem 0;
   box-sizing: border-box;
 }
 
@@ -36,21 +36,25 @@ const { breadcrumbs: links } = storeToRefs(useMetaStore())
   &__item {
     display: inline-block;
     white-space: nowrap;
-    margin: .25rem 0;
+    margin: .25rem 0; // required for wrapping
     cursor: default;
+  }
 
-    // arrow
-    &:not(:last-child):after {
-      display: inline-block;
-      width: 10px;
-      height: 14px;
-      line-height: 1;
-      margin: 0 2px;
-      background: url('../../assets/breadcrumb-arrow.svg') no-repeat;
-      background-position-y: 80%;
-      vertical-align: bottom;
-      content: ' ';
-    }
+  // arrow
+  &__link:after {
+    display: inline-block;
+    width: 18px;
+    height: 16px;
+    margin: 0 2px;
+    background: url('../../assets/icons/arrow-right.svg') no-repeat;
+    background-position-y: -1px;
+    vertical-align: middle;
+    content: ' ';
+  }
+
+  &__link,
+  &__text {
+    display: inline-block;
   }
 
   &__text {
@@ -60,11 +64,11 @@ const { breadcrumbs: links } = storeToRefs(useMetaStore())
 
 // hide page title on mobile
 @include sm {
-  .layout__default {
-    .breadcrumb__item:nth-last-child(10n+2):after,
-    .breadcrumb__item:last-child {
-      display: none;
-    }
+  .breadcrumb__text {
+    display: none;
+  }
+  .breadcrumb__link--last:after {
+    content: unset;
   }
 }
 </style>

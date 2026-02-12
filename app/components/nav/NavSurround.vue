@@ -55,15 +55,6 @@ onKeyStroke('ArrowUp', (e) => {
 </script>
 
 <style lang="scss">
-@mixin arrow {
-  content: ' ';
-  display: block;
-  width: 10px;
-  height: 18px;
-  margin: 0 2px;
-  background: url('~/assets/breadcrumb-arrow.svg') no-repeat;
-}
-
 .navSurround {
   line-height: 1.4em;
   vertical-align: top;
@@ -86,12 +77,18 @@ onKeyStroke('ArrowUp', (e) => {
     letter-spacing: 0.02em;
   }
 
-  $scale: 1.7;
+  @mixin arrow {
+    content: ' ';
+    display: block;
+    width: 21px;
+    height: 21px;
+    transform: translateY(1px);
+  }
 
   &__prev {
     span:before {
       @include arrow;
-      transform: scale(-$scale, $scale) translateY(2px);
+      background: url('~/assets/icons/arrow-left.svg') no-repeat;
     }
   }
 
@@ -99,7 +96,7 @@ onKeyStroke('ArrowUp', (e) => {
     text-align: right;
     span:after {
       @include arrow;
-      transform: scale($scale, $scale) translateY(2px);
+      background: url('~/assets/icons/arrow-right.svg') no-repeat;
     }
   }
 }

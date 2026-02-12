@@ -1,7 +1,7 @@
 <template>
   <div class="pageShare" unselectable="on">
     <a ref="toggle" class="pageShare__toggle" @click="show">
-      <UiIcon icon="share" :size="26" />
+      <UiIcon icon="share" :size="25" />
     </a>
     <div class="pageShare__popup">
       <div v-show="popup" ref="links" class="pageShare__links">
@@ -9,22 +9,22 @@
           :href="`https://twitter.com/intent/tweet?url=${url}&text=${title}%0A%0A${description}%0A%0A&hashtags=${hashtags}&via=dave_stewart`"
           target="_blank"
           title="Tweet"
-        ><img alt="Tweet" src="./sharing/twitter.svg" /></a>
+        ><img alt="Tweet" src="/assets/share/twitter.svg" /></a>
         <a
           :href="`https://www.facebook.com/sharer/sharer.php?u=${url}`"
           title="Share on Facebook"
           target="_blank"
-        ><img alt="Share on Facebook" src="./sharing/facebook.svg" /></a>
+        ><img alt="Share on Facebook" src="/assets/share/facebook.svg" /></a>
         <a
           :href="`https://www.linkedin.com/shareArticle?url=${url}&title=${title}&summary=${description}&source=${url}`"
           target="_blank"
           title="Share on LinkedIn"
-        ><img alt="Share on LinkedIn" src="./sharing/linkedin.svg" /></a>
+        ><img alt="Share on LinkedIn" src="/assets/share/linkedin.svg" /></a>
         <a
           :href="`http://www.reddit.com/submit?url=${url}&title=${title}`"
           target="_blank"
           title="Share on Reddit"
-        ><img alt="Share on Reddit" src="./sharing/reddit.svg" /></a>
+        ><img alt="Share on Reddit" src="/assets/share/reddit.svg" /></a>
         <!--
         <a
           :href="`https://getpocket.com/save?url=${url}&title=${title}&tags=${hashtags}`"
@@ -36,7 +36,7 @@
           :href="`mailto:?subject=${title}&body=${description}%0A%0A${url}`"
           target="_blank"
           title="Send email"
-        ><img alt="Send email" src="./sharing/email.svg" /></a>
+        ><img alt="Send email" src="/assets/share/email.svg" /></a>
       </div>
     </div>
   </div>
@@ -70,7 +70,7 @@ const show = () => {
     popup.value = true
     nextTick(() => {
       if (links.value && toggle.value) {
-        links.value.style.marginLeft = (toggle.value.offsetLeft - 10) + 'px'
+        links.value.style.marginLeft = (toggle.value.offsetLeft - 13) + 'px'
       }
     })
 
@@ -97,7 +97,9 @@ const show = () => {
   }
 
   &__toggle {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 30px;
     height: 30px;
     font-size: 0;
