@@ -1,5 +1,5 @@
 <template>
-  <div class="pageFeedback pageContent">
+  <div id="hyvor-talk-view" class="pageFeedback pageContent">
     <h2>So...</h2>
     <template v-if="$route.path.includes('/blog/')">
       <p>I hope you found this article useful or enjoyable.</p>
@@ -39,6 +39,12 @@ const settings = {
   margin: 4px 10px;
 }
 
+.comment-writer,
+input {
+  background: white !important;
+  box-shadow: 0 0 0 1px var(--ht-color-accent-15);
+}
+
 .comments-list .no-comments {
   display: none;
 }
@@ -46,34 +52,37 @@ const settings = {
 .main-box-footer {
   display: none;
 }
+
+.comment-content {
+  line-height: 1.7;
+}
+
+#app.light .hljs span *
+  background: #f5f5f8;
+  color: var(--foreground) !important; {
+  font-weight: normal !important;
+}
+
+code,
+.hljs * {
+  color: #5c6e74 !important;
+  font-weight: 500 !important;
+}
+
+.hljs-title, .hljs-literal {
+  color: #EA4848 !important;
+}
+
 `,
 }
 </script>
 
 <style lang="scss">
 .pageFeedback {
-  //margin-top: 5rem;
-  //border-top: 1px solid $grey-lightest;
+  margin-bottom: 5rem;
 }
 
 .ht-comments-wrap {
   margin-top: 3rem;
-}
-
-#hyvor-talk-view {
-  min-height: 280px;
-  margin-bottom: -60px;
-  margin-left: -1rem;
-  margin-right: -1rem;
-  width: calc(100% + 2rem) !important;
-  max-width: unset !important;
-
-  iframe {
-    width: calc(100% + 2rem) !important;
-  }
-
-  .main-box-footer {
-    display: none;
-  }
 }
 </style>

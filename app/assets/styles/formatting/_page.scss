@@ -331,15 +331,18 @@ a:hover {
 }
 
 .pageContent {
-  p, li {
-    a:not([href^="#"]):not([href^="/"]):not([class]):not(:has(img))::after {
-      content: url('/assets/img/external-link.svg');
-      display: inline-block;
-      width: 15px;
-      height: 15px;
-      margin-left: 2px;
-      vertical-align: -2px;
-      opacity: 0.5;
+  p, li, td {
+    a:not([href^="#"]):not([href^="/"]):not([class]):not(:has(img)) {
+      //text-decoration: underline;
+      &::after {
+        content: url('/assets/img/external-link.svg');
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        margin-left: 2px;
+        vertical-align: -2px;
+        opacity: 0.6;
+      }
     }
   }
 }
