@@ -18,6 +18,9 @@ function defineLayerConfig (config: NuxtConfig & {
 
 function source (name: string, dir = '') {
   if (process.env.NODE_ENV === 'production') {
+    if (!process.env.GITHUB_TOKEN) {
+      throw new Error('GITHUB_TOKEN is required in production')
+    }
     return {
       driver: 'github',
       repo: `davestewart/${name}`,

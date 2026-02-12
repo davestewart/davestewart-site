@@ -4,7 +4,7 @@ import type { MediaSource, MediaSourceOption } from './media'
 export type PostVisibility = 'public' | 'preview' | 'unlisted'
 
 export const PostStatus = {
-  // has a date, is published, and within 30 days of being published
+  // has a date, is published, and within 90 days of being published
   NEW: 'new',
 
   // has a date, but not yet published, so hidden on production

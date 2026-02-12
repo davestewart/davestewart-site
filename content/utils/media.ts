@@ -1,5 +1,5 @@
 export function isImage (path: string = ''): boolean {
-  const src = path.split('?').shift()!
+  const src = path.split('?')[0] ?? ''
   return /\.(ico|gif|bmp|svg|png|jpe?g)$/.test(src)
 }
 

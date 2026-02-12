@@ -22,7 +22,7 @@ const { data, error } = await useAsyncData(`page-${route.path}`, () => {
   return store.loadPage(route.path)
 })
 
-usePageSeo(data)
+usePageSeo(data.value)
 
 const getViewComponent = (content: PageContent | undefined) => {
   if (error.value || !content) {

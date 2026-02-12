@@ -25,7 +25,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from '#app'
 import { onKeyStroke } from '@vueuse/core'
-import { getPath, getTitle } from '@content/utils'
+import { getPath, getParentPath, getTitle } from '@content/utils'
 
 const route = useRoute()
 const router = useRouter()

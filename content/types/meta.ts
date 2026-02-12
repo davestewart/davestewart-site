@@ -14,6 +14,7 @@ export interface MetaItemRaw {
   order?: number
   date?: string
   status?: string
+  github?: string
   tags?: string[]
 }
 

@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { resolveMedia, useMedia } from '@content/composables/useMedia'
-import type { MediaBase } from '@content/types'
+import type { MediaKey, MediaBase, MediaItem } from '@content/types'
 
 // Either a media key, or base media properties
 type MediaEmbedProps =

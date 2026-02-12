@@ -2,7 +2,6 @@ import { serverQueryContent } from '#content/server'
 import type { MetaFolder, MetaItemRaw, MetaPost } from '../../../types'
 
 export default defineEventHandler(async (event) => {
-  const { mode = 'production' } = getQuery(event)
   const items = await serverQueryContent(event)
     .only([
       '_path',
@@ -31,11 +30,13 @@ export default defineEventHandler(async (event) => {
     }
   })
 
+  // get mode
+  const mode = process.env.NODE_ENV || 'production'
+
   // process final items array
   return items
     // filter out drafts and unlisted items
     .filter((item) => {
-      // const mode = process.env.NODE_ENV || 'development'
       if (mode === 'production') {
         if (item.type === 'post') {
           return item.date && (!item.status || !['draft', 'unlisted', 'hidden'].includes(item.status))

@@ -41,7 +41,7 @@ interface Props {
 }
 
 function makeHeaders (toc: { links: TocLink[] }) {
-  function flatten (links: TocLink[]): TockItem[] {
+  function flatten (links: TocLink[]): TocItem[] {
     return links.flatMap(link => [
       {
         level: link.depth,
@@ -71,11 +71,11 @@ const items = computed(() => {
   if (props.headers) {
     return props.headers
   }
-  const toc = usePageStore().page.body.toc
-  return makeHeaders(toc)
+  const toc = usePageStore().page?.body?.toc
+  return toc
+    ? makeHeaders(toc)
+    : []
 })
-
-const depth = ref(1)
 
 function split (value: number | string | string[]): string[] {
   if (Array.isArray(value)) {
@@ -153,6 +153,14 @@ const options = computed(() => {
   }
 })
 
+const depth = computed(() => {
+  const levels = options.value.levels
+  if (props.type === 'tree' && levels.length > 0) {
+    return levels[levels.length - 1]! - 1
+  }
+  return 1
+})
+
 const hasHierarchy = computed(() => {
   return options.value.levels.length > 1 || props.type === 'list'
 })
@@ -185,20 +193,15 @@ const html = computed(() => {
 
   // generate html
   if (levels.length) {
-    // set depth
-    if (props.type === 'tree') {
-      depth.value = levels[levels.length - 1] - 1
-    }
-
     // list
     if (hasHierarchy.value) {
       let prev = itemsList[0]
       let html = '<ul>'
       for (const item of itemsList) {
-        if (item.level > prev.level) {
+        if (prev && item.level > prev.level) {
           html += '<ul>'
         }
-        else if (item.level < prev.level) {
+        else if (prev && item.level < prev.level) {
           html += '</ul>'.repeat(prev.level - item.level)
         }
         html += `<li>${makeLink(item, tips[item.slug])}</li>`

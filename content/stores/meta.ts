@@ -77,7 +77,7 @@ export const useMetaStore = defineStore('meta', () => {
     // Can't have more than one await
     // @see https://www.youtube.com/watch?v=ofuKRZLtOdY
     const results = await Promise.all([
-      $fetch('/api/content/meta'), // , { query: { mode: process.env.NODE_ENV } }
+      $fetch('/api/content/meta'),
       $fetch('/api/content/tags'),
     ])
     items.value = results[0]

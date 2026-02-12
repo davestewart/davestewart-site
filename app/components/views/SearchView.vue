@@ -201,12 +201,6 @@ const searchTitle = computed(() => {
   return h('div', { class: 'searchTokens' }, parts)
 })
 
-watch(searchTitle, (val) => {
-  if (import.meta.client) {
-    document.title = `Search${val ? ' ' + val : ''} | Dave Stewart`
-  }
-})
-
 const pageDescription = computed(() => {
   return isFiltered.value
     ? plural(results.value.total, 'item')

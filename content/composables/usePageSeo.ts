@@ -1,47 +1,34 @@
-import { type Ref } from 'vue'
 import type { PageContent } from '../types'
-
-interface PageSeoMeta {
-  title?: string
-  description?: string
-}
 
 /**
  * Sets SEO metadata for a page
  * Call this once in each page component
  *
- * @param pageOrMeta - Either a PageContent ref or a plain object with title/description
+ * @param page - Either PageContent or a plain object with title/description
  */
-export function usePageSeo (pageOrMeta?: Ref<PageContent | undefined> | PageContent | PageSeoMeta) {
-  // Check if it's a ref (PageContent) or plain object (PageSeoMeta)
-  const isRef = pageOrMeta && 'value' in pageOrMeta
-  const page = isRef ? pageOrMeta as Ref<PageContent | undefined> : undefined
-  const meta = !isRef ? pageOrMeta as PageSeoMeta : undefined
-
+export function usePageSeo (page: Partial<PageContent> | undefined) {
   const route = useRoute()
 
   const url = `https://davestewart.co.uk${route.path === '/' ? '' : route.path}`
 
-  const type = page?.value?.type === 'post' ? 'article' : 'website'
+  const type = page?.type === 'post' ? 'article' : 'website'
 
-  const time = page?.value?.date
+  const time = page?.date
 
   const title = computed(() => {
-    return meta?.title
-      ?? page?.value?.title
+    return page?.title
       ?? <string>route.meta.title
       ?? ''
   })
 
   const description = computed(() => {
-    return meta?.description
-      ?? page?.value?.description
+    return page?.description
       ?? <string>route.meta.description
       ?? ''
   })
 
   const image = computed(() => {
-    const media = page?.value?.media ?? {}
+    const media = page?.media ?? {}
     const { opengraph, featured } = media
     const img = opengraph
       ?? (featured && (typeof featured === 'string') ? featured : undefined) // featured may also be a gallery or embed
