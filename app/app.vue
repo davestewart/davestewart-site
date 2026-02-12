@@ -11,6 +11,7 @@ import { useRoute } from '#app'
 import { useWindowScroll } from '@vueuse/core'
 import { setupPreview } from '~/composables/usePreview'
 import { useShortcuts } from '~/composables/useShortcuts'
+import { useSmoothScroll } from '~/composables/useSmoothScroll'
 
 const { y } = useWindowScroll()
 
@@ -26,6 +27,7 @@ const classes = computed(() => ({
 const preview = setupPreview()
 
 useShortcuts()
+useSmoothScroll()
 
 watch(y, (scrollY) => {
   if (import.meta.client) {
