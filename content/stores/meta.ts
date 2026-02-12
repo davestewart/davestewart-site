@@ -7,7 +7,7 @@ import type { MetaItem } from '../types'
 export type Link = {
   path: string
   title: string
-  description?: string
+  description?: string | ComputedRef<string>
   class?: string
 }
 
@@ -27,10 +27,6 @@ export const useMetaStore = defineStore('meta', () => {
   // ---------------------------------------------------------------------------------------------------------------------
 
   const content = usePageStore()
-
-  const path = toRef(content, 'path')
-
-  const page = toRef(content, 'page')
 
   // ---------------------------------------------------------------------------------------------------------------------
   // properties
@@ -94,9 +90,11 @@ export const useMetaStore = defineStore('meta', () => {
 
   function createLink (path: string, title: string, description = '', cssClass = ''): Link {
     return {
-      path,
+      path: path,
       title,
-      description: description || getItem(path)?.description || '',
+      description: description
+        ? description
+        : computed(() => getItem(path)?.description || ''), // items aren't yet loaded when store is initialised
       class: cssClass,
     }
   }
@@ -117,37 +115,39 @@ export const useMetaStore = defineStore('meta', () => {
   const blog = createLink('/blog/', 'Blog')
 
   // main sections
-  const sections = [
-    createSection('Navigation', [
-      home,
-      sitemap,
-      search,
-    ]),
-    createSection('Creation', [
-      work,
-      products,
-      projects,
-      archive,
-    ]),
-    createSection('Ideation', [
-      blog,
-      info,
-    ]),
-  ]
+  const sections = computed(() => {
+    return [
+      createSection('Navigation', [
+        home,
+        sitemap,
+        search,
+      ]),
+      createSection('Creation', [
+        work,
+        products,
+        projects,
+        archive,
+      ]),
+      createSection('Ideation', [
+        blog,
+        info,
+      ]),
+    ]
+  })
 
   // computed
   const surround = computed(() => {
-    return getMetaSurround(getPosts(), path.value)
+    return getMetaSurround(getPosts(), content.path)
   })
 
   const siblings = computed(() => {
-    const parentPath = getParentPath(path.value)
+    const parentPath = getParentPath(content.path)
     const items = getItems(parentPath)
     return getMetaSiblings(items, parentPath)
   })
 
   const breadcrumbs = computed(() => {
-    return getMetaParents(items.value, path.value, page.value?.title ?? '')
+    return getMetaParents(items.value, content.path, content.page?.title ?? '')
   })
 
   const up = computed<Link>(() => {
