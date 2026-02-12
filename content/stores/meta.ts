@@ -14,7 +14,7 @@ export type Link = {
 /**
  * Manages site navigation
  */
-export const useNavStore = defineStore('nav', () => {
+export const useMetaStore = defineStore('meta', () => {
   const content = useContentStore()
 
   const path = toRef(content, 'path')
@@ -73,7 +73,7 @@ export const useNavStore = defineStore('nav', () => {
   ]
 
   const up = computed<Link>(() => {
-    const parents = getContentParents(content.path, 'Up')
+    const parents = getMetaParents(content.path, 'Up')
     return {
       title: 'Up',
       path: getParentPath(content.path),
@@ -98,15 +98,15 @@ export const useNavStore = defineStore('nav', () => {
 
   // computed
   const surround = computed(() => {
-    return getContentSurround(path.value)
+    return getMetaSurround(path.value)
   })
 
   const siblings = computed(() => {
-    return getContentSiblings(path.value)
+    return getMetaSiblings(path.value)
   })
 
   const breadcrumbs = computed(() => {
-    return getContentParents(path.value, page.value?.title ?? '')
+    return getMetaParents(path.value, page.value?.title ?? '')
   })
 
   return {
@@ -126,7 +126,7 @@ export const useNavStore = defineStore('nav', () => {
 /**
  * items from root to current page
  */
-export function getContentParents (path: string, fallbackTitle = '404'): Link[] {
+export function getMetaParents (path: string, fallbackTitle = '404'): Link[] {
   // variables
   const items = useContentStore().getItems('/')
   const parents: Link[] = [{ title: 'Home', path: '/' }]
@@ -168,7 +168,7 @@ export function getContentParents (path: string, fallbackTitle = '404'): Link[] 
 /**
  * items at the same level as current page
  */
-export function getContentSiblings (path: string): MetaItem[] {
+export function getMetaSiblings (path: string): MetaItem[] {
   const parentPath = getParentPath(path)
   const store = useContentStore()
   const items = store.getItems(parentPath)
@@ -178,7 +178,7 @@ export function getContentSiblings (path: string): MetaItem[] {
 /**
  * items before and after current page
  */
-export function getContentSurround (path: string) {
+export function getMetaSurround (path: string) {
   const store = useContentStore()
   const posts = store.getPosts()
   const index = posts.findIndex((p: any) => p.permalink === path || p.path === path)

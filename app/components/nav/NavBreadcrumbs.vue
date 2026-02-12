@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-const { breadcrumbs: links } = storeToRefs(useNavStore())
+const { breadcrumbs: links } = storeToRefs(useMetaStore())
 </script>
 
 <style lang="scss">

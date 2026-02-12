@@ -33,7 +33,7 @@ defineEmits<{
   (e: 'click'): void
 }>()
 
-const { sections } = useNavStore()
+const { sections } = useMetaStore()
 </script>
 
 <style lang="scss">

@@ -25,7 +25,7 @@ watch(() => route.path, () => {
   visible.value = false
 })
 
-const { side } = useNavStore()
+const { side } = useMetaStore()
 </script>
 
 <style lang="scss">

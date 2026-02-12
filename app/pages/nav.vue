@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { getContentParents, getContentSiblings, getContentSurround } from '@content/stores/nav'
+import { getMetaParents, getMetaSiblings, getMetaSurround } from '@content/stores/meta'
 // import { searchContent } from '@content/stores/search'
 
 definePageMeta({
@@ -10,9 +10,9 @@ const store = useContentStore()
 
 const methods = {
   Items: store.getItems,
-  Siblings: getContentSiblings,
-  Surround: getContentSurround,
-  Parents: getContentParents,
+  Siblings: getMetaSiblings,
+  Surround: getMetaSurround,
+  Parents: getMetaParents,
   Tree: () => {
     return searchContent({
       path: path.value,

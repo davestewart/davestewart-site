@@ -30,7 +30,7 @@
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const { top } = storeToRefs(useNavStore())
+const { top } = storeToRefs(useMetaStore())
 </script>
 
 <style lang="scss">

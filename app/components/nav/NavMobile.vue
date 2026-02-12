@@ -54,7 +54,7 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 const visible = ref(false)
 
-const { up } = storeToRefs(useNavStore())
+const { up } = storeToRefs(useMetaStore())
 
 watch(() => route.path, () => {
   visible.value = false
