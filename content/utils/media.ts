@@ -1,6 +1,6 @@
 export function isImage (path: string = ''): boolean {
   const src = path.split('?')[0] ?? ''
-  return /\.(ico|gif|bmp|svg|png|jpe?g)$/.test(src)
+  return /\.(ico|gif|bmp|svg|png|jpe?g|avif)$/.test(src)
 }
 
 export function isVideo (path: string = ''): boolean {

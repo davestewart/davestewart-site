@@ -150,7 +150,6 @@ html {
   .navTop {
     display: flex;
   }
-  .navBreadcrumbs,
   .navMobile {
     display: none;
   }
