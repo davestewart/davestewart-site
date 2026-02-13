@@ -1,6 +1,10 @@
 import type { ParsedContent } from '@nuxt/content'
 import type { MediaSource, MediaSourceOption } from './media'
 
+// ---------------------------------------------------------------------------------------------------------------------
+// page meta
+// ---------------------------------------------------------------------------------------------------------------------
+
 export type PostVisibility = 'public' | 'preview' | 'unlisted'
 
 export const PostStatus = {
@@ -37,6 +41,42 @@ export interface PageMedia {
   gallery?: string[] | MediaSource[]
   [key: string]: MediaSourceOption | undefined
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// page toc
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Nuxt Content TOC
+ */
+export interface Toc {
+  title?: string
+  depth?: number
+  links: TocLink[]
+}
+
+/**
+ * Nuxt Content TOC link
+ */
+export interface TocLink {
+  id: string
+  text: string
+  depth: number
+  children?: TocLink[]
+}
+
+/**
+ * Old TOC item interface, to be removed in favour of Nuxt Content TOC
+ */
+export interface HeaderItem {
+  slug: string
+  title: string
+  level: number
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// page
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**
  * Base content item returned from Nuxt Content queries

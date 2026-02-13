@@ -12,7 +12,7 @@ definePageMeta({
   title: 'Sitemap',
 })
 
-const { items } = searchContent({
+const { items } = useMetaStore().search({
   path: '/',
   group: 'path',
 })

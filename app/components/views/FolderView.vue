@@ -18,21 +18,20 @@ defineProps<{
   page: PageContent
 }>()
 
-const { path, query } = storeToRefs(usePageStore())
+const store = usePageStore()
 
-// Options
 const options = computed<Partial<SearchOptions>>(() => {
   return {
     mode: 'tree',
     format: 'image',
-    ...query.value,
+    ...store.query,
   }
 })
 
 const data = computed(() => {
-  return searchContent({
+  return useMetaStore().search({
     ...options.value,
-    path: path.value,
+    path: store.path,
     group: 'path',
   })
 })

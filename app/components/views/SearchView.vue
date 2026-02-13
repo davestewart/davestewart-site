@@ -107,13 +107,14 @@ import {
   cleanQuery,
   makeSearchFilters,
   parseQuery,
-  searchContent,
-  type SearchQuery,
+
 } from '@content/stores/search'
 import { UiIcon } from '#components'
+import type { SearchQuery } from '@content/types'
 
 const route = useRoute()
 const router = useRouter()
+const store = useMetaStore()
 
 // ---------------------------------------------------------------------------------------------------------------------
 // variables
@@ -219,7 +220,7 @@ const searchQuery = computed(() => {
 })
 
 const results = computed(() => {
-  return searchContent(searchQuery.value)
+  return store.search(searchQuery.value)
 })
 
 // ---------------------------------------------------------------------------------------------------------------------

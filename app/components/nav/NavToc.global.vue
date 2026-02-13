@@ -1,29 +1,48 @@
 <template>
-  <div
-    v-if="items.length > 1"
-    :data-depth="depth"
-    class="navToc"
-    v-html="html"
-  />
+  <div class="navToc">
+    <div
+      v-if="options.items.length > 1"
+      :data-depth="depth"
+      v-html="html"
+    />
+    <details v-if="items.length > 0 && options.items.length === 0" class="navToc__warning">
+      <summary class="navToc__label">
+        Invalid TOC attributes
+      </summary>
+      <div class="navToc__data">
+        <pre>Props: {{ $props }}</pre>
+        <pre>Items: {{ items }}</pre>
+      </div>
+    </details>
+  </div>
 </template>
 
+<script lang="ts">
+/**
+ * Convert Nuxt Content TOC to legacy format
+ *
+ * @param toc
+ */
+function makeHeaders (toc: Toc): HeaderItem[] {
+  function flatten (links: TocLink[]): HeaderItem[] {
+    return links.flatMap(link => [
+      {
+        level: link.depth,
+        title: link.text,
+        slug: link.id,
+      },
+      ...(link.children ? flatten(link.children) : []),
+    ])
+  }
+
+  return flatten(toc.links).flat()
+}
+</script>
+
 <script setup lang="ts">
-interface TocItem {
-  slug: string
-  title: string
-  level: number
-}
-
-type TocLink = {
-  id: string
-  depth: number
-  text: string
-  children?: TocLink[]
-}
-
 interface Props {
   // optional page headers to render (defaults to the containing page)
-  headers?: TocItem[]
+  headers?: HeaderItem[]
   // change the text which precedes the links
   prompt?: string
   // takes a number, or a comma-delimited string of levels, i.e. 2,3,4
@@ -38,21 +57,8 @@ interface Props {
   to?: string
   // the type of structure to render; defaults to auto, which depends on the number of levels
   type?: 'list' | 'tree' | 'auto'
-}
-
-function makeHeaders (toc: { links: TocLink[] }) {
-  function flatten (links: TocLink[]): TocItem[] {
-    return links.flatMap(link => [
-      {
-        level: link.depth,
-        title: link.text,
-        slug: link.id,
-      },
-      ...(link.children ? flatten(link.children) : []),
-    ])
-  }
-
-  return flatten(toc.links).flat()
+  // tips for each level
+  tips?: Record<string, string>
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -64,8 +70,6 @@ const props = withDefaults(defineProps<Props>(), {
   to: '',
   type: 'auto',
 })
-
-const attrs = useAttrs()
 
 const items = computed(() => {
   if (props.headers) {
@@ -120,7 +124,7 @@ const options = computed(() => {
         }
       }
       return items
-    }, [] as TocItem[])
+    }, [] as HeaderItem[])
   }
 
   // slice if from or to and included
@@ -136,20 +140,12 @@ const options = computed(() => {
     .filter(item => levels.includes(item.level))
     .filter(item => !excludes.includes(item.slug))
 
-  // add tips to top level items
-  const tips = Object.keys(attrs).reduce((output, name) => {
-    if (name.startsWith('tip-')) {
-      output[name.substring(4)] = attrs[name]
-    }
-    return output
-  }, {} as Record<string, any>)
-
   // return
   return {
     levels,
     excludes,
     items: itemsList,
-    tips,
+    tips: props.tips || {},
   }
 })
 
@@ -167,7 +163,7 @@ const hasHierarchy = computed(() => {
 
 const html = computed(() => {
   // helpers
-  const makeLink = (item: TocItem, tip?: string) => {
+  const makeLink = (item: HeaderItem, tip?: string) => {
     const title = hasHierarchy.value
       ? item.title
       : item.title.replace(/^\W|\W$/g, '')
@@ -250,6 +246,26 @@ const html = computed(() => {
 
   > ul > ul > li {
     font-size: .85rem;
+  }
+
+  &__label {
+    cursor: pointer;
+    color: $accentColor;
+    font-weight: 600;
+  }
+
+  &__warning {
+    padding: 1rem;
+    border: 1px solid $borderColor;
+    border-radius: 4px;
+  }
+
+  &__data {
+    margin: 1rem;
+
+    pre + pre {
+      margin-top: 1rem;
+    }
   }
 }
 </style>

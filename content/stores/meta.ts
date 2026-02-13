@@ -1,8 +1,8 @@
-import { computed, defineStore, toRef } from '#imports'
+import { computed, defineStore } from '#imports'
 import { getParentPath, getPath } from '../utils'
 import { usePageStore } from './page'
-
-import type { MetaItem } from '../types'
+import { queryItems } from './search'
+import type { MetaItem, SearchQuery } from '../types'
 
 export type Link = {
   path: string
@@ -17,9 +17,9 @@ export type Link = {
  * Loads and manages metadata from all folders and posts in the Content API
  *
  * This allows the site to build navigation, related links, and other metadata-driven
- * features from site load, rather than having to wait for individual page loads.
+ * features at site load, rather than having to wait for individual page loads.
  *
- * It also allows search to be instant, via `searchContent()`.
+ * It also allows search to be instant, via `useMetaStore().search()`.
  */
 export const useMetaStore = defineStore('meta', () => {
   // ---------------------------------------------------------------------------------------------------------------------
@@ -65,6 +65,13 @@ export const useMetaStore = defineStore('meta', () => {
     return getItems(path).filter(p => p.type === 'post')
   }
 
+  /**
+   * Search, sort, and structure all posts
+   */
+  function search (query: SearchQuery) {
+    return queryItems(items.value, query)
+  }
+
   // ---------------------------------------------------------------------------------------------------------------------
   // initialisation
   // ---------------------------------------------------------------------------------------------------------------------
@@ -84,17 +91,13 @@ export const useMetaStore = defineStore('meta', () => {
   // navigation
   // ---------------------------------------------------------------------------------------------------------------------
 
-  function getItem (path: string) {
-    return items.value.find(item => item.path === path)
-  }
-
   function createLink (path: string, title: string, description = '', cssClass = ''): Link {
     return {
-      path: path,
+      path,
       title,
       description: description
         ? description
-        : computed(() => getItem(path)?.description || ''), // items aren't yet loaded when store is initialised
+        : computed(() => items.value.find(item => item.path === path)?.description || '...'), // items aren't yet loaded when store is initialised
       class: cssClass,
     }
   }
@@ -106,7 +109,7 @@ export const useMetaStore = defineStore('meta', () => {
   // entries
   const home = createLink('/', 'Home', 'Home page')
   const sitemap = createLink('/sitemap/', 'Sitemap', 'Full list of everything on the site')
-  const search = createLink('/search/', 'Search', 'Search portfolio')
+  const siteSearch = createLink('/search/', 'Search', 'Search portfolio')
   const work = createLink('/work/', 'Work')
   const products = createLink('/products/', 'Products')
   const projects = createLink('/projects/', 'Projects')
@@ -120,7 +123,7 @@ export const useMetaStore = defineStore('meta', () => {
       createSection('Navigation', [
         home,
         sitemap,
-        search,
+        siteSearch,
       ]),
       createSection('Creation', [
         work,
@@ -162,11 +165,13 @@ export const useMetaStore = defineStore('meta', () => {
 
   const top = computed(() => {
     const left: Link[] = [
+      // main entries
       work, products, projects, blog,
+      // only show archive if in archive path
       { ...archive, class: content.path.startsWith('/archive/') ? '' : 'hidden' },
     ]
 
-    const right: Link[] = [up.value, search]
+    const right: Link[] = [up.value, siteSearch]
 
     return [
       createSection('Content', left),
@@ -179,6 +184,7 @@ export const useMetaStore = defineStore('meta', () => {
     items,
     getItems,
     getPosts,
+    search,
 
     // tags
     tagGroups,
@@ -202,7 +208,7 @@ export const useMetaStore = defineStore('meta', () => {
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
- * items from root to current page
+ * Ancestor items from the root to the current page
  */
 export function getMetaParents (items: MetaItem[], path: string, fallbackTitle = '404'): Link[] {
   // variables
@@ -243,14 +249,14 @@ export function getMetaParents (items: MetaItem[], path: string, fallbackTitle =
 }
 
 /**
- * items at the same level as current page
+ * Sibling items in the same folder level as the current page
  */
 export function getMetaSiblings (items: MetaItem[], parentPath: string): MetaItem[] {
   return items.filter(p => getParentPath(p.path) === parentPath)
 }
 
 /**
- * items before and after current page
+ * Related items before and after the current page
  */
 export function getMetaSurround (posts: MetaPost[], path: string) {
   const index = posts.findIndex(p => p.permalink === path || p.path === path)

@@ -42,7 +42,7 @@ useSeoMeta({
 })
 
 const { data } = useAsyncData('404', async () => {
-  return searchContent({
+  return useMetaStore().search({
     randomize: true,
     limit: 3,
   })

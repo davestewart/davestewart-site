@@ -1,5 +1,5 @@
-import { defineStore, queryContent, useNuxtApp, useRoute } from '#imports'
-import { ref } from 'vue'
+import { ref, defineStore, queryContent, useNuxtApp, useRoute } from '#imports'
+import { metaItemsToToc } from '../utils'
 import type { LocationQuery } from 'vue-router'
 
 /**
@@ -38,11 +38,15 @@ export const usePageStore = defineStore('page', () => {
   // page object
   const page = ref<PageContent | null>(null)
 
+  // the page's children (0-length for posts)
+  const children = ref<MetaItem[]>([])
+
   /**
    * Load a page from the content api
    */
   async function loadPage (path: string) {
-    page.value = await queryContent<PageContent>()
+    // page
+    const content = await queryContent<PageContent>()
       .where({
         $or: [
           { _path: path },
@@ -50,6 +54,27 @@ export const usePageStore = defineStore('page', () => {
         ],
       })
       .findOne()
+
+    // children and toc
+    if (content.type === 'folder') {
+      const items = useMetaStore().search({
+        ...query.value,
+        path,
+        group: 'path',
+      }).items
+      children.value = items
+      if (content.body) {
+        content.body.toc = metaItemsToToc(items)
+      }
+    }
+    else {
+      children.value = []
+    }
+
+    // set page
+    page.value = content
+
+    // return the page
     return page.value
   }
 
@@ -78,6 +103,9 @@ export const usePageStore = defineStore('page', () => {
     // page
     page,
     loadPage,
+
+    // content
+    children,
 
     // initialisation
     initServer,

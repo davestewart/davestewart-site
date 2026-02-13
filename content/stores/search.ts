@@ -1,59 +1,5 @@
-import { useMetaStore } from './meta'
 import { getParentPath } from '../utils'
-import type { MetaFolder, MetaItem, MetaPost } from '../types'
-
-// ---------------------------------------------------------------------------------------------------------------------
-// types
-// ---------------------------------------------------------------------------------------------------------------------
-
-/**
- * Options to filter the search
- *
- * @public
- */
-export interface SearchFilters {
-  // the path from which to search from
-  path?: string
-  // any text from title and description to match
-  text?: string
-  // any tags to match
-  tags?: string[]
-  // match all or some text fragments
-  textOp?: 'and' | 'or'
-  // match all or some text tags
-  tagsOp?: 'and' | 'or'
-  // group by path (default) or date (year)
-  group?: 'path' | 'date'
-  // whether to pick random items (different from sort, as items can still be sorted)
-  randomize?: boolean
-  // limit the number of results returned
-  limit?: number
-  // sort by path (default) or date
-  sort?: 'path' | 'date' | 'random'
-}
-
-/**
- * Options to control search behaviour and display
- *
- * @internal
- */
-export interface SearchOptions {
-  // which paths to include in the search
-  searchPaths?: string[]
-  // whether to exclude drafts from results
-  excludeDrafts?: boolean
-  // whether to include only items with thumbnails
-  hasThumbnail?: boolean
-  // whether to show the tag filter
-  tagsFilter?: 'off' | 'list' | 'groups'
-  // format to display results in - image (default) or text
-  format?: 'image' | 'text'
-}
-
-/**
- * Combined type for overall search query
- */
-export type SearchQuery = SearchFilters & SearchOptions
+import type { MetaFolder, MetaItem, MetaPost, SearchFilters, SearchOptions, SearchQuery } from '../types'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // query utilities
@@ -204,7 +150,7 @@ export function cleanQuery (query: SearchQuery): Partial<SearchQuery> {
 /**
  * Search and filter content based on query parameters
  */
-export function searchContent (query: SearchQuery = {}) {
+export function queryItems (items: MetaItem[], query: SearchQuery = {}) {
   const {
     searchPaths = DEFAULT_SEARCH_PATHS,
     excludeDrafts = true,
@@ -213,9 +159,7 @@ export function searchContent (query: SearchQuery = {}) {
   } = query
 
   // Get all pages
-  const store = useMetaStore()
-  const allItems = store.getItems('/')
-  let posts = allItems.filter(item => item.type === 'post')
+  let posts = items.filter(item => item.type === 'post')
 
   // Filter drafts
   if (excludeDrafts) {
@@ -270,7 +214,7 @@ export function searchContent (query: SearchQuery = {}) {
   // results
   // ---------------------------------------------------------------------------------------------------------------------
 
-  let items: MetaItem[] = posts
+  let results: MetaItem[] = posts
 
   // collate tags
   const tags = posts.reduce((tags, item) => {
@@ -282,7 +226,7 @@ export function searchContent (query: SearchQuery = {}) {
 
   // group by date
   if (query.group === 'date') {
-    items = groupBy(posts, item => item.date ? item.date.substring(0, 4) : 'No date')
+    results = groupBy(posts, item => item.date ? item.date.substring(0, 4) : 'No date')
   }
 
   // group by path
@@ -298,17 +242,21 @@ export function searchContent (query: SearchQuery = {}) {
         paths.add(currentPath)
       }
     }
-    const nested = allItems.filter(item => paths.has(item.path))
-    items = makeTree(nested, query.path || '/')
+    const nested = items.filter(item => paths.has(item.path))
+    results = makeTree(nested, query.path || '/')
   }
 
   return {
     total: posts.length,
-    query,
+    items: results,
     tags: Array.from(tags),
-    items,
+    query,
   }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// helpers
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**
  * Create a text filter function
