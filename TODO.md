@@ -85,9 +85,26 @@
 
 ### Presentation
 
+Formatting
+
 - [x] Code highlighting theme
+- [x] Fix Shiki theming
+
+Components
+
+- [x] ~~Could folders just be pages with `NavFolder` components?~~
+- [x] re-implement folder `toc` property
+  - [x] Do manually in the page
+  - [x] Provide a way for TOC to get tree items
 - [ ] Add "intro" content to folders
-  - Could folders just be pages with `NavFolder` components?
+- [ ] Add search to blog folder
+- [ ] Add gallery to some folders
+  - [ ] Projects
+  - [ ] Blog
+  - [ ] Archive
+
+Layout
+
 - [x] Add padding to bottom of page (check home, folder, page views)
 - [x] Add intersection observer to Gallery keyboard control
 
@@ -96,6 +113,7 @@
 ### Content
 
 - [ ] Landing pages don't have intro paragraphs
+- [ ] Check all folder text; some of it is very out of date
 - [ ] Missing alt text on images
 - [ ] Fix RSS page
 
@@ -106,28 +124,22 @@
 - Path control
   - [ ] In transform, combine path and permalink 
   - [ ] Include `_path` in returned
-- [ ] Move search query to server
-- [ ] Fix RSS feed content
+- [x] Move search query to server
 - [x] Drafts are showing in Blog and Search
 - [ ] Review how `status` works
+- [ ] Fix RSS feed content
 
 ### Content Store
 
-- [ ] Move all functions to store
-- [-] Implement sorting (number folders)
+- [x] Move all functions to store
 - [ ] Review post filters
-  - Review at frontmatter, consider hidden: true
+  - Review frontmatter, consider hidden: true
   - Reconsider all use cases
     - `draft`
     - `unlisted`
     - could use `navigation: false` for this (https://v2.content.nuxt.com/usage/markdown#front-matter)
-- [ ] Consider moving filtering to the backend
-- [ ] Review how Content native search works
-- [ ] Consider HATEOS for content
-  - parent
-  - siblings
-  - surround
-  - tags
+- [x] Consider moving filtering to the backend
+- [x] Review how Content native search works
 
 ## Site structure
 
@@ -168,48 +180,64 @@ Tags
 
 ### Structure
 
-- [ ] Convert to slashless URLs
+Redirects
+
+| Name                         | From                 | To                  |
+|------------------------------|----------------------|---------------------|
+| ToDo Emojis                  | Products             | Projects/Personal   |
+| Timezone Planner             | Products             | Projects/Personal   |
+| Versioning Chrome extensions | Blog/Work            | Blog/Programming    |
+| ES Kit                       | Projects/Open Source | Archive/Open Source |
+
+
 - [ ] 301 redirects
-- [ ] Structure
-  - Projects
-    - Nuxt Modules
-      - [x] Nuxt Content Assets
-      - [x] Nuxt Areas
-      - [ ] Nuxt Perfect Scrollbar
-      - [ ] Nuxt Layer Utils
-      - [ ] Nuxt Content Outline
-    - Vue Plugins
-      - [ ] Vue Smart Header
-      - [x] Vue Class Store
-      - [x] Vuex Pathify
-    - Browser Extensions
-      - [ ] WebExt Messaging
-      - [ ] WXT Layers
-      - [ ] WXT Pages
-      - [ ] Extension Bus
-    - JavaScript Libraries
-      - [ ] Tree Lang
-      - [x] Spaceman
-      - [x] Alias HQ
-      - [x] Axios Actions
-      - [ ] Phomemo CLI
-      - [x] State Machine
-      - [x] ES Kit
-      - [x] Outliner
-      - [ ] Package Wiki
-    - Figma
-      - [ ] Figma Select Related
-      - [ ] Figma Messaging
-    - Personal Projects
-      - [ ] Emoji Picker
-      - [ ] Dave Stewart
-      - [x] Likely Logic
-      - [x] Branding Experiment
-    - Blog
-      - [ ] Nuxt IKEA
-      - [ ] Nuxt Data Fetching
-        - add computed / watch for asyncData
-        - add only one asyncData function
+- [ ] Convert to slashless URLs
+- [ ] Update Hyvor Talk 
+
+Archive projects
+
+- [ ] ES Kit
+
+Structure
+
+- Projects
+  - Nuxt Modules
+    - [x] Nuxt Content Assets
+    - [x] Nuxt Areas
+    - [ ] Nuxt Perfect Scrollbar
+    - [ ] Nuxt Layer Utils
+    - [ ] Nuxt Content Outline
+  - Vue Plugins
+    - [ ] Vue Smart Header
+    - [x] Vue Class Store
+    - [x] Vuex Pathify
+  - Browser Extensions
+    - [ ] WebExt Messaging
+    - [ ] WXT Layers
+    - [ ] WXT Pages
+    - [ ] Extension Bus
+  - JavaScript Libraries
+    - [ ] Tree Lang
+    - [x] Spaceman
+    - [x] Alias HQ
+    - [x] Axios Actions
+    - [ ] Phomemo CLI
+    - [x] State Machine
+    - [x] Outliner
+    - [ ] Package Wiki
+  - Figma
+    - [ ] Figma Select Related
+    - [ ] Figma Messaging
+  - Personal Projects
+    - [ ] Dave Stewart
+    - [x] Likely Logic
+    - [x] Branding Experiment
+    - [ ] Emoji Picker
+  - Blog
+    - [ ] Nuxt IKEA
+    - [ ] Nuxt Data Fetching
+      - add computed / watch for asyncData
+      - add only one asyncData function
 
 ## New
 

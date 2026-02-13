@@ -21,7 +21,6 @@ export function useSmoothScroll () {
             event.stopImmediatePropagation()
             element.scrollIntoView({ behavior: 'smooth', block: 'start' })
             window.addEventListener('scrollend', () => {
-              console.log('scroll completed')
               void router.push(path)
             }, { once: true })
           }

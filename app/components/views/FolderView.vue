@@ -5,7 +5,11 @@
       {{ page.description }}
     </p>
     <div class="pageContent">
-      <ContentRenderer v-if="page.body?.children.length" :value="page" />
+      <ContentRenderer
+        v-if="page.body?.children.length"
+        :value="page"
+        class="pageContent__intro"
+      />
       <PageTree :items="data.items" :format="options.format" />
     </div>
   </div>
@@ -36,3 +40,20 @@ const data = computed(() => {
   })
 })
 </script>
+
+<style lang="scss">
+.layout__folder > .pageContent {
+  .pageContent__intro {
+    @include introText;
+
+    font-size: 1.4em;
+    p {
+      margin: .75em 0;
+    }
+  }
+
+  & > .pageTree {
+    margin-top: 3.5rem;
+  }
+}
+</style>

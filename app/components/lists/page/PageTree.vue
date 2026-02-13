@@ -1,6 +1,6 @@
 <template>
   <div
-    :id="`tree-${id}`"
+    :id="id"
     class="pageTree"
     :data-format="format"
     :data-depth="depth"
@@ -20,7 +20,7 @@
     <div v-if="folders.length" class="pageTree__folders">
       <PageTree
         v-for="item in folders"
-        :key="item.path"
+        :key="item.path || item.title"
         :title="item.title"
         :path="item.path"
         :desc="item.description"
@@ -64,7 +64,7 @@ function slugify (text: string) {
     .replace(/^-+|-+$/g, '')
 }
 
-const id = computed(() => props.title ? slugify(props.title) : '')
+const id = computed(() => props.title ? slugify(props.path ?? props.title) : '')
 
 const folders = computed(() => props.items.filter(item => item.type === 'folder'))
 
