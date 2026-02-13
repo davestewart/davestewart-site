@@ -5,15 +5,15 @@
 </template>
 
 <script setup lang="ts">
-import { parseQuery, type SearchQuery } from '@content/stores/search'
+import { parseQuery } from '@content/stores/search'
+import type { SearchQuery } from '@content/types'
 
 const route = useRoute()
 
-function searchFeatured (query: Partial<SearchQuery>, randomize = false) {
-  return searchContent({
+function searchFeatured (query: Partial<SearchQuery>) {
+  return useMetaStore().search({
     ...query,
     sort: 'date',
-    randomize,
     searchPaths: ['/products/', '/projects/', '/work/', '/blog/'],
     excludeDrafts: true,
     hasThumbnail: true,
@@ -23,16 +23,17 @@ function searchFeatured (query: Partial<SearchQuery>, randomize = false) {
 
 const { data } = await useAsyncData('home-thumbs', async () => {
   // user clicked a link
-  if (route.hash.length) {
-    const query = parseQuery(route.hash)
+  if (route.fullPath.includes('?')) {
+    const query = parseQuery(route.fullPath.slice(2))
     return searchFeatured(query)
   }
   // default options
   return searchFeatured({
     tags: ['featured'],
-  }, true)
+    randomize: true,
+  })
 }, {
-  watch: [() => route.hash],
+  watch: [() => route.query],
 })
 </script>
 
