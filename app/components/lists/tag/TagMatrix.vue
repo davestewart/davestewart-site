@@ -41,23 +41,6 @@ const { tagList, tagGroups } = storeToRefs(useMetaStore())
 
 const component = ref('list')
 
-// Valid tags are those that appear in the filtered pages
-/*
-const valid = computed(() => {
-  return props.pages?.reduce((output: string[], page: any) => {
-    const tags = page.frontmatter?.tags || page.tags
-    if (tags?.length) {
-      tags.forEach((tag: string) => {
-        if (!output.includes(tag)) {
-          output.push(tag)
-        }
-      })
-    }
-    return output
-  }, []) || []
-})
-*/
-
 watch(() => props.mode, (value) => {
   if (value && components.includes(value)) {
     component.value = value

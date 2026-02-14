@@ -24,19 +24,24 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   label?: string
   name?: string
   options?: string[]
   modelValue?: string
   count?: number | string
   countState?: number | string
+  toggleable?: boolean
 }>()
 
 const emit = defineEmits(['update:modelValue'])
 
-const click = (val: string) => {
-  emit('update:modelValue', val)
+const click = (option: string) => {
+  const { toggleable, modelValue } = props
+  const value = toggleable && option === modelValue
+    ? ''
+    : option
+  emit('update:modelValue', value)
 }
 </script>
 
@@ -45,8 +50,9 @@ const click = (val: string) => {
   display: flex;
   align-items: center;
   white-space: nowrap;
+  font-family: $titleFont;
+  font-size: 15px;
   color: $textColor;
-  font-size: 14px;
   line-height: 1;
 
   @include md-down {
