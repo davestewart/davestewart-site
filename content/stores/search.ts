@@ -2,7 +2,7 @@ import { getParentPath } from '../utils'
 import type { MetaFolder, MetaItem, MetaPost, SearchFilters, SearchOptions, SearchQuery } from '../types'
 
 // ---------------------------------------------------------------------------------------------------------------------
-// query utilities
+// defaults
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -17,30 +17,61 @@ export const DEFAULT_SEARCH_PATHS = [
 ]
 
 /**
- * Create a default search query
+ * Default search filters
  */
-export function makeSearchFilters (): Required<SearchFilters> {
-  return {
-    text: '',
-    tags: [],
-    textOp: 'and',
-    tagsOp: 'and',
-    group: 'path',
-    path: '',
-    sort: 'date',
-    randomize: false,
-    limit: 0,
-  }
+const DEFAULT_FILTERS: Required<SearchFilters> = {
+  text: '',
+  tags: [],
+  textOp: 'and',
+  tagsOp: 'and',
+  group: 'path',
+  path: '',
+  sort: 'date',
+  randomize: false,
+  limit: 0,
 }
 
-export function makeSearchOptions (): Required<SearchOptions> {
-  return {
-    format: 'image',
-    tagsFilter: 'off',
-    searchPaths: DEFAULT_SEARCH_PATHS,
-    excludeDrafts: true,
-    hasThumbnail: false,
-  }
+/**
+ * Default search options
+ */
+const DEFAULT_OPTIONS: SearchOptions = {
+  format: 'image',
+  tagsFilter: undefined,
+  searchPaths: DEFAULT_SEARCH_PATHS,
+  excludeDrafts: true,
+  hasThumbnail: false,
+}
+
+/**
+ * Create a default search filters object
+ */
+export function makeSearchFilters (): Required<SearchFilters> {
+  return { ...DEFAULT_FILTERS }
+}
+
+/**
+ * Create a default search options object
+ */
+export function makeSearchOptions (): SearchOptions {
+  return { ...DEFAULT_OPTIONS }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// query utilities
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Check if the query has any filtering applied (text or tags)
+ */
+export function isSearchFiltered (query: Partial<SearchQuery>): boolean {
+  return !!(query.text || (query.tags && query.tags.length > 0))
+}
+
+/**
+ * Check if query can be reset (has non-default filter values)
+ */
+export function canResetSearch (query: Partial<SearchQuery>): boolean {
+  return !!(query.text && query.text !== '') || !!(query.tags && query.tags.length > 0)
 }
 
 /**
@@ -126,18 +157,33 @@ export function parseQuery (input: Record<string, any> | string): Partial<Search
 }
 
 /**
- * Clean query by removing default values
+ * Clean query by removing default values and undefined/empty values
  */
-export function cleanQuery (query: SearchQuery): Partial<SearchQuery> {
+export function cleanQuery (query: Partial<SearchQuery>): Partial<SearchQuery> {
   const cleaned: Record<string, any> = {}
-  const defaults = makeSearchFilters()
+  const defaults = { ...DEFAULT_FILTERS, ...DEFAULT_OPTIONS }
 
   for (const key in query) {
     const queryKey = key as keyof SearchQuery
-    // @ts-ignore
-    if (String(query[queryKey]) !== String(defaults[queryKey])) {
-      cleaned[key] = query[queryKey]
+    const value = query[queryKey]
+    const defaultValue = defaults[queryKey]
+
+    // Skip undefined, null, or empty string values
+    if (value === undefined || value === null || value === '') {
+      continue
     }
+
+    // Skip empty arrays
+    if (Array.isArray(value) && value.length === 0) {
+      continue
+    }
+
+    // Skip if value matches default
+    if (String(value) === String(defaultValue)) {
+      continue
+    }
+
+    cleaned[key] = value
   }
 
   return cleaned
@@ -158,7 +204,7 @@ export function queryItems (items: MetaItem[], query: SearchQuery = {}) {
     limit,
   } = query
 
-  // Get all pages
+  // Get all posts
   let posts = items.filter(item => item.type === 'post')
 
   // Filter drafts
@@ -188,8 +234,14 @@ export function queryItems (items: MetaItem[], query: SearchQuery = {}) {
     posts = posts.filter(makeTagsFilter(query.tags, query.tagsOp === 'or'))
   }
 
+  // Match on text, but also test tags for text
   if (query.text) {
-    posts = posts.filter(makeTextFilter(query.text, query.textOp === 'or'))
+    const tags = query.text.toLowerCase().match(/\S+/g) ?? []
+    const matchingPaths = new Set([
+      ...posts.filter(makeTextFilter(query.text, query.textOp === 'or')).map(p => p.path),
+      ...posts.filter(makeTagsFilter(tags, query.tagsOp === 'or')).map(p => p.path),
+    ])
+    posts = posts.filter(p => matchingPaths.has(p.path))
   }
 
   if (query.randomize) {
@@ -226,7 +278,18 @@ export function queryItems (items: MetaItem[], query: SearchQuery = {}) {
 
   // group by date
   if (query.group === 'date') {
-    results = groupBy(posts, item => item.date ? item.date.substring(0, 4) : 'No date')
+    const grouped = groupPosts(posts, item => item.date ? item.date.substring(0, 4) : 'none')
+    results = Object.values(grouped).map((folder) => {
+      const { key, items } = folder
+      return {
+        type: 'folder',
+        title: key === 'none' ? 'No Date' : key,
+        description: '',
+        slug: `year-${key}`,
+        path: '',
+        items,
+      }
+    })
   }
 
   // group by path
@@ -307,11 +370,11 @@ function makeTagsFilter (tags: string[], useOr = false) {
   }
 }
 
-function groupBy<T extends MetaPost, K extends keyof T> (
+function groupPosts<T extends MetaPost, K extends keyof T> (
   pages: T[],
   // eslint-disable-next-line
   key: K | ((item: T) => string),
-): MetaFolder[] {
+) {
   const result: Record<any, MetaPost[]> = {}
   pages.forEach((item) => {
     const groupKey = typeof key === 'function'
@@ -327,10 +390,7 @@ function groupBy<T extends MetaPost, K extends keyof T> (
     .sort()
     .reverse()
     .map(key => ({
-      type: 'folder',
-      path: '',
-      title: key,
-      description: '',
+      key,
       items: result[key] ?? [],
     }))
 }
@@ -340,7 +400,9 @@ function groupBy<T extends MetaPost, K extends keyof T> (
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
- * Replicate legacy tree building logic adapted for Nuxt Content documents
+ * Build tree from filtered items
+ *
+ * Note that parent folders must be pre-filtered for the function to work!
  *
  * @param nodes
  * @param rootPath
@@ -376,27 +438,9 @@ function makeTree (nodes: (MetaFolder | MetaPost)[], rootPath: string): MetaItem
           parent.items = []
         }
         parent.items.push(node)
-        // Auto-promote to folder if it has children
-        if (map[parentPath].type !== 'folder') {
-          // map[parentPath].type = 'folder'
-        }
       }
     }
   })
 
-  // depth-first search where we remove folders with no items
-  // TODO we shouldn't need this when the filtering is correct
-  function pruneEmptyFolders (nodes: MetaItem[]): MetaItem[] {
-    return nodes
-      .filter((node: MetaItem) => {
-        if (node.type === 'folder') {
-          const folder = node as MetaFolder
-          folder.items = pruneEmptyFolders(folder.items)
-          return folder.items.length > 0
-        }
-        return true
-      })
-  }
-
-  return pruneEmptyFolders(tree)
+  return tree
 }

@@ -1,4 +1,5 @@
 import { serverQueryContent } from '#content/server'
+import { slugify } from '../../../utils'
 import type { MetaFolder, MetaItemRaw, MetaPost } from '../../../types'
 
 export default defineEventHandler(async (event) => {
@@ -13,9 +14,9 @@ export default defineEventHandler(async (event) => {
       'order',
       'date',
       'status',
+      'github',
       'tags',
       'media',
-      'github',
     ])
     .where({
       _extension: 'md',
@@ -52,6 +53,7 @@ export default defineEventHandler(async (event) => {
     .map((item) => {
       if (item.type === 'folder') {
         return clean({
+          slug: `folder-${slugify(item._path!)}`,
           path: item._path!,
           type: item.type,
           title: item.title ?? '',

@@ -37,7 +37,7 @@ export interface SearchOptions {
   // whether to include only items with thumbnails
   hasThumbnail?: boolean
   // whether to show the tag filter
-  tagsFilter?: 'off' | 'list' | 'groups'
+  tagsFilter?: 'list' | 'groups'
   // format to display results in - image (default) or text
   format?: 'image' | 'text'
 }

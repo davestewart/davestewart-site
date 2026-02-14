@@ -1,6 +1,6 @@
 <template>
   <div
-    :id="id"
+    :id="slug"
     class="pageTree"
     :data-format="format"
     :data-depth="depth"
@@ -20,7 +20,8 @@
     <div v-if="folders.length" class="pageTree__folders">
       <PageTree
         v-for="item in folders"
-        :key="item.path || item.title"
+        :key="item.slug"
+        :slug="item.slug"
         :title="item.title"
         :path="item.path"
         :desc="item.description"
@@ -45,6 +46,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<{
+  slug?: string
   title?: string
   path?: string
   desc?: string
@@ -53,18 +55,10 @@ const props = withDefaults(defineProps<{
   depth?: number
 }>(), {
   items: () => [],
+  slug: '',
   format: 'image',
   depth: 0,
 })
-
-function slugify (text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^\w]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-const id = computed(() => props.title ? slugify(props.path ?? props.title) : '')
 
 const folders = computed(() => props.items.filter(item => item.type === 'folder'))
 

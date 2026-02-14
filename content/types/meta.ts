@@ -28,6 +28,7 @@ export type MetaItem = MetaFolder | MetaPost
  */
 export interface MetaFolder {
   type: 'folder'
+  slug: string
   path: string
   title: string
   description?: string

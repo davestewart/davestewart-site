@@ -47,6 +47,7 @@
                 :count="query.tags.length ? query.tags.length : ''"
                 :count-state="options.showTags ? 0 : 1"
                 :options="options.filter"
+                toggleable
               />
             </div>
 
@@ -102,15 +103,16 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { onKeyStroke, useLocalStorage } from '@vueuse/core'
 import SlideUpDown from 'vue-slide-up-down'
-
 import {
+  canResetSearch,
   cleanQuery,
+  isSearchFiltered,
   makeSearchFilters,
   parseQuery,
-
 } from '@content/stores/search'
 import { UiIcon } from '#components'
-import type { SearchQuery } from '@content/types'
+import type { SearchOptions, SearchFilters } from '@content/types'
+import type { LocationQueryRaw } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
@@ -122,31 +124,34 @@ const store = useMetaStore()
 
 const searchInput = ref<HTMLElement | null>(null)
 
-type StoredOptions = Required<Pick<SearchQuery, 'group' | 'format' | 'tagsFilter'>>
+type StoredOptions = {
+  group: NonNullable<SearchFilters['group']>
+  format: NonNullable<SearchOptions['format']>
+  tagsFilter?: SearchOptions['tagsFilter']
+}
 
 const storedOptions = useLocalStorage<StoredOptions>('searchOptions', {
   group: 'path',
   format: 'image',
-  tagsFilter: 'off',
+  tagsFilter: undefined,
 })
 
-const query = reactive<Required<SearchFilters & StoredOptions>>({
+const query = reactive({
   ...makeSearchFilters(),
   ...storedOptions.value,
   ...parseQuery(route.query),
 })
 
 const options = reactive({
-  filter: ['off', 'list', 'groups'],
+  filter: ['list', 'groups'],
   group: ['path', 'date'],
   format: ['image', 'text'],
-  showTags: query.tagsFilter !== 'off',
+  showTags: !!query.tagsFilter,
 })
 
 watch(query, (val) => {
   router
-    // TODO fix this any
-    .replace({ path: '/search/', query: cleanQuery(val) as any })
+    .replace({ path: '/search/', query: cleanQuery(val) as LocationQueryRaw })
     .catch((err) => {
       console.log(err)
     })
@@ -159,24 +164,16 @@ watch(query, (val) => {
   }
 
   // Options sync
-  options.showTags = query.tagsFilter !== 'off'
+  options.showTags = !!query.tagsFilter
 }, { deep: true })
 
 // ---------------------------------------------------------------------------------------------------------------------
 // flags
 // ---------------------------------------------------------------------------------------------------------------------
 
-const hasTags = computed(() => {
-  return Array.isArray(query.tags) && query.tags.length > 0
-})
+const isFiltered = computed(() => isSearchFiltered(query))
 
-const isFiltered = computed(() => {
-  return query.text || hasTags.value
-})
-
-const canReset = computed(() => {
-  return query.text !== '' || hasTags.value
-})
+const canReset = computed(() => canResetSearch(query))
 
 // ---------------------------------------------------------------------------------------------------------------------
 // derived
@@ -228,13 +225,10 @@ const results = computed(() => {
 // ---------------------------------------------------------------------------------------------------------------------
 
 function reset () {
-  const def = {
-    ...makeSearchFilters(),
-    ...makeSearchOptions(),
-  }
-  query.text = def.text
-  query.tags = def.tags
-  query.tagsFilter = def.tagsFilter
+  const defaults = makeSearchFilters()
+  query.text = defaults.text
+  query.tags = defaults.tags
+  query.tagsFilter = undefined
 }
 
 function toggleTag (tag: string) {
@@ -264,11 +258,13 @@ onMounted(() => {
   const hash = useRoute().hash
   if (hash) {
     const slug = hash.substring(1)
+    let prefix = 'folder'
     if (/^\d{4}$/.test(slug)) {
       query.group = 'date'
+      prefix = 'year'
     }
     setTimeout(() => {
-      document.querySelector(`#tree-${slug}`)?.scrollIntoView({ behavior: 'smooth' })
+      document.querySelector(`#${prefix}-${slug}`)?.scrollIntoView({ behavior: 'smooth' })
     }, 750)
   }
   nextTick(() => {
