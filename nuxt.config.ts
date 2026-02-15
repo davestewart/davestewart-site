@@ -49,6 +49,10 @@ export default defineNuxtConfig({
     '~/assets/styles/index.scss',
   ],
 
+  runtimeConfig: {
+    githubToken: process.env.GITHUB_TOKEN,
+  },
+
   dir: {
     public: resolve('./public'),
   },
