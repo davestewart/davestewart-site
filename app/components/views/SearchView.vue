@@ -113,6 +113,7 @@ import {
 import { UiIcon } from '#components'
 import type { SearchOptions, SearchFilters } from '@content/types'
 import type { LocationQueryRaw } from 'vue-router'
+import useAnchor from '~/composables/useAnchor'
 
 const route = useRoute()
 const router = useRouter()
@@ -255,17 +256,11 @@ onKeyStroke('Escape', () => {
 })
 
 onMounted(() => {
-  const hash = useRoute().hash
-  if (hash) {
-    const slug = hash.substring(1)
-    let prefix = 'folder'
-    if (/^\d{4}$/.test(slug)) {
-      query.group = 'date'
-      prefix = 'year'
-    }
-    setTimeout(() => {
-      document.querySelector(`#${prefix}-${slug}`)?.scrollIntoView({ behavior: 'smooth' })
-    }, 750)
+  const { prefix } = useAnchor()
+  if (prefix === 'year') {
+    query.group = 'date'
+    options.showTags = false
+    query.tagsFilter = undefined
   }
   nextTick(() => {
     searchInput.value?.focus()
@@ -334,6 +329,10 @@ onMounted(() => {
 
   &__tags-container {
     overflow: hidden;
+  }
+
+  &__nav {
+    margin: 2rem 0 2rem;
   }
 
   &__results {

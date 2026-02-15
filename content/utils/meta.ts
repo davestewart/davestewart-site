@@ -1,22 +1,24 @@
+import { slugify } from '../utils'
 import type { MetaItem, TocLink } from '../types'
 
 /**
  * Convert MetaItems to TocLinks
  */
 export function metaItemsToToc (items: MetaItem[]) {
-  function makeLinks (items: MetaItem[], depth: number = 1): TocLink[] {
+  function makeLinks (items: MetaFolder[], depth: number = 1): TocLink[] {
     if (depth > searchDepth) {
       searchDepth = depth
     }
     return items.map((item) => {
       const link: TocLink = {
-        id: item.path.replace(/^\/|\/$/g, '').replace(/\//g, '-'),
+        id: item.slug,
         depth,
         text: item.title || '',
       }
 
-      if (('items' in item) && item.items.length > 0 && item.items.some(item => item.type === 'folder')) {
-        link.children = makeLinks(item.items, depth + 1)
+      const folders = item.items?.filter(item => item.type === 'folder')
+      if (folders?.length) {
+        link.children = makeLinks(folders, depth + 1)
       }
 
       return link
@@ -24,7 +26,8 @@ export function metaItemsToToc (items: MetaItem[]) {
   }
 
   let searchDepth = 2
-  const links = makeLinks(items, 2)
+  const folders = items.filter(item => item.type === 'folder')
+  const links = makeLinks(folders, 2)
 
   return {
     depth: searchDepth,

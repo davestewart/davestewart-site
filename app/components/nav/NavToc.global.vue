@@ -41,8 +41,6 @@ function makeHeaders (toc: Toc): HeaderItem[] {
 
 <script setup lang="ts">
 interface Props {
-  // optional page headers to render (defaults to the containing page)
-  headers?: HeaderItem[]
   // change the text which precedes the links
   prompt?: string
   // takes a number, or a comma-delimited string of levels, i.e. 2,3,4
@@ -59,6 +57,8 @@ interface Props {
   type?: 'list' | 'tree' | 'auto'
   // tips for each level
   tips?: Record<string, string>
+  // optional toc to render (defaults to the containing page)
+  toc?: Toc
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -72,10 +72,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const items = computed(() => {
-  if (props.headers) {
-    return props.headers
-  }
-  const toc = usePageStore().page?.body?.toc
+  const toc = props.toc ?? usePageStore().page?.body?.toc
   return toc
     ? makeHeaders(toc)
     : []

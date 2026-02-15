@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import useAnchor from '~/composables/useAnchor'
 
 defineProps<{
   page: PageContent
@@ -38,6 +39,10 @@ const data = computed(() => {
     path: store.path,
     group: 'path',
   })
+})
+
+onMounted(() => {
+  useAnchor()
 })
 </script>
 

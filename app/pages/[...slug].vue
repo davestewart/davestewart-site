@@ -1,6 +1,6 @@
 <template>
   <component
-    :is="getViewComponent(data)"
+    :is="component"
     v-if="data"
     :page="data"
   />
@@ -15,21 +15,20 @@ import NotFound from '~/components/views/404View.vue'
 const route = useRoute()
 const store = usePageStore()
 
-/**
- * All content pages
- */
 const { data, error } = await useAsyncData(`page-${route.path}`, () => {
   return store.loadPage(route.path)
 })
 
-usePageSeo(data.value)
-
-const getViewComponent = (content: PageContent | undefined) => {
-  if (error.value || !content) {
+const component = computed(() => {
+  if (error.value || !data.value) {
+    console.warn('Not Found', {
+      error: error.value,
+      data: data.value,
+    })
     return NotFound
   }
 
-  switch (content.type) {
+  switch (data.value.type) {
     case 'folder':
       return FolderView
     case 'post':
@@ -37,5 +36,7 @@ const getViewComponent = (content: PageContent | undefined) => {
     default:
       return PageView
   }
-}
+})
+
+usePageSeo(data.value)
 </script>

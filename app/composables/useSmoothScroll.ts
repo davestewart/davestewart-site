@@ -21,7 +21,7 @@ export function useSmoothScroll () {
             event.stopImmediatePropagation()
             element.scrollIntoView({ behavior: 'smooth', block: 'start' })
             window.addEventListener('scrollend', () => {
-              void router.push(path)
+              void router.push(path.replace(/#(folder|year)-/, '#'))
             }, { once: true })
           }
         }
