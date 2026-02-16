@@ -28,7 +28,7 @@
     </div>
 
     <!-- navigation -->
-    <div class="mediaGallery__nav">
+    <div v-if="images.length > 1" class="mediaGallery__nav">
       <!-- prev -->
       <span
         class="mediaGallery__navButton mediaGallery__navPrev"
@@ -39,7 +39,7 @@
       <div class="mediaGallery__pagination">
         <a
           v-for="(image, i) in images"
-          :key="i"
+          :key="image.src"
           :class="{ 'mediaGallery__page--active': index === i }"
           class="mediaGallery__page"
           @click.prevent="index = i"
@@ -100,10 +100,17 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const media = props.sources
-  ? props.sources!
+  ? props.sources
   : resolveMedia(props.media ?? 'gallery')
 
-const images = useMedia(media) as MediaItem[]
+const images = computed(() => {
+  const images = useMedia(media)
+  return Array.isArray(images)
+    ? images
+    : images
+      ? [images]
+      : []
+})
 
 const index = ref(0)
 const loaded = ref<number[]>([])
@@ -112,27 +119,24 @@ const loading = ref(props.keepAlive)
 const hasCaption = computed(() => {
   return props.captions === false || props.captions === 0
     ? false
-    : images.some((image: MediaItem) => image.text)
+    : images.value?.some((image: MediaItem) => image.text)
 })
 
 const currentImage = computed(() => {
-  const imgs = Array.isArray(images) ? images : []
-  return imgs[index.value]
+  return images.value[index.value]
 })
 
 const captionText = computed(() => currentImage.value?.text)
 const captionLink = computed(() => currentImage.value?.href)
 
 const containerStyle = computed(() => {
-  const image = Array.isArray(images) ? images.at(-1) : images
-  return `${image?.style}`
+  return `${images.value.at(-1)?.style}`
 })
 
 const widthStyle = computed(() => {
-  const image = Array.isArray(images) ? images.at(-1) : images
   const maxWidth = props.width
     ? props.width
-    : image?.width + 'px'
+    : images.value.at(-1)?.width + 'px'
   return maxWidth
     ? `max-width: ${maxWidth}; margin: inherit auto;`
     : ''
@@ -159,15 +163,15 @@ function renderImage (i: number) {
 }
 
 function next () {
-  index.value = offset(index.value, 1, images, !!props.wrap)
+  index.value = offset(index.value, 1, images.value, !!props.wrap)
 }
 
 function prev () {
-  index.value = offset(index.value, -1, images, !!props.wrap)
+  index.value = offset(index.value, -1, images.value, !!props.wrap)
 }
 
 function view () {
-  if (images.length && rootEl.value) {
+  if (images.value.length && rootEl.value) {
     usePreview().show(rootEl.value)
   }
 }
@@ -227,8 +231,7 @@ onMounted(() => {
   if (props.keepAlive) {
     nextTick(() => loading.value = false)
     const savedIndex = storage.get(storageKey.value)
-    const imgs = Array.isArray(images) ? images : []
-    if (typeof savedIndex === 'number' && savedIndex >= 0 && savedIndex < imgs.length) {
+    if (typeof savedIndex === 'number' && savedIndex >= 0 && savedIndex < images.value.length) {
       index.value = savedIndex
     }
   }
