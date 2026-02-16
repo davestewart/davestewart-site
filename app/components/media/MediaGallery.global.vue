@@ -401,6 +401,9 @@ $colorHover: #888;
     margin: 1rem 0 0;
     padding: 1rem 0 0;
     text-align: center;
+    font-family: $titleFont;
+    font-size: 1.1rem;
+    line-height: 1.6;
     color: $accentColor;
   }
 

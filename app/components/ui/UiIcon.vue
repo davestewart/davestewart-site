@@ -5,6 +5,8 @@ export type Icon =
   | 'share'
   | 'share-alt'
   | 'up'
+  | 'arrow-left'
+  | 'arrow-right'
   | 'close'
   | 'tag'
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class="homeThumbs">
-    <ThumbnailWall v-if="data" :pages="data.items" />
+    <ThumbnailCarousel v-if="data" v-model="carouselIndex" :pages="data" />
   </div>
 </template>
 
@@ -18,30 +18,42 @@ function searchFeatured (query: Partial<SearchQuery>) {
     excludeDrafts: true,
     hasThumbnail: true,
     randomize: true,
-    limit: 3,
+    // limit: 6,
   })
 }
 
-const { data } = await useAsyncData('home-thumbs', async () => {
-  // user clicked a link
-  if (route.fullPath.includes('?')) {
-    const query = parseQuery(route.fullPath.slice(2))
-    return searchFeatured(query)
-  }
-  // default options
-  return searchFeatured({
-    tags: ['featured'],
-    randomize: true,
-  })
-}, {
-  watch: [() => route.query],
-})
+const carouselIndex = useState('home-thumbs-carousel-index', () => 0)
+
+const queryKey = computed(() => JSON.stringify(route.query))
+
+const { data: result } = await useAsyncData(
+  () => `home-thumbs-${queryKey.value}`,
+  async () => {
+    // user clicked a link
+    if (route.fullPath.includes('?')) {
+      const query = parseQuery(route.fullPath.slice(2))
+      return searchFeatured(query)
+    }
+    // default options
+    return searchFeatured({
+      tags: ['featured'],
+      randomize: true,
+    })
+  },
+  {
+    getCachedData: (key) => {
+      return useNuxtApp().static.data[key] || useNuxtApp().payload.data[key]
+    },
+  },
+)
+
+const data = computed(() => result.value?.items || [])
 </script>
 
 <style lang="scss">
 .homeThumbs {
-  .thumbnailWall {
-    margin: 3rem 0;
+  .thumbnailCarousel {
+    margin: 2rem 0;
   }
 }
 </style>
