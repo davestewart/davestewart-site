@@ -56,12 +56,13 @@ provide('handleTagClick', handleTagClick)
 
 <style lang="scss">
 .searchTags {
+  font-family: $titleFont;
 
   &__groups {
     display: flex;
     flex-direction: column;
     padding-left: 4px;
-    gap: 4px;
+    gap: 3px;
     @include md-down {
       gap: 4px;
     }
@@ -91,6 +92,7 @@ provide('handleTagClick', handleTagClick)
 
   .tagList__tag {
     display: inline-block;
+    font-size: 15px;
     @include md-up {
       margin: .1em .1em;
     }
@@ -98,6 +100,7 @@ provide('handleTagClick', handleTagClick)
 
   .tagGroup {
     display: flex;
+    align-items: center;
     font-size: 12px;
 
     label {

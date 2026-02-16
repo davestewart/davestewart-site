@@ -13,11 +13,12 @@ const route = useRoute()
 function searchFeatured (query: Partial<SearchQuery>) {
   return useMetaStore().search({
     ...query,
-    sort: 'date',
+    // sort: 'date',
     searchPaths: ['/products/', '/projects/', '/work/', '/blog/'],
     excludeDrafts: true,
     hasThumbnail: true,
-    limit: 6,
+    randomize: true,
+    limit: 3,
   })
 }
 

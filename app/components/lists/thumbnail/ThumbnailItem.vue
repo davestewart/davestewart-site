@@ -114,7 +114,7 @@ const description = computed(() => {
   p {
     margin: 0;
     line-height: 1.5;
-    font-size: .8rem;
+    font-size: .825rem;
     opacity: .6;
   }
 

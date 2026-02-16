@@ -51,6 +51,7 @@ defineExpose({ focus })
   &__text {
     width: 100%;
     min-width: 50px;
+    font-family: $bodyFont;
   }
 
   &__clear {

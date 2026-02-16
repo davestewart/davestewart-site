@@ -85,7 +85,8 @@ const show = () => {
 
 <style lang="scss">
 .pageShare {
-  display: inline-block;
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
 
   ::selection {

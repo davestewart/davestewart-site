@@ -28,6 +28,7 @@
   - [x] Add scroll-to-date
   - [x] Fix type to search
   - [x] Change sort to group
+  - [x] Remove "off" and make radio buttons toggle to off
   - [ ] Add groups count
 
 ### UX
@@ -76,6 +77,8 @@
   - jittery scrolling
     - Multiflow
   - bounces to top twice on scroll up
+- [ ] Add image zoom / preview component
+- [ ] Add `> [!Alert]` component https://v2.content.nuxt.com/usage/markdown#props
 
 ### Other
 
@@ -89,6 +92,9 @@ Formatting
 
 - [x] Code highlighting theme
 - [x] Fix Shiki theming
+- [x] Home Page font size and leading to 1.5em (match with folders)
+- [x] Search page should use title font for tags and UI toggles
+- [x] Increase margin on PageList items
 
 Components
 
@@ -96,12 +102,6 @@ Components
 - [x] re-implement folder `toc` property
   - [x] Do manually in the page
   - [x] Provide a way for TOC to get tree items
-- [ ] Add "intro" content to folders
-- [ ] Add search to blog folder
-- [ ] Add gallery to some folders
-  - [ ] Projects
-  - [ ] Blog
-  - [ ] Archive
 
 Layout
 
@@ -109,13 +109,6 @@ Layout
 - [x] Add intersection observer to Gallery keyboard control
 
 ## Nuxt Content
-
-### Content
-
-- [ ] Landing pages don't have intro paragraphs
-- [ ] Check all folder text; some of it is very out of date
-- [ ] Missing alt text on images
-- [ ] Fix RSS page
 
 ### Data
 
@@ -133,11 +126,11 @@ Layout
 
 - [x] Move all functions to store
 - [ ] Review post filters
-  - Review frontmatter, consider hidden: true
-  - Reconsider all use cases
-    - `draft`
-    - `unlisted`
-    - could use `navigation: false` for this (https://v2.content.nuxt.com/usage/markdown#front-matter)
+  - Review frontmatter
+    - `draft` -> `draft: true`
+    - `unlisted` -> `navigation: false`
+    - `visibility` -> delete
+    - `preview` -> Just use component in the page
 - [x] Consider moving filtering to the backend
 - [x] Review how Content native search works
 
@@ -173,6 +166,20 @@ Home Page
 
 - [x] Combine home and bio
 - [ ] Figure out design
+
+### Content
+
+Text
+
+- [ ] Landing pages don't have intro paragraphs
+- [ ] Check all folder text; some of it is very out of date
+- [ ] Missing alt text on images
+- [ ] Fix RSS page
+- [ ] Add search to blog folder
+- [ ] Add gallery to some folders
+  - [ ] Projects
+  - [ ] Blog
+- [ ] Archive
 
 Tags
 

@@ -33,6 +33,7 @@ const year = computed(() => props.date?.slice(0, 4) || '')
   padding: .3em .5em;
   white-space: nowrap;
   color: black !important;
+  font-weight: 600;
 
   &:hover span {
     text-decoration: underline;

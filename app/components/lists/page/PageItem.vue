@@ -26,6 +26,8 @@ defineProps<{
     margin: 0;
     position: relative;
     line-height: 1.6em;
+    font-family: $titleFont;
+    font-size: 1.1em;
 
     // for focus outline
     &:focus {
@@ -44,7 +46,7 @@ defineProps<{
   &__desc {
     display: block;
     margin: 0;
-    font-size: .8em;
+    font-size: .85em;
     color: #888888;
     line-height: 1.4em;
   }

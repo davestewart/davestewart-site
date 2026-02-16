@@ -51,7 +51,6 @@ onMounted(() => {
   .pageContent__intro {
     @include introText;
 
-    font-size: 1.4em;
     p {
       margin: .75em 0;
     }

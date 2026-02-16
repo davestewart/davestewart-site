@@ -31,9 +31,13 @@ $widthOuter: calc(#{$widthPage} + #{$widthAside * 2} + #{$widthGap * 2});
 
 // $font
 $titleFont: europa, sans;
-$bodyFont: 'Open Sans', Roboto, 'SF Pro', sans-serif;
 $codeFont: 'JetBrains Mono', monospaced;
 $quoteFont: Sanchez, Garamond, Times, serif;
+
+$bodyFont: 'Noto Sans', 'Open Sans', Roboto, 'SF Pro', sans-serif;
+$bodySize: 15px;
+$bodyWeight: 400;
+$bodyLeading: 1.8;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // MIXINS
@@ -99,7 +103,7 @@ $quoteFont: Sanchez, Garamond, Times, serif;
 }
 
 @mixin introText {
-  font-size: 1.7rem;
+  font-size: 1.4rem;
   line-height: 1.4em !important;
   font-family: $titleFont !important;
   font-weight: 500;

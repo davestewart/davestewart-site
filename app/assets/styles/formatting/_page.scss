@@ -8,9 +8,8 @@
 
 body {
   font-family: $bodyFont;
-  //font-size: 16px; // Palanquin
-  font-size: 15px; // Open Sans
-  font-weight: 400;
+  font-weight: $bodyWeight;
+  font-size: $bodySize;
   color: $textColor;
 
   -webkit-font-smoothing: antialiased;
@@ -90,7 +89,7 @@ em strong {
 .pageContent {
 
   margin-bottom: 3rem;
-  line-height: 1.7; // Open Sans
+  line-height: $bodyLeading;
 
   &--bottom {
     margin-top: 3rem;
