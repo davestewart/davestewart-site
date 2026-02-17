@@ -50,20 +50,29 @@ export function usePageSeo (page: Partial<PageContent> | undefined) {
     ],
   })
 
-  const payload = {
-    ogSiteName: 'Dave Stewart',
+  useSeoMeta({
+    // basic
     title: title.value,
-    ogTitle: title.value,
     description: description.value,
+
+    // open graph
+    ogTitle: title.value,
     ogDescription: description.value,
-    ogUrl: url,
+    ogSiteName: 'Dave Stewart',
     ogImage: image.value.url,
     ogImageWidth: image.value.width,
     ogImageHeight: image.value.height,
-    twitterCard: 'summary_large_image' as any,
-    ogArticlePublishedTime: time,
-    ogType: type as any,
-  }
+    ogType: type,
+    ogUrl: url,
 
-  useSeoMeta(payload)
+    // twitter
+    twitterTitle: title.value,
+    twitterDescription: description.value,
+    twitterImage: image.value.url,
+    twitterCard: 'summary_large_image',
+
+    // article
+    articlePublishedTime: time,
+    articleAuthor: ['Dave Stewart'],
+  })
 }
