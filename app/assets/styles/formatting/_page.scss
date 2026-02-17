@@ -91,6 +91,14 @@ em strong {
   margin-bottom: 3rem;
   line-height: $bodyLeading;
 
+  @include sm {
+    &__intro {
+      p:nth-child(2) {
+        display: none;
+      }
+    }
+  }
+
   &--bottom {
     margin-top: 3rem;
   }
