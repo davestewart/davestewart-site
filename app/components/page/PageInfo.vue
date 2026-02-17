@@ -2,7 +2,7 @@
   <UiControls class="pageInfo">
     <PageDate v-if="page.date" :date="page.date" />
     <PageStats v-if="page.path?.startsWith('/blog/') && page.readingTime" v-bind="page.readingTime" />
-    <PageShare v-if="isVisible(page)" :page="page" />
+    <PageShare v-if="isVisible(page)" :page="page" class="only-md-up" />
     <Shield v-if="page.github" :github="page.github" class="only-md-up" />
     <TagList v-if="page.tags" :tags="page.tags" />
   </UiControls>
@@ -28,6 +28,12 @@ function isVisible (post: PageContent) {
 
   .shield {
     padding: 0 18px;
+  }
+
+  .tagList {
+    @include sm {
+      display: block;
+    }
   }
 }
 </style>

@@ -31,6 +31,13 @@
   - [x] Remove "off" and make radio buttons toggle to off
   - [ ] Add groups count
 
+Refactor page and meta
+  - [ ] Refactor page store / loading
+  - [ ] Pass data via props / inject
+  - [ ] Move search to services
+  - [ ] Move meta to services
+  - [ ] Consider _passing_ images to gallery?
+
 ### UX
 
 - [ ] Website presentation prefs
@@ -125,12 +132,12 @@ Layout
 ### Content Store
 
 - [x] Move all functions to store
-- [ ] Review post filters
+- [x] Review post filters
   - Review frontmatter
-    - `draft` -> `draft: true`
-    - `unlisted` -> `navigation: false`
-    - `visibility` -> delete
-    - `preview` -> Just use component in the page
+    - [x] `draft` -> `draft: true`
+    - [x] `unlisted` -> `navigation: false`
+    - [x] `visibility` -> delete
+    - [x] `preview` -> Just use component in the page
 - [x] Consider moving filtering to the backend
 - [x] Review how Content native search works
 
@@ -183,7 +190,7 @@ Text
 
 Tags
 
-- [ ] Add tags to blog posts
+- [x] Add tags to blog posts
 
 ### Structure
 
@@ -219,9 +226,9 @@ Structure
     - [x] Vue Class Store
     - [x] Vuex Pathify
   - Browser Extensions
-    - [ ] WebExt Messaging
     - [ ] WXT Layers
     - [ ] WXT Pages
+    - [ ] WebExt Messaging
     - [ ] Extension Bus
   - JavaScript Libraries
     - [ ] Tree Lang
@@ -245,6 +252,11 @@ Structure
     - [ ] Nuxt Data Fetching
       - add computed / watch for asyncData
       - add only one asyncData function
+  - Nuxt (new Nuxt section)
+    - [ ] Nuxt auto-import
+      [ ] Nuxt data fetching
+      [ ] Nuxt layers
+
 
 ## New
 

@@ -372,6 +372,10 @@ onMounted(() => {
     //margin-left: -1rem;
   }
 
+  @include sm {
+    zoom: 1.1;
+  }
+
   &__text {
     padding-right: 1rem;
     padding-left: 0;

@@ -2,8 +2,6 @@ import { defineNitroPlugin } from 'nitropack/runtime'
 import { ParsedContent } from '@nuxt/content'
 import { isWithinDays } from '../../../app/utils/time'
 
-import { PostStatus } from '../../types'
-
 // ---------------------------------------------------------------------------------------------------------------------
 // helpers
 // ---------------------------------------------------------------------------------------------------------------------
@@ -25,9 +23,6 @@ function setType (file: ParsedContent) {
     else if (file.layout === 'file') {
       file.type = 'file'
     }
-    else if (file._file?.endsWith('/captions.yaml')) {
-      file.type = 'captions'
-    }
     else if (file._extension === 'md') {
       file.type = 'post' // Default to post
     }
@@ -46,33 +41,26 @@ function setDate (file: any) {
  * Set the visibility status so it can be omitted from production
  */
 function setStatus (file: ParsedContent) {
-  const { layout, date, visibility } = file // hidden, preview
+  const { layout, date, navigation } = file // hidden, preview
 
   // default status
   file.status = ''
 
   // add status to posts (files without layout)
   if (!layout) {
-    if (visibility === PostStatus.HIDDEN) {
-      file.status = PostStatus.HIDDEN
-    }
-    else if (visibility === PostStatus.UNLISTED) {
-      file.status = PostStatus.UNLISTED
-    }
-    else if (visibility === PostStatus.PREVIEW) {
-      file.status = PostStatus.PREVIEW
-      file.date = today.replace('T00', 'T01')
+    if (navigation === false) {
+      file.status = 'unlisted'
     }
     else if (date) {
       if (date > today) {
-        file.status = PostStatus.SCHEDULED
+        file.status = 'scheduled'
       }
       else if (isWithinDays(file.date, 90)) {
-        file.status = PostStatus.NEW
+        file.status = 'new'
       }
     }
     else {
-      file.status = PostStatus.DRAFT
+      file.status = 'draft'
     }
   }
 }
@@ -104,11 +92,13 @@ function setContent (file: ParsedContent) {
 
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('content:file:afterParse' as any, (file: any) => {
-    setPath(file)
-    setType(file)
-    setStatus(file)
-    setDate(file)
-    setPermalink(file)
-    setContent(file)
+    if (file._extension === 'md') {
+      setPath(file)
+      setType(file)
+      setStatus(file)
+      setDate(file)
+      setPermalink(file)
+      setContent(file)
+    }
   })
 })

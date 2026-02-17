@@ -82,7 +82,6 @@ html {
 }
 
 .siteHeader {
-  font-family: $titleFont;
   user-select: none;
 
   &__el {

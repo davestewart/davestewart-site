@@ -6,20 +6,19 @@
       class="navSections__section"
       :data-name="section.name.toLowerCase()"
     >
-      <div v-if="headers" class="navSections__header">
-        {{ section.name }}
+      <div class="navSections__items">
+        <NuxtLink
+          v-for="link in section.links"
+          :key="link.path"
+          :to="link.path"
+          :target="link.path.startsWith('http') ? '_blank' : undefined"
+          class="navSections__item"
+          @click="$emit('click')"
+        >
+          <span class="navSections__text">{{ link.title }}</span>
+          <span class="navSections__desc">{{ link.description }}</span>
+        </NuxtLink>
       </div>
-      <NuxtLink
-        v-for="link in section.links"
-        :key="link.path"
-        :to="link.path"
-        :target="link.path.startsWith('http') ? '_blank' : undefined"
-        class="navSections__item"
-        @click="$emit('click')"
-      >
-        <span class="navSections__text">{{ link.title }}</span>
-        <span class="navSections__desc">{{ link.description }}</span>
-      </NuxtLink>
     </div>
   </nav>
 </template>
@@ -56,6 +55,7 @@ const { sections } = useMetaStore()
     &__section {
       border-bottom: 1px solid $grey-lightest;
       padding: .5rem 0;
+      min-width: 25%;
 
       &:first-child {
         padding-top: 0;
@@ -86,6 +86,15 @@ const { sections } = useMetaStore()
     }
   }
 
+  &__items {
+    display: flex;
+    flex-direction: column;
+
+    @include sm {
+      gap: .5rem;
+    }
+  }
+
   // ---------------------------------------------------------------------------------------------------------------------
   // items
   // ---------------------------------------------------------------------------------------------------------------------
@@ -93,7 +102,6 @@ const { sections } = useMetaStore()
   &__item {
     display: block;
     padding: .5rem !important;
-    margin: 0 0 .5rem;
     border-radius: 3px;
 
     @media screen and (max-height: 600px) {
@@ -118,8 +126,15 @@ const { sections } = useMetaStore()
   }
 
   &__desc {
-    font-size: .75em;
+    display: block;
+    margin-top: .25rem;
+    font-size: .8rem;
+    line-height: 1.3;
     color: $grey;
+
+    @include sm {
+      font-size: .9rem;
+    }
   }
 
   a.router-link-exact-active[href="/"],
@@ -132,7 +147,7 @@ const { sections } = useMetaStore()
   }
 
   a span {
-    margin: 0;
+    //margin: 0;
   }
 }
 </style>

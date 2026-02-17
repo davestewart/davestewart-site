@@ -36,13 +36,30 @@ export default defineEventHandler(async (event) => {
 
   // process final items array
   return items
-    // filter out drafts and unlisted items
     .filter((item) => {
       if (mode === 'production') {
-        if (item.type === 'post') {
-          return item.date && (!item.status || !['draft', 'unlisted', 'hidden'].includes(item.status))
+        // keep folders
+        if (item.type === 'folder') {
+          return true
         }
+        // filter posts
+        if (item.type === 'post') {
+          // skip posts with no date (implicit draft or intentionally hidden, like home)
+          if (!item.date) {
+            return false
+          }
+          // skip drafts, unlisted, and scheduled
+          if (item.status === 'draft' || item.status === 'unlisted' || item.status === 'scheduled') {
+            return false
+          }
+          // keep all other posts (scheduled, new)
+          return true
+        }
+        // skip anything else (showcase, etc)
+        return false
       }
+
+      // in dev, return everything
       return true
     })
 

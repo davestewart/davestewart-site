@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="previewInfo">
+  <div class="previewInfo">
     <blockquote>
       <h2>This is a preview post!</h2>
       <p>That means I'm still working on it, and I'd love your feedback:</p>
@@ -17,25 +17,6 @@
     </blockquote>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { isProd } from '~/utils/config'
-
-import { PostStatus } from '@content/types'
-
-const props = defineProps<{
-  page: PageContent
-}>()
-
-const show = ref(false)
-
-onMounted(() => {
-  if (isProd && props.page?.status === PostStatus.PREVIEW) {
-    show.value = true
-  }
-})
-</script>
 
 <style lang="scss">
 .previewInfo {

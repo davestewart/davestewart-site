@@ -6,7 +6,6 @@
       {{ page.description }}
     </p>
     <PageInfo v-if="isPost" :page="page" />
-    <PreviewInfo :page="page" />
     <ContentRendererMarkdown
       :value="page"
       class="pageContent"

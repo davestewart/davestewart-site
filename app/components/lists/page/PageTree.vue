@@ -99,6 +99,9 @@ const headingTag = computed(() => `h${props.depth + 1}`)
     display: block;
     font-size: .8em;
     color: #888888;
+    @include sm {
+      font-size: .9em;
+    }
   }
 
   // ITEMS

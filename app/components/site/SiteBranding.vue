@@ -31,6 +31,7 @@ withDefaults(defineProps<{
     width: auto;
     fill: $grey;
     opacity: .8;
+    flex-shrink: 0;
   }
 
   &:hover {

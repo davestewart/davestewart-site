@@ -41,6 +41,11 @@
           <p class="navMobile__promo">
             Are you looking for a new <a href="https://controlspace.app" target="_blank">tab manager</a>?
           </p>
+
+          <!-- close -->
+          <div class="navMobile__close only-sm">
+            <UiIcon icon="close" :size="24" @click="hide" />
+          </div>
         </div>
       </div>
     </transition>
@@ -139,17 +144,31 @@ function hide () {
   }
 
   &__dropdown {
+    display: flex;
+    flex-direction: column;
     box-sizing: border-box;
     position: fixed;
-    padding: .5rem;
-    font-size: 1.3em;
-    top: 45px;
-    left: 15px;
-    right: 15px;
     background: white;
     outline: 1px solid $grey-lightest;
     border-radius: 2px;
     overflow: hidden;
+
+    @include sm {
+      padding: 1rem;
+      font-size: 1.3em;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100vh;
+    }
+
+    @include md-up {
+      font-size: 1.3em;
+      padding: .5rem;
+      top: 45px;
+      left: 15px;
+      right: 15px;
+    }
 
     @include shadow-lg;
 
@@ -171,10 +190,19 @@ function hide () {
         border-radius: 4px;
       }
     }
+  }
 
-    @media screen and (max-width: 430px), screen and (max-height: 470px) {
-      display: none;
+  @include sm {
+    &__branding {
+      margin-bottom: .5rem;
     }
+  }
+
+  &__close {
+    position: absolute;
+    top: 1rem;
+    right: .75rem;
+    padding: 1rem;
   }
 
   &__promo {
@@ -188,7 +216,7 @@ function hide () {
     }
 
     @include sm {
-      display: none;
+      text-align: right;
     }
   }
 
@@ -197,11 +225,18 @@ function hide () {
   // ---------------------------------------------------------------------------------------------------------------------
 
   .navSections {
+    display: flex;
+    flex-grow: 1;
 
     &__header {
       display: none;
       @include md-up {
         display: block;
+      }
+    }
+    @include md-down {
+      &__section[data-name="navigation"] {
+        display: none;
       }
     }
 

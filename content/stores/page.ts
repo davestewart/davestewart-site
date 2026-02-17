@@ -45,6 +45,15 @@ export const usePageStore = defineStore('page', () => {
    * Load a page from the content api
    */
   async function loadPage (path: string) {
+    const skip = {
+      $not: {
+        $or: [
+          { status: 'draft' },
+          { status: 'scheduled' },
+        ],
+      },
+    }
+
     // page
     const content = await queryContent<PageContent>()
       .where({
@@ -52,6 +61,9 @@ export const usePageStore = defineStore('page', () => {
           { _path: path },
           { permalink: path },
         ],
+        ...process.env.NODE_ENV === 'production'
+          ? skip
+          : {},
       })
       .findOne()
 
