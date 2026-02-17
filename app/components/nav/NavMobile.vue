@@ -15,7 +15,7 @@
         class="navMobile__link navMobile__up"
         :class="up.class"
       >
-        <UiIcon icon="up" :size="24" />
+        <UiIcon icon="arrow-up" :size="24" />
       </NuxtLink>
 
       <!-- search -->
