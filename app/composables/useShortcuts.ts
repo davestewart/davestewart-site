@@ -12,15 +12,17 @@ export function useShortcuts () {
   const isOnSearchPage = computed(() => route.path.startsWith(SEARCH_PATH))
 
   onKeyStroke('k', (e: KeyboardEvent) => {
-    // skip if on search page or input
-    if (!(isOnSearchPage.value || isInput(e))) {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      return
-    }
-
     // skip if modal is showing
     if (document.body.classList.contains('preview-active')) {
       return
+    }
+
+    // skip if on search page or input
+    if (isOnSearchPage.value) {
+      if (isInput(e)) {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        return
+      }
     }
 
     // open search if keyboard combo hit
