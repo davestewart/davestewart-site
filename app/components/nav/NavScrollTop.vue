@@ -37,6 +37,14 @@ const elements: Elements = {
   target: null,
 }
 
+function assignElements () {
+  Object.assign(elements, {
+    footerOuter: document.querySelector('.siteFooter'),
+    footerInner: document.querySelector('.navSurround'),
+    target: document.querySelector('.scrollTop__inner'),
+  })
+}
+
 /**
  * NavScrollTop uses a combination of position:sticky and JS to position itself
  *
@@ -84,7 +92,10 @@ function update () {
   elements.target.style.bottom = offset + 'px'
 }
 
-const onEvent = throttle(10, () => {
+const onEvent = throttle(10, (event) => {
+  if (event.type === 'resize') {
+    assignElements()
+  }
   update()
 })
 
@@ -101,18 +112,9 @@ function onClick () {
 }
 
 onMounted(() => {
-  // elements
-  Object.assign(elements, {
-    footerOuter: document.querySelector('.siteFooter'),
-    footerInner: document.querySelector('.navSurround'),
-    target: document.querySelector('.scrollTop__inner'),
-  })
-
-  // handlers
+  assignElements()
   window.addEventListener('scroll', onEvent)
   window.addEventListener('resize', onEvent)
-
-  // update
   update()
 })
 
