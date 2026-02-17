@@ -12,10 +12,11 @@
       </p>
 
       <!-- parameters -->
-      <div class="search__parameters">
+      <div class="search__parameters" @submit.prevent="onSubmit">
         <!-- clear -->
         <button
           v-if="isFiltered"
+          type="button"
           class="search__clear"
           :class="{ active: canReset }"
           @click.prevent="reset"
@@ -23,7 +24,7 @@
           <UiIcon icon="close" :size="24" />
         </button>
 
-        <div class="searchControls">
+        <form class="searchControls">
           <UiControls class="only-md-down">
             <!-- search input -->
             <div class="searchControls__text">
@@ -71,7 +72,10 @@
               />
             </div>
           </UiControls>
-        </div>
+
+          <!-- hidden submit button -->
+          <button style="display: none" />
+        </form>
 
         <!-- tags -->
         <SlideUpDown :active="options.showTags" :duration="400" class="search__tags-container">
@@ -266,6 +270,13 @@ onMounted(() => {
     searchInput.value?.focus()
   })
 })
+
+function onSubmit () {
+  const link = document.querySelector('.search__results .pageTree__pages a') as HTMLAnchorElement | undefined
+  if (link) {
+    link.click()
+  }
+}
 </script>
 
 <style lang="scss">
