@@ -159,7 +159,7 @@ export const useMetaStore = defineStore('meta', () => {
       title: 'Up',
       path: getParentPath(content.path),
       description: `Go up to ${parents.at(-2)?.title}`,
-      class: `up ${parents.length > 2 ? '' : 'hidden'}`,
+      class: `up ${parents.length > 1 ? '' : 'hidden'}`,
     } satisfies Link
   })
 
