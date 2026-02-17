@@ -92,15 +92,17 @@ const headingTag = computed(() => `h${props.depth + 1}`)
   }
 
   h2 {
-    font-size: 1.8rem;
+    font-size: 2.1rem;
   }
 
   &__desc {
     display: block;
-    font-size: .8em;
+    font-family: $titleFont;
+    font-size: 1.1em;
+    line-height: 1.3;
     color: #888888;
     @include sm {
-      font-size: .9em;
+      font-size: 1em;
     }
   }
 

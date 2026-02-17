@@ -27,7 +27,7 @@ defineProps<{
     position: relative;
     line-height: 1.6em;
     font-family: $titleFont;
-    font-size: 1.1em;
+    font-size: 1.2em;
 
     // for focus outline
     &:focus {

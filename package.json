@@ -6,6 +6,7 @@
     "build": "NODE_OPTIONS='--inspect' nuxt build --verbose",
     "dev": "nuxt dev --host",
     "generate": "nuxt generate",
+    "generate:dev": "NODE_ENV=development nuxt generate",
     "preview": "nuxt preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

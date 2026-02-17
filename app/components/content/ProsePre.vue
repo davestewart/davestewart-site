@@ -27,6 +27,7 @@ const props = withDefaults(defineProps<{
 
 const lang = computed(() => {
   const lookup: Record<string, string> = {
+    tree: 'text', // TODO implement Tree language
     typescript: 'ts',
     javascript: 'js',
     markdown: 'md',
@@ -43,6 +44,7 @@ const label = computed(() => {
   const lookup: Record<string, string> = {
     ts: 'TypeScript',
     js: 'JavaScript',
+    tree: 'Text',
     vue: 'Vue',
     xml: 'XML',
     html: 'HTML',

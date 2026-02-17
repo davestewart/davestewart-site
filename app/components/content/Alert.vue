@@ -67,7 +67,7 @@ const layout = computed(() => {
 
 .uiAlert {
   border-left: 5px solid $accentColor;
-  font-weight: 500;
+  //font-weight: 600;
 
   &[data-layout="block"] {
     display: grid;

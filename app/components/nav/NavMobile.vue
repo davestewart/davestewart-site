@@ -217,6 +217,7 @@ function hide () {
 
     @include sm {
       text-align: right;
+      font-size: .6em;
     }
   }
 

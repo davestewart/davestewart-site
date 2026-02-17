@@ -155,7 +155,7 @@ const description = computed(() => {
       }
 
       p {
-        font-size: 1em;
+        font-size: .9em;
       }
     }
   }
