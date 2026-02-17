@@ -1,4 +1,11 @@
-# Todo
+# TODO List
+
+> Initial migration and mae ready for release
+
+- [Phase 1](#phase-1)
+- [Phase 2](#phase-2)
+
+# Phase 1
 
 ## Functionality
 
@@ -19,35 +26,25 @@
 
 ### Search
 
-- Structure
-  - [x] Build search service
-  - [x] Migrate search page to service
-  - [x] Move to store
+Structure
 
-- Functionality
-  - [x] Add scroll-to-date
-  - [x] Fix type to search
-  - [x] Change sort to group
-  - [x] Remove "off" and make radio buttons toggle to off
-  - [ ] Add groups count
+- [x] Build search service
+- [x] Migrate search page to service
+- [x] Move to store
 
-Refactor page and meta
-  - [ ] Refactor page store / loading
-  - [ ] Pass data via props / inject
-  - [ ] Move search to services
-  - [ ] Move meta to services
-  - [ ] Consider _passing_ images to gallery?
+Functionality
 
-### UX
-
-- [ ] Website presentation prefs
+- [x] Add scroll-to-date
+- [x] Fix type to search
+- [x] Change sort to group
+- [x] Remove "off" and make radio buttons toggle to off
 
 ### Bugs
 
 - [x] Gumroad button
 - [x] Transition full screen if link clicked, then navigate
 - [x] 404 page is missing?
-- [ ] Review all mobile pages for responsive bugs
+- [x] Review all mobile pages for responsive bugs
 
 ### Mobile
 
@@ -81,15 +78,8 @@ Refactor page and meta
 - [x] Shiki breaks responsive layout
   - ES Kit
 - [x] Sticky header is janky
-  - jittery scrolling
-    - Multiflow
+  - ~~jittery scrolling (Multiflow)~~
   - bounces to top twice on scroll up
-- [ ] Add image zoom / preview component
-- [ ] Add `> [!Alert]` component https://v2.content.nuxt.com/usage/markdown#props
-
-### Other
-
-- [ ] Review image compression
 
 ## Design
 
@@ -119,15 +109,9 @@ Layout
 
 ### Data
 
-- [ ] Decide on `page` or `post` for content `type`
-  - [ ] Rename `type` to `view` 
-- Path control
-  - [ ] In transform, combine path and permalink 
-  - [ ] Include `_path` in returned
 - [x] Move search query to server
 - [x] Drafts are showing in Blog and Search
-- [ ] Review how `status` works
-- [ ] Fix RSS feed content
+- [x] Review how `status` works
 
 ### Content Store
 
@@ -140,6 +124,51 @@ Layout
     - [x] `preview` -> Just use component in the page
 - [x] Consider moving filtering to the backend
 - [x] Review how Content native search works
+
+
+# Phase 2
+
+> Architectural and content updates
+
+## Pickups
+
+Data
+
+- [ ] Decide on `page` or `post` for content `type`
+  - [ ] Rename `type` to `view`
+- Path control
+  - [x] Make sure Up navigation respects full path in blog
+  - [ ] In transform, combine path and permalink
+  - [ ] Include `_path` in returned
+
+Components
+
+- [ ] Make PageList items completely clickable
+- [ ] Add image zoom / preview component
+- [ ] Add `> [!Alert]` component https://v2.content.nuxt.com/usage/markdown#props
+
+Navigation
+
+- [ ] Make whole of PageItem clickable
+- [ ] Make whole of ThumbnailItem clickable
+- [ ] Make all items tabbable
+
+Misc
+
+- [ ] Website presentation prefs
+- [ ] Review image compression
+- [ ] Add groups count
+- [ ] Fix RSS feed content
+
+## Architecture
+
+Refactor page and meta
+
+- [ ] Refactor page store / loading
+- [ ] Pass data via props / inject
+- [ ] Move search to services
+- [ ] Move meta to services
+- [ ] Consider _passing_ images to gallery?
 
 ## Site structure
 

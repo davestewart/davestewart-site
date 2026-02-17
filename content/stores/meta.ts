@@ -155,10 +155,11 @@ export const useMetaStore = defineStore('meta', () => {
 
   const up = computed<Link>(() => {
     const parents = getMetaParents(items.value, content.path, 'Up')
+    const parent = parents.at(-2) ?? parents.at(0)!
     return {
       title: 'Up',
-      path: getParentPath(content.path),
-      description: `Go up to ${parents.at(-2)?.title}`,
+      path: parent.path,
+      description: `Go up to ${parent?.title}`,
       class: `up ${parents.length > 1 ? '' : 'hidden'}`,
     } satisfies Link
   })
@@ -212,19 +213,24 @@ export const useMetaStore = defineStore('meta', () => {
  */
 export function getMetaParents (items: MetaItem[], path: string, fallbackTitle = '404'): Link[] {
   // variables
-  const parents: Link[] = [{ title: 'Home', path: '/' }]
+  const parents: Link[] = [{ path: '/', title: 'Home' }]
   let currentPath = '/'
 
+  // resolve any permalinks
+  const candidatePath = items
+    .find((item) => {
+      const p = item.type === 'post'
+        ? item.permalink ?? item.path
+        : item.path
+      return p === path
+    })?.path ?? path
+
   // build segments
-  const segments = path.split('/').filter(Boolean)
+  const segments = candidatePath.split('/').filter(Boolean)
   for (const segment of segments) {
     // variables
     currentPath += segment + '/'
-    const item = items.find((p) => {
-      return p.type === 'folder'
-        ? p.path === currentPath
-        : getPath(p) === currentPath
-    })
+    const item = items.find(p => p.path === currentPath)
 
     // page found
     if (item) {
