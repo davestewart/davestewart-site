@@ -1,12 +1,12 @@
 <template>
-  <div id="app" :class="classes" :data-path="path">
+  <div id="app" :data-path="path">
     <NuxtLayout />
     <Preview ref="preview" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute } from '#app'
 import { useWindowScroll } from '@vueuse/core'
 import { setupPreview } from '~/composables/usePreview'
@@ -17,12 +17,6 @@ const { y } = useWindowScroll()
 
 const route = useRoute()
 const path = computed(() => route.path)
-
-const layout = ref('page')
-
-const classes = computed(() => ({
-  [`layout__${layout.value}`]: true,
-}))
 
 const preview = setupPreview()
 

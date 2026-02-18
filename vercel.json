@@ -6,5 +6,15 @@
       "destination": "/blog/app-diary/",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/stats/js",
+      "destination": "https://plausible.io/js/script.tagged-events.js"
+    },
+    {
+      "source": "/stats/api/event",
+      "destination": "https://plausible.io/api/event"
+    }
   ]
 }
