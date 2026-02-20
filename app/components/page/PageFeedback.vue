@@ -57,6 +57,10 @@ input {
   line-height: 1.7;
 }
 
+.reactions {
+  margin: 0 -20px;
+}
+
 #app.light .hljs span *
   background: #f5f5f8;
   color: var(--foreground) !important; {
