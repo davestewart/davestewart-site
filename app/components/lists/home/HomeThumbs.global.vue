@@ -15,7 +15,6 @@ function searchFeatured (query: Partial<SearchQuery>) {
     ...query,
     // sort: 'date',
     searchPaths: ['/products/', '/projects/', '/work/', '/blog/'],
-    excludeDrafts: true,
     hasThumbnail: true,
     randomize: true,
     // limit: 6,

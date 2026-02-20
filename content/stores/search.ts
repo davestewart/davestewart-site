@@ -22,7 +22,7 @@ export const DEFAULT_SEARCH_PATHS = [
 const DEFAULT_FILTERS: Required<SearchFilters> = {
   text: '',
   tags: [],
-  textOp: 'and',
+  textOp: 'or',
   tagsOp: 'and',
   group: 'path',
   path: '',
@@ -35,11 +35,12 @@ const DEFAULT_FILTERS: Required<SearchFilters> = {
  * Default search options
  */
 const DEFAULT_OPTIONS: SearchOptions = {
-  format: 'image',
-  tagsFilter: undefined,
   searchPaths: DEFAULT_SEARCH_PATHS,
-  excludeDrafts: true,
+  includeUnlisted: false,
+  includeDrafts: false,
   hasThumbnail: false,
+  tagsFilter: undefined,
+  format: 'image',
 }
 
 /**
@@ -199,19 +200,22 @@ export function cleanQuery (query: Partial<SearchQuery>): Partial<SearchQuery> {
 export function queryItems (items: MetaItem[], query: SearchQuery = {}) {
   const {
     searchPaths = DEFAULT_SEARCH_PATHS,
-    excludeDrafts = true,
+    includeUnlisted = false,
+    includeDrafts = false,
     hasThumbnail = false,
-    limit,
   } = query
 
   // Get all posts
   let posts = items.filter(item => item.type === 'post')
 
+  // Filter unlisted
+  if (!includeUnlisted) {
+    posts = posts.filter(item => item.status !== 'unlisted')
+  }
+
   // Filter drafts
-  if (excludeDrafts) {
-    posts = posts.filter((item) => {
-      return !('draft' in item) || !(item as any).draft
-    })
+  if (!includeDrafts) {
+    posts = posts.filter(item => item.status !== 'draft')
   }
 
   // Filter by path - use query.path if specified, otherwise use options.paths
@@ -249,8 +253,8 @@ export function queryItems (items: MetaItem[], query: SearchQuery = {}) {
   }
 
   // Apply limit
-  if (limit && limit > 0) {
-    posts = posts.slice(0, limit)
+  if (query.limit && query.limit > 0) {
+    posts = posts.slice(0, query.limit)
   }
 
   // Sort by date (items pre-sorted by path)

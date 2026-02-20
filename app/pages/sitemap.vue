@@ -15,5 +15,6 @@ definePageMeta({
 const { items } = useMetaStore().search({
   path: '/',
   group: 'path',
+  includeUnlisted: true,
 })
 </script>

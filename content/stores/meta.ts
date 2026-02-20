@@ -140,13 +140,16 @@ export const useMetaStore = defineStore('meta', () => {
 
   // computed
   const surround = computed(() => {
-    return getMetaSurround(getPosts(), content.path)
+    const posts = getPosts()
+      .filter(p => p.status !== 'draft' && p.status !== 'unlisted')
+    return getMetaSurround(posts, content.path)
   })
 
   const siblings = computed(() => {
     const parentPath = getParentPath(content.path)
-    const items = getItems(parentPath)
-    return getMetaSiblings(items, parentPath)
+    const posts = getPosts(parentPath)
+      .filter(p => p.status !== 'draft' && p.status !== 'unlisted')
+    return getMetaSiblings(posts, parentPath)
   })
 
   const breadcrumbs = computed(() => {
@@ -257,7 +260,7 @@ export function getMetaParents (items: MetaItem[], path: string, fallbackTitle =
 /**
  * Sibling items in the same folder level as the current page
  */
-export function getMetaSiblings (items: MetaItem[], parentPath: string): MetaItem[] {
+export function getMetaSiblings (items: MetaPost[], parentPath: string): MetaItem[] {
   return items.filter(p => getParentPath(p.path) === parentPath)
 }
 

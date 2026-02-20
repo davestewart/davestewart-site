@@ -214,10 +214,13 @@ const pageDescription = computed(() => {
 // data
 // ---------------------------------------------------------------------------------------------------------------------
 
-const searchQuery = computed(() => {
+const searchQuery = computed<SearchOptions>(() => {
   return {
     ...query,
-    excludeDrafts: true,
+    // include unlisted if filtering
+    includeUnlisted: !!query.text || query.tags?.length > 0,
+    // only include drafts in development
+    includeDrafts: process.env.NODE_ENV === 'development',
   }
 })
 
@@ -363,12 +366,12 @@ function onSubmit () {
   }
 
   &__noResults {
-    padding: 3rem;
+    padding: 5rem 3rem;
     line-height: 1.6;
     text-align: center;
     font-family: $titleFont;
     font-size: 1.25rem;
-    color: $grey-light;
+    color: $accentColor;
   }
 
   .pageItem a:focus {

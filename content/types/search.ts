@@ -32,8 +32,10 @@ export interface SearchFilters {
 export interface SearchOptions {
   // which paths to include in the search
   searchPaths?: string[]
-  // whether to exclude drafts from results
-  excludeDrafts?: boolean
+  // whether to include unlisted in results
+  includeUnlisted?: boolean
+  // whether to include drafts in results
+  includeDrafts?: boolean
   // whether to include only items with thumbnails
   hasThumbnail?: boolean
   // whether to show the tag filter

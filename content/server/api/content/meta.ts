@@ -37,6 +37,13 @@ export default defineEventHandler(async (event) => {
   // process final items array
   return items
     .filter((item) => {
+      // never include hidden items
+      if (item.status === 'hidden') {
+        return false
+      }
+
+      // in production, filter based on status
+      // note: unlisted items won't show in folders, but are searchable via text
       if (mode === 'production') {
         // keep folders
         if (item.type === 'folder') {
@@ -48,8 +55,8 @@ export default defineEventHandler(async (event) => {
           if (!item.date) {
             return false
           }
-          // skip drafts, unlisted, and scheduled
-          if (item.status === 'draft' || item.status === 'unlisted' || item.status === 'scheduled') {
+          // skip drafts and scheduled
+          if (item.status === 'draft' || item.status === 'scheduled') {
             return false
           }
           // keep all other posts (scheduled, new)

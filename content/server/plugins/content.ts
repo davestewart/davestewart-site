@@ -41,17 +41,20 @@ function setDate (file: any) {
  * Set the visibility status so it can be omitted from production
  */
 function setStatus (file: ParsedContent) {
-  const { layout, date, navigation } = file // hidden, preview
+  const { layout, date, navigation, searchable, draft } = file // hidden, preview
 
   // default status
   file.status = ''
 
   // add status to posts (files without layout)
   if (!layout) {
-    if (navigation === false) {
+    if (searchable === false) {
+      file.status = 'hidden'
+    }
+    else if (navigation === false) {
       file.status = 'unlisted'
     }
-    else if (date) {
+    else if (date && !draft) {
       if (date > today) {
         file.status = 'scheduled'
       }

@@ -11,8 +11,8 @@
         <p>Try these links:</p>
         <ul>
           <li>
-            <NuxtLink :to="`/search/?text=${path}`">
-              Search for: "{{ path }}"
+            <NuxtLink :to="`/search/?text=${search}`">
+              Search for: "{{ search }}"
             </NuxtLink>
           </li>
           <li>
@@ -47,6 +47,12 @@ const { data } = useAsyncData('404', async () => {
     limit: 3,
   })
 })
+
+const search = route.path
+  .split('/')
+  .filter(Boolean)
+  .pop()
+  ?.replace(/-/g, ' ') ?? ''
 
 const path = computed(() => {
   return route.path.substring(1)
