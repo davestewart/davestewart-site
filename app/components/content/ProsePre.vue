@@ -54,6 +54,7 @@ const label = computed(() => {
     scss: 'SCSS',
     md: 'Markdown',
     bash: 'Bash',
+    http: 'cURL',
   }
   return copied.value
     ? 'Copied!'
@@ -84,11 +85,11 @@ function copyCode () {
 <style lang="scss">
 .prosePre {
   position: relative;
-  margin: 2rem 0;
+  margin: 1.5rem 0;
   cursor: default;
 
   & + & {
-    margin-top: 1rem;
+    margin-top: -.5rem !important;
   }
 
   &__label {
@@ -124,7 +125,7 @@ pre.shiki {
 :root {
   /* base **/
   --shiki-default-font-style: normal !important;
-  --shiki-foreground: #5c6e74;
+  --shiki-foreground: #0a3069;
   --shiki-background: #f5f5f8;
 
   /* comments, prolog, doctype, cdata */

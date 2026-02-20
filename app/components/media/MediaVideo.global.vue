@@ -43,7 +43,7 @@ const url = computed(() => {
 
 <style lang="scss">
 .mediaVideo {
-  margin-bottom: 1rem;
+  margin: 2rem auto;
   font-size: 0;
 }
 </style>

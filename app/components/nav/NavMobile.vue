@@ -6,7 +6,7 @@
       :class="{ 'router-link-active': visible }"
       @click="visible = !visible"
     >
-      <UiIcon icon="menu" :size="24" />
+      <UiIcon icon="menu" :size="32" />
     </div>
 
     <div class="navMobile__links">
@@ -15,7 +15,7 @@
         class="navMobile__link navMobile__up"
         :class="up.class"
       >
-        <UiIcon icon="arrow-up" :size="24" />
+        <UiIcon icon="arrow-up" :size="32" />
       </NuxtLink>
 
       <!-- search -->
@@ -23,7 +23,7 @@
         to="/search/"
         class="navMobile__link navMobile__search"
       >
-        <UiIcon icon="search" :size="24" />
+        <UiIcon icon="search" :size="32" />
       </NuxtLink>
     </div>
 
@@ -44,7 +44,7 @@
 
           <!-- close -->
           <div class="navMobile__close only-sm">
-            <UiIcon icon="close" :size="24" @click="hide" />
+            <UiIcon icon="close" :size="32" @click="hide" />
           </div>
         </div>
       </div>

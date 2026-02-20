@@ -76,7 +76,7 @@ export default defineLayerConfig({
         'md', 'json', 'yaml',
         'html', 'css', 'scss',
         'vue', 'vue-html',
-        'bash', 'xml', 'python', 'dotenv',
+        'bash', 'http', 'xml', 'python', 'dotenv',
       ],
     },
   },

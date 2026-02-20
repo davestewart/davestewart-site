@@ -3,6 +3,7 @@
     ref="rootEl"
     class="mediaGallery"
     :style="widthStyle"
+    :data-type="images.length === 1 ? 'image' : 'gallery'"
     :class="{ loading }"
   >
     <!-- slides -->
@@ -21,9 +22,9 @@
         </div>
       </div>
       <div class="mediaGallery__slidesNav">
-        <div class="mediaGallery__slidesPrev" @click="prev" />
+        <div v-if="images.length > 1" class="mediaGallery__slidesPrev" @click="prev" />
         <div v-if="scale" class="mediaGallery__slidesView" @click="view" />
-        <div class="mediaGallery__slidesNext" @click="next" />
+        <div v-if="images.length > 1" class="mediaGallery__slidesNext" @click="next" />
       </div>
     </div>
 
@@ -260,6 +261,10 @@ $colorHover: #888;
     }
   }
 
+  .pageContent &[data-type="image"] {
+    margin: 1.5rem auto;
+  }
+
   // slides
   &__slidesContainer {
     font-size: 0;
@@ -320,14 +325,17 @@ $colorHover: #888;
 
   &__slidesPrev {
     cursor: w-resize;
+    flex-grow: 1;
   }
 
   &__slidesView {
     cursor: zoom-in;
+    flex-grow: 1;
   }
 
   &__slidesNext {
     cursor: e-resize;
+    flex-grow: 1;
   }
 
   // button navigation
