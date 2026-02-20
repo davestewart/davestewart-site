@@ -82,7 +82,7 @@ export default defineLayerConfig({
   },
 
   contentAssets: {
-    imageSize: 'style src',
+    imageSize: 'src attrs',
     // debug: true,
   },
 })
