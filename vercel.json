@@ -1,9 +1,30 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": true,
   "redirects": [
     {
       "source": "/projects/open-source/app-diary/",
       "destination": "/blog/app-diary/",
+      "permanent": true
+    },
+    {
+      "source": "/projects/open-source/vue-class-store/",
+      "destination": "/projects/vue/vue-class-store/",
+      "permanent": true
+    },
+    {
+      "source": "/projects/open-source/vuex-pathify/",
+      "destination": "/projects/vue/vuex-pathify/",
+      "permanent": true
+    },
+    {
+      "source": "/projects/open-source/nuxt-areas/",
+      "destination": "/projects/vue/nuxt-areas/",
+      "permanent": true
+    },
+    {
+      "source": "/projects/open-source/nuxt-content-assets/",
+      "destination": "/projects/vue/nuxt-content-assets/",
       "permanent": true
     }
   ],
