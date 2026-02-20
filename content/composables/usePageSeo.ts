@@ -1,4 +1,32 @@
-import type { PageContent } from '../types'
+import type { PageMedia } from '../types'
+
+export function parseMedia (media: PageMedia = {}) {
+  let candidate = media.opengraph ?? media.featured ?? media.gallery
+
+  // candidate is an array
+  if (Array.isArray(candidate)) {
+    candidate = candidate[0]
+  }
+
+  // no candidate
+  if (!candidate) {
+    candidate = { src: '/assets/img/site-preview.png' }
+  }
+
+  // string; convert to media source
+  else if (typeof candidate === 'string') {
+    candidate = { src: candidate }
+  }
+
+  // process media source
+  const domain = 'https://davestewart.co.uk'
+  const url = new URL(candidate.src, domain)
+  return {
+    width: url.searchParams.get('width') ?? 1280,
+    height: url.searchParams.get('height') ?? 720,
+    url: `${domain}${url.pathname}`,
+  }
+}
 
 /**
  * Sets SEO metadata for a page
@@ -15,33 +43,15 @@ export function usePageSeo (page: Partial<PageContent> | undefined) {
 
   const time = page?.date
 
-  const title = computed(() => {
-    return page?.title
-      ?? <string>route.meta.title
-      ?? ''
-  })
+  const title = page?.title
+    ?? <string>route.meta.title
+    ?? ''
 
-  const description = computed(() => {
-    return page?.description
-      ?? <string>route.meta.description
-      ?? ''
-  })
+  const description = page?.description
+    ?? <string>route.meta.description
+    ?? ''
 
-  const image = computed(() => {
-    const media = page?.media ?? {}
-    const { opengraph, featured } = media
-    const img = opengraph
-      ?? (featured && (typeof featured === 'string') ? featured : undefined) // featured may also be a gallery or embed
-      ?? <string>route.meta.image
-      ?? '/assets/img/site-preview.png'
-    const src = typeof img === 'string' ? img : img?.src
-    const url = new URL(src ?? '', 'https://davestewart.co.uk')
-    return {
-      width: url.searchParams.get('width') ?? 1280,
-      height: url.searchParams.get('height') ?? 720,
-      url: `https://davestewart.co.uk${url.pathname}`,
-    }
-  })
+  const image = parseMedia(page?.media)
 
   useHead({
     title,
@@ -52,23 +62,23 @@ export function usePageSeo (page: Partial<PageContent> | undefined) {
 
   useSeoMeta({
     // basic
-    title: title.value,
-    description: description.value,
+    title,
+    description,
 
     // open graph
-    ogTitle: title.value,
-    ogDescription: description.value,
+    ogTitle: title,
+    ogDescription: description,
     ogSiteName: 'Dave Stewart',
-    ogImage: image.value.url,
-    ogImageWidth: image.value.width,
-    ogImageHeight: image.value.height,
+    ogImage: image.url,
+    ogImageWidth: image.width,
+    ogImageHeight: image.height,
     ogType: type,
     ogUrl: url,
 
     // twitter
-    twitterTitle: title.value,
-    twitterDescription: description.value,
-    twitterImage: image.value.url,
+    twitterTitle: title,
+    twitterDescription: description,
+    twitterImage: image.url,
     twitterCard: 'summary_large_image',
 
     // article
