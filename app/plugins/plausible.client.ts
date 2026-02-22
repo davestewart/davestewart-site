@@ -2,11 +2,11 @@ export default defineNuxtPlugin(() => {
   if (window.location.host === 'davestewart.co.uk') {
     useHead({
       script: [{
-        src: '/stats/js',
+        'src': '/stats/js/',
         'data-domain': 'davestewart.co.uk',
-        'data-api': '/stats/api/event',
-        async: true,
-        defer: true,
+        'data-api': '/stats/api/event/',
+        'async': true,
+        'defer': true,
       }],
     })
   }
