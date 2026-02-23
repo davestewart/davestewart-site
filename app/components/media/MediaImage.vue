@@ -7,7 +7,7 @@ defineProps<{
 <template>
   <img
     :src="source.src"
-    :alt="source.text"
+    :alt="source.text ?? ''"
     :style="source.style"
     draggable="false"
   >

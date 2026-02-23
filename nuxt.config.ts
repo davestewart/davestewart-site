@@ -74,11 +74,17 @@ export default defineNuxtConfig({
 
   nitro: {
     prerender: {
+      crawlLinks: true,
       routes: [
-        '/api/content/meta',
-        '/api/content/tags',
+        '/sitemap/',
       ],
     },
+  },
+
+  routeRules: {
+    '/': { prerender: false, ssr: true },
+    '/404': { prerender: false, ssr: true },
+    '/**': { prerender: true },
   },
 
   vite: {
