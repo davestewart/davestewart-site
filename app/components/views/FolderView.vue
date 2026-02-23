@@ -21,6 +21,7 @@ defineProps<{
 }>()
 
 const route = useRoute()
+const metaStore = useMetaStore()
 
 const options = computed<Partial<SearchOptions>>(() => {
   return {
@@ -31,7 +32,7 @@ const options = computed<Partial<SearchOptions>>(() => {
 })
 
 const data = computed(() => {
-  return useMetaStore().search({
+  return metaStore.search({
     ...options.value,
     path: route.path,
     group: 'path',

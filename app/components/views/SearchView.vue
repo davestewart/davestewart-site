@@ -110,8 +110,8 @@ import { onKeyStroke, useLocalStorage } from '@vueuse/core'
 import SlideUpDown from 'vue-slide-up-down'
 import { canResetSearch, cleanQuery, isSearchFiltered, makeSearchFilters, parseQuery } from '@content/stores/search'
 import { UiIcon } from '#components'
-import type { SearchFilters, SearchOptions } from '@content/types'
 import useAnchor from '~/composables/useAnchor'
+import type { SearchFilters, SearchOptions } from '@content/types'
 
 const route = useRoute()
 const router = useRouter()

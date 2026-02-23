@@ -25,7 +25,7 @@
 
       <section style="margin-top: 2rem">
         <p>Or pick a random project!</p>
-        <ThumbnailWall v-if="data" :pages="data.items" />
+        <ThumbnailWall :pages="items" />
       </section>
     </div>
   </div>
@@ -41,11 +41,11 @@ useSeoMeta({
   title: '404',
 })
 
-const { data } = useAsyncData('404', async () => {
-  return useMetaStore().search({
-    randomize: true,
-    limit: 3,
-  })
+const metaStore = useMetaStore()
+
+const { items } = metaStore.search({
+  randomize: true,
+  limit: 3,
 })
 
 const search = route.path

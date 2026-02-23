@@ -11,10 +11,6 @@ import NotFound from '~/components/views/404View.vue'
 
 const { data, error } = await usePage()
 
-if (data.value) {
-  usePageSeo(data.value)
-}
-
 const component = computed(() => {
   if (error.value || !data.value) {
     console.warn('Not Found', {

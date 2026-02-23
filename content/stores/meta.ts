@@ -76,8 +76,8 @@ export const useMetaStore = defineStore('meta', () => {
       $fetch('/api/content/meta'),
       $fetch('/api/content/tags'),
     ])
-    items.value = results[0]
-    tagGroups.value = results[1]
+    items.value = results[0] || []
+    tagGroups.value = results[1] || []
   }
 
   // ---------------------------------------------------------------------------------------------------------------------

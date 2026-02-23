@@ -237,6 +237,10 @@ Redirects
 - [ ] Convert to slashless URLs
 - [ ] Update Hyvor Talk 
 
+Migrations to Vercel
+
+- [ ] Got Paper 
+
 Archive projects
 
 - [ ] ES Kit

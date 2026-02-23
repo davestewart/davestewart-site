@@ -9,9 +9,10 @@ import { parseQuery } from '@content/stores/search'
 import type { SearchQuery } from '@content/types'
 
 const route = useRoute()
+const metaStore = useMetaStore()
 
 function searchFeatured (query: Partial<SearchQuery>) {
-  return useMetaStore().search({
+  return metaStore.search({
     ...query,
     // sort: 'date',
     searchPaths: ['/products/', '/projects/', '/work/', '/blog/'],
