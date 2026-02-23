@@ -30,7 +30,7 @@
   ],
   "rewrites": [
     {
-      "source": "/stats/js/",
+      "source": "/stats/js/events.js",
       "destination": "https://plausible.io/js/script.tagged-events.js"
     },
     {
