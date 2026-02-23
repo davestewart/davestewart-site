@@ -34,7 +34,7 @@ export function parseMedia (media: PageMedia = {}) {
  *
  * @param page - Either PageContent or a plain object with title/description
  */
-export function usePageSeo (page: Partial<PageContent> | undefined) {
+export function usePageSeo (page?: Partial<PageContent>) {
   const route = useRoute()
 
   const url = `https://davestewart.co.uk${route.path === '/' ? '' : route.path}`

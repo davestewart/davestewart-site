@@ -1,4 +1,5 @@
 import { serverQueryContent } from '#content/server'
+import type { PageContent } from '../../../types'
 
 export default defineEventHandler(async (event): Promise<PageContent | null> => {
   const path = getQuery(event).path as string | undefined

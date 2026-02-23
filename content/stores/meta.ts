@@ -1,13 +1,12 @@
 import { computed, defineStore } from '#imports'
-import { getParentPath, getPath } from '../utils'
-import { usePageStore } from './page'
+import { getParentPath } from '../utils'
 import { queryItems } from './search'
-import type { MetaItem, SearchQuery } from '../types'
+import type { MetaItem, MetaPost, SearchQuery, TagGroup } from '../types'
 
 export type Link = {
   path: string
   title: string
-  description?: string | ComputedRef<string>
+  description?: string
   class?: string
 }
 
@@ -22,12 +21,6 @@ export type Link = {
  * It also allows search to be instant, via `useMetaStore().search()`.
  */
 export const useMetaStore = defineStore('meta', () => {
-  // ---------------------------------------------------------------------------------------------------------------------
-  // dependencies
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  const content = usePageStore()
-
   // ---------------------------------------------------------------------------------------------------------------------
   // properties
   // ---------------------------------------------------------------------------------------------------------------------
@@ -76,28 +69,28 @@ export const useMetaStore = defineStore('meta', () => {
   // initialisation
   // ---------------------------------------------------------------------------------------------------------------------
 
-  async function initServer () {
+  async function loadItems () {
     // Can't have more than one await
     // @see https://www.youtube.com/watch?v=ofuKRZLtOdY
     const results = await Promise.all([
       $fetch('/api/content/meta'),
       $fetch('/api/content/tags'),
     ])
-    items.value = results[0]
-    tagGroups.value = results[1]
+    items.value = results[0] || []
+    tagGroups.value = results[1] || []
   }
 
   // ---------------------------------------------------------------------------------------------------------------------
-  // navigation
+  // navigation computed
   // ---------------------------------------------------------------------------------------------------------------------
 
   function createLink (path: string, title: string, description = '', cssClass = ''): Link {
     return {
       path,
       title,
-      description: description
-        ? description
-        : computed(() => items.value.find(item => item.path === path)?.description || '...'), // items aren't yet loaded when store is initialised
+      get description () {
+        return description || items.value.find(item => item.path === path)?.description || '...'
+      },
       class: cssClass,
     }
   }
@@ -138,26 +131,29 @@ export const useMetaStore = defineStore('meta', () => {
     ]
   })
 
-  // computed
-  const surround = computed(() => {
+  // ---------------------------------------------------------------------------------------------------------------------
+  // navigation actions
+  // ---------------------------------------------------------------------------------------------------------------------
+
+  function getSurround (path: string) {
     const posts = getPosts()
       .filter(p => p.status !== 'draft' && p.status !== 'unlisted')
-    return getMetaSurround(posts, content.path)
-  })
+    return getMetaSurround(posts, path)
+  }
 
-  const siblings = computed(() => {
-    const parentPath = getParentPath(content.path)
+  function getSiblings (path: string) {
+    const parentPath = getParentPath(path)
     const posts = getPosts(parentPath)
       .filter(p => p.status !== 'draft' && p.status !== 'unlisted')
     return getMetaSiblings(posts, parentPath)
-  })
+  }
 
-  const breadcrumbs = computed(() => {
-    return getMetaParents(items.value, content.path, content.page?.title ?? '')
-  })
+  function getBreadcrumbs (path: string, fallbackTitle = '') {
+    return getMetaParents(items.value, path, fallbackTitle)
+  }
 
-  const up = computed<Link>(() => {
-    const parents = getMetaParents(items.value, content.path, 'Up')
+  function getUp (path: string): Link {
+    const parents = getMetaParents(items.value, path, 'Up')
     const parent = parents.at(-2) ?? parents.at(0)!
     return {
       title: 'Up',
@@ -165,23 +161,27 @@ export const useMetaStore = defineStore('meta', () => {
       description: `Go up to ${parent?.title}`,
       class: `up ${parents.length > 1 ? '' : 'hidden'}`,
     } satisfies Link
-  })
+  }
 
-  const top = computed(() => {
+  function getTop (path: string) {
     const left: Link[] = [
       // main entries
       work, products, projects, blog,
       // only show archive if in archive path
-      { ...archive, class: content.path.startsWith('/archive/') ? '' : 'hidden' },
+      { ...archive, class: path.startsWith('/archive/') ? '' : 'hidden' },
     ]
 
-    const right: Link[] = [up.value, siteSearch]
+    const right: Link[] = [getUp(path), siteSearch]
 
     return [
       createSection('Content', left),
       createSection('Navigation', right),
     ]
-  })
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // return
+  // ---------------------------------------------------------------------------------------------------------------------
 
   return {
     // items
@@ -196,14 +196,14 @@ export const useMetaStore = defineStore('meta', () => {
 
     // navigation
     sections,
-    surround,
-    siblings,
-    breadcrumbs,
-    top,
-    up,
+    getSurround,
+    getSiblings,
+    getBreadcrumbs,
+    getTop,
+    getUp,
 
     // initialisation
-    initServer,
+    loadItems,
   }
 })
 

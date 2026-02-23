@@ -6,13 +6,13 @@
       {{ page.description }}
     </p>
     <PageInfo v-if="isPost" :page="page" />
-    <ContentRendererMarkdown
-      :value="page"
-      class="pageContent"
-    />
+    <ContentRendererMarkdown :value="page" class="pageContent" />
 
     <!-- comments -->
     <PageFeedback v-if="isPost" />
+
+    <!-- prev / next -->
+    <NavSurround />
   </div>
 </template>
 

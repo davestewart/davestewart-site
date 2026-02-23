@@ -1,5 +1,4 @@
-import { slugify } from '../utils'
-import type { MetaItem, TocLink } from '../types'
+import type { MetaFolder, MetaItem, TocLink } from '../types'
 
 /**
  * Convert MetaItems to TocLinks

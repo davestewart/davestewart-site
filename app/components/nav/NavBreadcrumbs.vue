@@ -1,10 +1,6 @@
 <template>
   <nav v-if="links" class="navBreadcrumbs">
-    <span
-      v-for="(link, index) in links"
-      :key="link.path"
-      class="breadcrumb__item"
-    >
+    <span v-for="(link, index) in links" :key="link.path" class="breadcrumb__item">
       <NuxtLink
         v-if="index < links.length - 1"
         :to="link.path"
@@ -18,7 +14,13 @@
 </template>
 
 <script setup lang="ts">
-const { breadcrumbs: links } = storeToRefs(useMetaStore())
+import { computed } from 'vue'
+import { useRoute } from '#imports'
+
+const route = useRoute()
+const metaStore = useMetaStore()
+
+const links = computed(() => metaStore.getBreadcrumbs(route.path, ''))
 </script>
 
 <style lang="scss">
@@ -67,6 +69,7 @@ const { breadcrumbs: links } = storeToRefs(useMetaStore())
   .breadcrumb__text {
     display: none;
   }
+
   .breadcrumb__link--last:after {
     content: unset;
   }

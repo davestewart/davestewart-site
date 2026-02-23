@@ -10,7 +10,7 @@
         <div class="layout__navSide">
           <div>
             <div>
-<!--              <NavSide />-->
+              <!--              <NavSide />-->
             </div>
           </div>
         </div>
@@ -23,9 +23,6 @@
           </div>
         </div>
       </div>
-
-      <!-- prev / next -->
-      <NavSurround v-if="route.path !== '/'" />
 
       <!-- scroll to top -->
       <ClientOnly>
@@ -45,10 +42,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts" setup>
-const route = useRoute()
-</script>
 
 <style>
 .page-enter-active,

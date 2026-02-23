@@ -1,23 +1,15 @@
 <template>
-  <component
-    :is="component"
-    v-if="data"
-    :page="data"
-  />
+  <component :is="component" v-if="data" :page="data" />
   <NotFound v-else />
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import PageView from '~/components/views/PageView.vue'
 import FolderView from '~/components/views/FolderView.vue'
 import NotFound from '~/components/views/404View.vue'
 
-const route = useRoute()
-const store = usePageStore()
-
-const { data, error } = await useAsyncData(`page-${route.path}`, () => {
-  return store.loadPage(route.path)
-})
+const { data, error } = await usePage()
 
 const component = computed(() => {
   if (error.value || !data.value) {
@@ -37,6 +29,4 @@ const component = computed(() => {
       return PageView
   }
 })
-
-usePageSeo(data.value)
 </script>

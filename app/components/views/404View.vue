@@ -25,14 +25,13 @@
 
       <section style="margin-top: 2rem">
         <p>Or pick a random project!</p>
-        <ThumbnailWall v-if="data" :pages="data.items" />
+        <ThumbnailWall v-if="items" :pages="items" />
       </section>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -41,11 +40,14 @@ useSeoMeta({
   title: '404',
 })
 
-const { data } = useAsyncData('404', async () => {
-  return useMetaStore().search({
+const metaStore = useMetaStore()
+
+const { data: items } = useAsyncData('items', async () => {
+  const { items } = metaStore.search({
     randomize: true,
     limit: 3,
   })
+  return items as MetaPost[]
 })
 
 const search = route.path
@@ -53,8 +55,4 @@ const search = route.path
   .filter(Boolean)
   .pop()
   ?.replace(/-/g, ' ') ?? ''
-
-const path = computed(() => {
-  return route.path.substring(1)
-})
 </script>

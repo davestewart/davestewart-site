@@ -22,36 +22,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute, useRouter } from '#app'
-import { onKeyStroke } from '@vueuse/core'
-import { getPath, getParentPath, getTitle } from '@content/utils'
+import { computed, inject, type Ref } from 'vue'
+import { useRoute } from '#app'
+import { getPath, getTitle } from '@content/utils'
+import type { PageContent } from '@content/types'
 
 const route = useRoute()
-const router = useRouter()
-const { surround: posts } = storeToRefs(useMetaStore())
+const page = inject<Ref<PageContent>>('page')
+const metaStore = useMetaStore()
 
-const prev = computed(() => posts?.value.at(0))
-const next = computed(() => posts?.value.at(1))
-
-// Keyboard navigation
-onKeyStroke('ArrowLeft', (e) => {
-  if (e.shiftKey && prev.value) {
-    router.push(getPath(prev.value))
-  }
+const posts = computed(() => {
+  const path = page?.value?._path ?? route.path
+  return metaStore.getSurround(path)
 })
 
-onKeyStroke('ArrowRight', (e) => {
-  if (e.shiftKey && next.value) {
-    router.push(getPath(next.value))
-  }
-})
-
-onKeyStroke('ArrowUp', (e) => {
-  if (e.shiftKey) {
-    router.push(getParentPath(route.path))
-  }
-})
+const prev = computed(() => posts.value.at(0))
+const next = computed(() => posts.value.at(1))
 </script>
 
 <style lang="scss">
@@ -94,6 +80,7 @@ onKeyStroke('ArrowUp', (e) => {
 
   &__next {
     text-align: right;
+
     span:after {
       @include arrow;
       background: url('~/assets/icons/arrow-right.svg') no-repeat;
