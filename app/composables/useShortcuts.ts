@@ -41,19 +41,19 @@ export function useShortcuts () {
 
   // surround navigation
   onKeyStroke('ArrowLeft', (e: KeyboardEvent) => {
-    if (e.shiftKey && prev.value) {
+    if (!isInput(e) && e.shiftKey && prev.value) {
       router.push(getPath(prev.value))
     }
   })
 
   onKeyStroke('ArrowRight', (e: KeyboardEvent) => {
-    if (e.shiftKey && next.value) {
+    if (!isInput(e) && e.shiftKey && next.value) {
       router.push(getPath(next.value))
     }
   })
 
   onKeyStroke('ArrowUp', (e: KeyboardEvent) => {
-    if (e.shiftKey) {
+    if (!isInput(e) && e.shiftKey) {
       router.push(getParentPath(route.path))
     }
   })
