@@ -1,4 +1,4 @@
-import { provide, queryContent, readonly, useAsyncData, useRoute, useNuxtApp } from '#imports'
+import { provide, queryContent, readonly, useAsyncData, useRoute } from '#imports'
 import { useMetaStore } from '../stores/meta'
 import { metaItemsToToc } from '../utils'
 import type { PageContent } from '../types'
@@ -13,7 +13,6 @@ export function usePage(path?: string) {
   const route = useRoute()
   const pagePath = path ?? route.path
 
-  const nuxtApp = useNuxtApp()
   const metaStore = useMetaStore()
 
   // fetch page data
@@ -39,12 +38,6 @@ export function usePage(path?: string) {
           : {},
       })
       .findOne()
-
-    // During Nuxt static generation, nitro worker resets Pinia state but does not rerun plugins.
-    // We restore it here, preserving the scoped context for relative $fetch capabilities
-    if (process.server && metaStore.items.length === 0) {
-      await nuxtApp.runWithContext(() => metaStore.initServer())
-    }
 
     // update folders with child folder toc
     if (content && content.type === 'folder') {

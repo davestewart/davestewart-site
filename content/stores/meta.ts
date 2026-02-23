@@ -69,7 +69,7 @@ export const useMetaStore = defineStore('meta', () => {
   // initialisation
   // ---------------------------------------------------------------------------------------------------------------------
 
-  async function initServer () {
+  async function loadItems () {
     // Can't have more than one await
     // @see https://www.youtube.com/watch?v=ofuKRZLtOdY
     const results = await Promise.all([
@@ -203,7 +203,7 @@ export const useMetaStore = defineStore('meta', () => {
     getUp,
 
     // initialisation
-    initServer,
+    loadItems,
   }
 })
 
