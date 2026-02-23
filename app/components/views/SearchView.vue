@@ -104,19 +104,13 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
+import type { LocationQueryRaw } from 'vue-router'
 import { useRoute, useRouter } from 'vue-router'
 import { onKeyStroke, useLocalStorage } from '@vueuse/core'
 import SlideUpDown from 'vue-slide-up-down'
-import {
-  canResetSearch,
-  cleanQuery,
-  isSearchFiltered,
-  makeSearchFilters,
-  parseQuery,
-} from '@content/stores/search'
+import { canResetSearch, cleanQuery, isSearchFiltered, makeSearchFilters, parseQuery } from '@content/stores/search'
 import { UiIcon } from '#components'
-import type { SearchOptions, SearchFilters } from '@content/types'
-import type { LocationQueryRaw } from 'vue-router'
+import type { SearchFilters, SearchOptions } from '@content/types'
 import useAnchor from '~/composables/useAnchor'
 
 const route = useRoute()
@@ -217,10 +211,10 @@ const pageDescription = computed(() => {
 const searchQuery = computed<SearchOptions>(() => {
   return {
     ...query,
-    // include unlisted if filtering
-    includeUnlisted: !!query.text || query.tags?.length > 0,
     // only include drafts in development
     includeDrafts: process.env.NODE_ENV === 'development',
+    // include unlisted if filtering
+    includeUnlisted: !!query.text || query.tags?.length > 0,
   }
 })
 
@@ -266,8 +260,8 @@ onMounted(() => {
   const { prefix } = useAnchor()
   if (prefix === 'year') {
     query.group = 'date'
-    options.showTags = false
     query.tagsFilter = undefined
+    options.showTags = false
   }
   nextTick(() => {
     searchInput.value?.focus()

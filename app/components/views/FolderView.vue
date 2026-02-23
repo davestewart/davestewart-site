@@ -5,11 +5,7 @@
       {{ page.description }}
     </p>
     <div class="pageContent">
-      <ContentRenderer
-        v-if="page.body?.children.length"
-        :value="page"
-        class="pageContent__intro"
-      />
+      <ContentRenderer v-if="page.body?.children.length" :value="page" class="pageContent__intro" />
       <PageTree :items="data.items" :format="options.format" />
     </div>
   </div>
@@ -17,26 +13,27 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRoute } from '#app'
 import useAnchor from '~/composables/useAnchor'
 
 defineProps<{
   page: PageContent
 }>()
 
-const store = usePageStore()
+const route = useRoute()
 
 const options = computed<Partial<SearchOptions>>(() => {
   return {
     mode: 'tree',
     format: 'image',
-    ...store.query,
+    ...route.query,
   }
 })
 
 const data = computed(() => {
   return useMetaStore().search({
     ...options.value,
-    path: store.path,
+    path: route.path,
     group: 'path',
   })
 })

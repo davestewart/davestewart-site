@@ -17,29 +17,11 @@
   </div>
 </template>
 
-<script lang="ts">
-/**
- * Convert Nuxt Content TOC to legacy format
- *
- * @param toc
- */
-function makeHeaders (toc: Toc): HeaderItem[] {
-  function flatten (links: TocLink[]): HeaderItem[] {
-    return links.flatMap(link => [
-      {
-        level: link.depth,
-        title: link.text,
-        slug: link.id,
-      },
-      ...(link.children ? flatten(link.children) : []),
-    ])
-  }
-
-  return flatten(toc.links).flat()
-}
-</script>
-
 <script setup lang="ts">
+import { computed, inject } from 'vue'
+import type { PageContent } from '@content/types'
+import type { Ref } from 'vue'
+
 interface Props {
   // change the text which precedes the links
   prompt?: string
@@ -71,8 +53,10 @@ const props = withDefaults(defineProps<Props>(), {
   type: 'auto',
 })
 
+const pageContext = inject<Ref<PageContent>>('page')
+
 const items = computed(() => {
-  const toc = props.toc ?? usePageStore().page?.body?.toc
+  const toc = props.toc ?? pageContext?.value?.body?.toc
   return toc
     ? makeHeaders(toc)
     : []
@@ -215,6 +199,28 @@ const html = computed(() => {
 
   return ''
 })
+</script>
+
+<script lang="ts">
+/**
+ * Convert Nuxt Content TOC to legacy format
+ *
+ * @param toc
+ */
+function makeHeaders (toc: Toc): HeaderItem[] {
+  function flatten (links: TocLink[]): HeaderItem[] {
+    return links.flatMap(link => [
+      {
+        level: link.depth,
+        title: link.text,
+        slug: link.id,
+      },
+      ...(link.children ? flatten(link.children) : []),
+    ])
+  }
+
+  return flatten(toc.links).flat()
+}
 </script>
 
 <style lang="scss">

@@ -16,8 +16,7 @@
                   route.path.startsWith(link.path) ? 'router-link-active' : '',
                 ]"
                 :title="link.description"
-              >{{ link.title }}
-              </NuxtLink>
+              >{{ link.title }}</NuxtLink>
             </div>
           </transition>
         </template>
@@ -27,10 +26,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const { top } = storeToRefs(useMetaStore())
+const metaStore = useMetaStore()
+
+const top = computed(() => metaStore.getTop(route.path))
 </script>
 
 <style lang="scss">

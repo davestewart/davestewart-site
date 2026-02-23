@@ -1,5 +1,14 @@
+import { inject, type Ref } from 'vue'
 import { isImage, isVideo } from '../utils'
-import type { MediaItem, MediaKey, MediaSource, MediaSourceOption, ResolveMedia, PageMedia } from '../types'
+import type {
+  MediaItem,
+  MediaKey,
+  MediaSource,
+  MediaSourceOption,
+  PageContent,
+  PageMedia,
+  ResolveMedia,
+} from '../types'
 
 type HasMedia = { media?: PageMedia }
 
@@ -12,7 +21,7 @@ type HasMedia = { media?: PageMedia }
 export function resolveMedia<K extends MediaKey> (key: K, page?: HasMedia | undefined): ResolveMedia<K> | undefined {
   // grab the injected page if not supplied
   const target = !page
-    ? usePageStore().page
+    ? inject<Ref<PageContent>>('page')?.value
     : page
 
   // return with the correct type, based on key; i.e. `gallery` will always be an array

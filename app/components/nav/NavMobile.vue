@@ -10,19 +10,12 @@
     </div>
 
     <div class="navMobile__links">
-      <NuxtLink
-        :to="up.path"
-        class="navMobile__link navMobile__up"
-        :class="up.class"
-      >
+      <NuxtLink :to="up.path" class="navMobile__link navMobile__up" :class="up.class">
         <UiIcon icon="arrow-up" :size="32" />
       </NuxtLink>
 
       <!-- search -->
-      <NuxtLink
-        to="/search/"
-        class="navMobile__link navMobile__search"
-      >
+      <NuxtLink to="/search/" class="navMobile__link navMobile__search">
         <UiIcon icon="search" :size="32" />
       </NuxtLink>
     </div>
@@ -53,13 +46,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const visible = ref(false)
 
-const { up } = storeToRefs(useMetaStore())
+const metaStore = useMetaStore()
+
+const up = computed(() => metaStore.getUp(route.path))
 
 watch(() => route.path, () => {
   visible.value = false
@@ -231,10 +226,12 @@ function hide () {
 
     &__header {
       display: none;
+
       @include md-up {
         display: block;
       }
     }
+
     @include md-down {
       &__section[data-name="navigation"] {
         display: none;
