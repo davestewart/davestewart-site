@@ -72,6 +72,15 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-07-15',
 
+  nitro: {
+    prerender: {
+      routes: [
+        '/api/content/meta',
+        '/api/content/tags',
+      ],
+    },
+  },
+
   vite: {
     plugins: [
       ViteYaml(),
