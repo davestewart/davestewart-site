@@ -8,15 +8,31 @@ function resolve (path: string) {
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  extends: [
-    'content',
-    resolve('themes/core'),
-  ],
+  // -------------------------------------------------------------------------------------------------------------------
+  // third-party
+  // -------------------------------------------------------------------------------------------------------------------
 
   modules: [
     '@nuxt/eslint',
     '@pinia/nuxt',
   ],
+
+  // -------------------------------------------------------------------------------------------------------------------
+  // layers and folders
+  // -------------------------------------------------------------------------------------------------------------------
+
+  extends: [
+    resolve('content'),
+    resolve('layers/themes/core'),
+  ],
+
+  dir: {
+    public: resolve('./public'),
+  },
+
+  alias: {
+    '@content': resolve('content'),
+  },
 
   components: {
     dirs: [
@@ -24,7 +40,13 @@ export default defineNuxtConfig({
     ],
   },
 
-  devtools: { enabled: true },
+  css: [
+    '~/assets/styles/index.scss',
+  ],
+
+  // -------------------------------------------------------------------------------------------------------------------
+  // application
+  // -------------------------------------------------------------------------------------------------------------------
 
   app: {
     head: {
@@ -45,21 +67,9 @@ export default defineNuxtConfig({
     },
   },
 
-  css: [
-    '~/assets/styles/index.scss',
-  ],
-
-  runtimeConfig: {
-    githubToken: process.env.GITHUB_TOKEN,
-  },
-
-  dir: {
-    public: resolve('./public'),
-  },
-
-  alias: {
-    '@content': resolve('content'),
-  },
+  // -------------------------------------------------------------------------------------------------------------------
+  // routing and rendering
+  // -------------------------------------------------------------------------------------------------------------------
 
   experimental: {
     appManifest: false,
@@ -70,7 +80,11 @@ export default defineNuxtConfig({
     },
   },
 
-  compatibilityDate: '2025-07-15',
+  routeRules: {
+    '/': { prerender: false, ssr: true },
+    '/404': { prerender: false, ssr: true },
+    '/**': { prerender: true },
+  },
 
   nitro: {
     prerender: {
@@ -81,10 +95,16 @@ export default defineNuxtConfig({
     },
   },
 
-  routeRules: {
-    '/': { prerender: false, ssr: true },
-    '/404': { prerender: false, ssr: true },
-    '/**': { prerender: true },
+  // -------------------------------------------------------------------------------------------------------------------
+  // build
+  // -------------------------------------------------------------------------------------------------------------------
+
+  compatibilityDate: '2025-07-15',
+
+  devtools: { enabled: true },
+
+  runtimeConfig: {
+    githubToken: process.env.GITHUB_TOKEN,
   },
 
   vite: {

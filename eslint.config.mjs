@@ -5,11 +5,10 @@ export default withNuxt(
   // Ignore patterns (migrated from .eslintignore)
   {
     ignores: [
-      'dist',
-      '.output',
       '.nuxt',
+      '.output',
+      'dist',
       'node_modules',
-      'app/utils/media.js', // Has unreachable code
     ],
   },
   {
@@ -42,6 +41,9 @@ export default withNuxt(
   // Your custom configs here will be merged with the Nuxt config
   {
     rules: {
+      // allow custom config order
+      'nuxt/nuxt-config-keys-order': 'off',
+
       // Stylistic rules
       // '@stylistic/indent': ['error', 2],
       '@stylistic/quotes': ['error', 'single'],
