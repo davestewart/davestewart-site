@@ -19,8 +19,11 @@ body {
 .siteMain {
   min-height: calc(100vh - 45px - 80px - 100px);
   position: relative;
+
+  // room for header
+  padding-top: 60px;
   @include md-up {
-    padding-top: 1rem;
+    padding-top: 72px;
   }
 }
 

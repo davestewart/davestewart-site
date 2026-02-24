@@ -27,51 +27,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { useWindowSize } from '@vueuse/core'
-
-const el = ref<HTMLElement | null>(null)
-const router = useRouter()
-
-// pad the body and app scrolling depending on the header height
-const offset = ref(51)
-useHead({
-  style: computed(() => {
-    const value = `${offset.value}px`
-    return [`
-      html {
-        scroll-padding-top: ${value};
-      }
-      .layout__default {
-        padding-top: ${value};
-      }
-    `]
-  }),
-})
-
-function updateHeader () {
-  const value = el.value?.offsetHeight
-  if (value) {
-    offset.value = value
-  }
-}
-
-const { width } = useWindowSize()
-watch(width, updateHeader)
-
-router.afterEach(updateHeader)
-
-onMounted(() => {
-  updateHeader()
-  nextTick(() => updateHeader())
-})
 </script>
 
 <style lang="scss">
-html {
-  scroll-padding-top: 51px;
-}
-
 // header and footer
 .siteHeader {
   position: fixed;
