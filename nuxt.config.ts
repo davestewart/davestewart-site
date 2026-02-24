@@ -22,7 +22,7 @@ export default defineNuxtConfig({
   // -------------------------------------------------------------------------------------------------------------------
 
   extends: [
-    resolve('content'),
+    resolve('layers/content'),
     resolve('layers/themes/core'),
   ],
 
@@ -31,7 +31,7 @@ export default defineNuxtConfig({
   },
 
   alias: {
-    '@content': resolve('content'),
+    '@content': resolve('layers/content'),
   },
 
   components: {
@@ -114,7 +114,7 @@ export default defineNuxtConfig({
     ],
     resolve: {
       alias: {
-        '@content': resolve('content'),
+        '@content': resolve('layers/content'),
       },
     },
     css: {

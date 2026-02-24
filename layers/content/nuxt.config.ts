@@ -30,7 +30,7 @@ function source (name: string, dir = '') {
   }
   return {
     driver: 'fs',
-    base: resolve(`../../${name}/${dir}`),
+    base: resolve(`../../../${name}/${dir}`),
   }
 }
 
