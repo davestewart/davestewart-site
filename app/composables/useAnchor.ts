@@ -1,5 +1,11 @@
 import { useRoute } from 'vue-router'
 
+/**
+ * Scrolls to the anchor on page load
+ *
+ * - looks for #folder-<hash>
+ * - looks for #year-<hash>
+ */
 export default function useAnchor () {
   const hash = useRoute().hash
   if (hash) {

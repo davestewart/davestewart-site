@@ -1,3 +1,8 @@
+/**
+ * Dynamically adds scripts to the page
+ *
+ * Seems to work for now. Not sure if Nuxt has a better way
+ */
 export function useEmbed (src: string) {
   let script: HTMLScriptElement | null = null
 

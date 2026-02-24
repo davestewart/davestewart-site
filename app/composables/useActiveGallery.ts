@@ -10,6 +10,10 @@ interface GalleryInstance {
 const galleries = ref<Map<symbol, GalleryInstance>>(new Map())
 const activeGalleryId = ref<symbol | null>(null)
 
+/**
+ * Isolates keyboard shortcuts to the
+ * currently visible / active gallery component
+ */
 export function useActiveGallery () {
   function register (element: HTMLElement) {
     const id = Symbol('gallery')

@@ -8,6 +8,11 @@ interface PreviewComponent {
 
 let previewInstance: PreviewComponent | null = null
 
+/**
+ * Registers root preview component
+ *
+ * Runs at app initialization
+ */
 export function setupPreview () {
   const previewRef = ref(null)
   onMounted(() => {
@@ -16,6 +21,11 @@ export function setupPreview () {
   return previewRef
 }
 
+/**
+ * Hooks into root preview component
+ *
+ * Used by individual content components to show/hide full-screen preview
+ */
 export function usePreview () {
   return {
     show: (source: HTMLElement) => {

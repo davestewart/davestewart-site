@@ -5,6 +5,9 @@ import { isInput, isModifier } from '~/utils/events'
 import { getParentPath, getPath } from '@content/utils'
 import { useMetaStore } from '#imports'
 
+/**
+ * Sets up global keyboard shortcuts for the whole site
+ */
 export function useShortcuts () {
   const route = useRoute()
   const router = useRouter()

@@ -1,3 +1,7 @@
+/**
+ * Intercepts clicks on internal links
+ * and scrolls smoothly to the target element
+ */
 export function useSmoothScroll () {
   const router = useRouter()
 

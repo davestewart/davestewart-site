@@ -9,17 +9,17 @@ This file is designed to help you understand the relationship between content an
 The types below are used to represent content and media:
 
 ```ts
-+- PageContent               // full page content
++- PageContent              // full page content
 |                           // ⚡️ Transformed in server/plugins/content.ts 
 |                           // 📄 Queried per page load  
 |
-+- ContentData              // common attributes
-|   +- FolderData           // only folder attributes
-|   +- PageData             // only page attributes
-|                           // 🗂️ Available on site load
++- MetaItem                 // item (page) metadata
+|   +- MetaFolder           // only folder metadata
+|   +- MetaPost             // only post metadata
+|                           // 🗂️ Injected on page load
 |
 +- MediaProps               // common media properties
-    +- MediaData            // parsed media attributes
+    +- MediaSource          // parsed media attributes
                             // ⚙️ Parsed in component setup
 ```
 
@@ -31,22 +31,19 @@ Effectively, everything flows from the original markdown. The final data are mad
 ### Stores
 
 ```ts
-// get the content store, which makes available ContentItems
-const content = usePageStore()
+// get the meta store, which stores all meta items
+const meta = useMetaStore()
 
-// get the content store, which makes available ContentItems
-const search = useSearchStore()
+// search the meta store
+const items = meta.search(query)
 ```
 
 ### Composables
 
-There are a few core composables to help with media processing.
+There are a couple of core composables to help with media processing:
 
 ```ts
-// get the current page from anywhere
-const page = usePage()
-
-// resolve specific media from page input
+// resolve specific media item from (optional) page input
 const media = resolveMedia(key, page)    
 
 // parse media props into final MediaItem 
@@ -89,9 +86,9 @@ All components take common `MediaProps` values including:
 - `text`: the media caption or alt text
 - `href`: the media link
 
-However, they also take a `media` prop:
+However, they also take a `<string>` `media` prop:
 
-- a sub-key of the current page's `media` frontmatter
+- a child-key of the current page's `media` frontmatter
 
 This allows the markdown to be flexible about to define media:
 
@@ -101,6 +98,8 @@ This allows the markdown to be flexible about to define media:
 ```markdown
 :media-video{media="featured"}
 ```
+
+> This may change in the future to directly access the media data. 
 
 ## Presentation components
 
@@ -116,3 +115,5 @@ These components combine data and media to render content structures:
     +- PageList             // renders a list of pages
         +- PageItem         // renders a page's title and description
 ```
+
+Items for each component should be fetched from the meta store.
