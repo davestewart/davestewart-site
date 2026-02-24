@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-interface PreviewComponent {
+export interface PreviewComponent {
   show: (source: HTMLElement) => void
   hide: (immediate?: boolean) => void
   visible: Ref<boolean>
@@ -13,12 +13,8 @@ let previewInstance: PreviewComponent | null = null
  *
  * Runs at app initialization
  */
-export function setupPreview () {
-  const previewRef = ref(null)
-  onMounted(() => {
-    previewInstance = previewRef.value as unknown as PreviewComponent
-  })
-  return previewRef
+export function registerPreview (instance: PreviewComponent) {
+  previewInstance = instance
 }
 
 /**
