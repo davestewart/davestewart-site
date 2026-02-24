@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { parseQuery } from '@content/stores/search'
+import { parseQuery } from '@content/utils/search'
 import type { SearchQuery } from '@content/types'
 
 const route = useRoute()

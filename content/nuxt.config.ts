@@ -47,7 +47,6 @@ export default defineLayerConfig({
     dirs: [
       'stores',
       'types',
-      'utils',
     ],
   },
 

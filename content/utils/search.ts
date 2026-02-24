@@ -1,4 +1,4 @@
-import { getParentPath } from '../utils'
+import { getParentPath } from './index'
 import type { MetaFolder, MetaItem, MetaPost, SearchFilters, SearchOptions, SearchQuery } from '../types'
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -416,7 +416,14 @@ function makeTree (nodes: (MetaFolder | MetaPost)[], rootPath: string): MetaItem
   const validNodes = nodes
     .filter(n => n.path !== rootPath && n.path.startsWith(rootPath))
     .map((p) => {
-      return clone(p)
+      if (p.type === 'folder') {
+        const { items: _items, ...rest } = p
+        return {
+          ...rest,
+          items: [],
+        }
+      }
+      return p
     })
 
   // Create a map for lookup

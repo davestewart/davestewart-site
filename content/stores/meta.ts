@@ -1,6 +1,6 @@
 import { computed, defineStore } from '#imports'
 import { getParentPath } from '../utils'
-import { queryItems } from './search'
+import { queryItems } from '../utils/search'
 import type { MetaItem, MetaPost, SearchQuery, TagGroup } from '../types'
 
 export type Link = {
