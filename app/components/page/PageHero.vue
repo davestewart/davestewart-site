@@ -75,10 +75,10 @@ const component = computed(() => {
 
 <style lang="scss">
 .pageHero {
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 
-  @include sm {
-    margin-bottom: 2rem;
+  @include md-down {
+    margin-bottom: 1.5rem;
   }
 }
 </style>

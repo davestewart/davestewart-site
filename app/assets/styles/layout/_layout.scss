@@ -21,10 +21,7 @@ body {
   position: relative;
 
   // room for header
-  padding-top: 60px;
-  @include md-up {
-    padding-top: 72px;
-  }
+  padding-top: 56px;
 }
 
 // horizontal layout - header
@@ -59,6 +56,14 @@ body {
 
   .layout__inner {
     flex-grow: 1;
+  }
+
+  .layout__search,
+  .layout__folder,
+  .layout__page {
+    @include lg {
+      padding-top: 1rem;
+    }
   }
 
   .layout__navSide > * {

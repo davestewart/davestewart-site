@@ -1,5 +1,5 @@
 <template>
-  <div class="page" :data-path="page._path">
+  <div class="layout__page" :data-path="page._path">
     <PageHero :page="page" />
     <h1>{{ page.title }}</h1>
     <p class="description">
@@ -49,5 +49,9 @@ const isPost = computed(() => {
     content: " ";
     background: linear-gradient(0deg, white, transparent);
   }
+}
+
+.layout__inner:has(.pageContent) {
+  padding-bottom: 0;
 }
 </style>

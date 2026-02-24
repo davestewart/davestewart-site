@@ -55,7 +55,7 @@ onMounted(() => {
   }
 
   & > .pageTree {
-    margin-top: 3.5rem;
+    margin-top: 2rem;
   }
 }
 </style>

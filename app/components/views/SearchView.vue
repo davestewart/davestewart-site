@@ -376,7 +376,7 @@ function onSubmit () {
 }
 
 .searchControls {
-  @include md-up {
+  @include md {
     //margin-left: -1rem;
   }
 

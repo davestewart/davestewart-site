@@ -50,10 +50,14 @@ h1 {
 p.description {
   font-family: $titleFont;
   margin-top: -.25em;
-  margin-bottom: 2rem;
   line-height: 1.25;
   font-size: 1.2em;
   color: $grey;
+
+  margin-bottom: 1rem;
+  @include md {
+    margin-bottom: 2rem;
+  }
 }
 
 strong {
@@ -126,6 +130,14 @@ em strong {
 
     & + p {
       margin-top: 0;
+    }
+  }
+
+  h1:first-child,
+  h2:first-child {
+    margin-top: 0.75em;
+    @include md-down {
+      margin-top: 0.5em;
     }
   }
 

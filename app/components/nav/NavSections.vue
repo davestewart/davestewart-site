@@ -43,7 +43,7 @@ const { sections } = useMetaStore()
   display: flex;
   width: 100%;
 
-  @include md-up {
+  @include md {
     &__sections {
       display: flex;
     }
@@ -68,7 +68,7 @@ const { sections } = useMetaStore()
     }
   }
 
-  @include md-up {
+  @include md {
     &__section {
       padding: 0 .5rem;
       width: 33.33%;

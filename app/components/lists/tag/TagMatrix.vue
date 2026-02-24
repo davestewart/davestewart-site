@@ -68,7 +68,7 @@ provide('handleTagClick', handleTagClick)
     }
   }
 
-  @include md-up {
+  @include md {
     &__groups {
       padding-left: 15px;
     }
@@ -93,7 +93,7 @@ provide('handleTagClick', handleTagClick)
   .tagList__tag {
     display: inline-block;
     font-size: 15px;
-    @include md-up {
+    @include md {
       margin: .1em .1em;
     }
   }

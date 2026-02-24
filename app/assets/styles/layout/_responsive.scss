@@ -17,14 +17,8 @@
   }
 }
 
-.hide-md {
-  @include md {
-    display: none !important;
-  }
-}
-
 .hide-md-up {
-  @include md-up {
+  @include md {
     display: none !important;
   }
 }
@@ -40,7 +34,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 
 .only-sm {
-  @include md-up {
+  @include md {
     display: none !important;
   }
 }

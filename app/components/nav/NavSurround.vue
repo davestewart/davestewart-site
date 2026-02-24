@@ -1,23 +1,21 @@
 <template>
-  <nav class="navSurround">
-    <div v-if="prev || next" class="layout__inner">
-      <!-- prev -->
-      <NuxtLink v-if="prev" :to="getPath(prev)" class="navSurround__link navSurround__prev">
-        <span class="navSurround__arrow" />
-        <div class="navSurround__text">
-          {{ getTitle(prev) }}
-        </div>
-      </NuxtLink>
-      <span v-else />
+  <nav v-if="prev || next" class="navSurround">
+    <!-- prev -->
+    <NuxtLink v-if="prev" :to="getPath(prev)" class="navSurround__link navSurround__prev">
+      <span class="navSurround__arrow" />
+      <div class="navSurround__text">
+        {{ getTitle(prev) }}
+      </div>
+    </NuxtLink>
+    <span v-else />
 
-      <!-- next -->
-      <NuxtLink v-if="next" :to="getPath(next)" class="navSurround__link navSurround__next">
-        <div class="navSurround__text">
-          {{ getTitle(next) }}
-        </div>
-        <span class="navSurround__arrow" />
-      </NuxtLink>
-    </div>
+    <!-- next -->
+    <NuxtLink v-if="next" :to="getPath(next)" class="navSurround__link navSurround__next">
+      <div class="navSurround__text">
+        {{ getTitle(next) }}
+      </div>
+      <span class="navSurround__arrow" />
+    </NuxtLink>
   </nav>
 </template>
 
@@ -42,16 +40,13 @@ const next = computed(() => posts.value.at(1))
 
 <style lang="scss">
 .navSurround {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid $grey-lightest;
+  padding: 0 1rem;
   line-height: 1.4em;
   vertical-align: top;
-
-  .layout__inner {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    border-top: 1px solid $grey-lightest;
-    padding: 0 1rem;
-  }
+  font-size: 14px;
 
   &__link {
     display: flex;

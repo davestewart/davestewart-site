@@ -168,7 +168,7 @@ onMounted(() => {
   user-select: none;
   pointer-events: all;
 
-  @include md-up {
+  @include md {
     margin: -2rem 0;
   }
 

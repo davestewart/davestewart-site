@@ -78,6 +78,8 @@ export default {
 </script>
 
 <style lang="scss">
+@use "sass:color";
+
 .promo-container {
   &:after {
     position: fixed;
@@ -126,7 +128,7 @@ export default {
 
     &:hover {
       text-decoration: none;
-      background: lighten($grey-lightest, 5%);
+      background: color.adjust($grey-lightest, $lightness: 2%);
     }
   }
 
@@ -135,7 +137,7 @@ export default {
     color: white;
 
     &:hover {
-      background: lighten($accentColor, 5%);
+      background: color.adjust($accentColor, $lightness: 5%);
     }
   }
 

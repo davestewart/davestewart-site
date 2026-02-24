@@ -54,19 +54,13 @@ const description = computed(() => {
 
   @include shadow-md;
 
-  // box-shadow: 0 8px 8px 3px rgba($grey-lightest, .4);
-
-  @include md {
-    box-shadow: 0 5px 6px rgba(59, 92, 143, 0.05);
-  }
-
   // stripes for transparent thumbnails
   &__image {
     overflow: hidden;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
 
-    @include md-up {
+    @include md {
       background-image: linear-gradient(0deg, #f2f6f8 0%, #FFF 35%);
       a {
         @include striped(transparent, white);

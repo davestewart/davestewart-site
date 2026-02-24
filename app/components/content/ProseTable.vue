@@ -23,7 +23,7 @@
       margin: 1rem 0;
     }
 
-    @include md-up {
+    @include md {
       min-width: 840px; // normal content width
     }
 

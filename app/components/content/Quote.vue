@@ -27,7 +27,7 @@ defineProps({
 .quote {
   box-sizing: border-box;
 
-  @include md-up {
+  @include md {
     padding: 1.5rem 2rem;
   }
 
@@ -79,7 +79,7 @@ defineProps({
       }
     }
 
-    @include md-up {
+    @include md {
       padding: 3rem 5rem;
       .quote__text {
         font-size: 2em;

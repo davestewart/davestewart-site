@@ -157,7 +157,7 @@ function hide () {
       height: 100vh;
     }
 
-    @include md-up {
+    @include md {
       font-size: 1.3em;
       padding: .5rem;
       top: 45px;
@@ -227,7 +227,7 @@ function hide () {
     &__header {
       display: none;
 
-      @include md-up {
+      @include md {
         display: block;
       }
     }
@@ -238,7 +238,7 @@ function hide () {
       }
     }
 
-    @include md-up {
+    @include md {
       &__section {
         border-right: 1px dashed $grey-lightest;
         width: max-content;
