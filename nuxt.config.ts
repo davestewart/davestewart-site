@@ -22,16 +22,20 @@ export default defineNuxtConfig({
   // -------------------------------------------------------------------------------------------------------------------
 
   extends: [
-    resolve('layers/content'),
-    resolve('layers/themes/core'),
+    // earlier priority wins;this setup allows themes to override base
+    resolve('layers/themes/main'),
+    resolve('layers/themes/base'),
+    // resolve('layers/content'),
   ],
-
-  dir: {
-    public: resolve('./public'),
-  },
 
   alias: {
     '@content': resolve('layers/content'),
+    '@base': resolve('layers/themes/base/app'),
+    '@main': resolve('layers/themes/main/app'),
+  },
+
+  dir: {
+    public: resolve('./public'),
   },
 
   components: {
