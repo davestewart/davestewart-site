@@ -140,6 +140,7 @@ Data
   - [x] Make sure Up navigation respects full path in blog
   - [ ] In transform, combine path and permalink
   - [ ] Include `_path` in returned
+  - [ ] Include reading time in meta
 
 Components
 

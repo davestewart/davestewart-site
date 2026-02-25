@@ -11,7 +11,7 @@ The architecture supports arbitrary `themes` sub-folders which:
 
 ## Structure
 
-```
+```text
 + app                         1️⃣ Core functionality
 |   +- assets
 |   +- plugins
