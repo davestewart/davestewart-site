@@ -21,6 +21,15 @@ export default defineNuxtConfig({
     resolve('./assets/styles/index.scss'),
   ],
 
+  nitro: {
+    prerender: {
+      crawlLinks: true,
+      routes: [
+        '/sitemap/',
+      ],
+    },
+  },
+
   vite: {
     css: {
       preprocessorOptions: {
