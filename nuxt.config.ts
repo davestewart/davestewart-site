@@ -29,6 +29,7 @@ export default defineNuxtConfig({
     '@content': resolve('layers/1_content'),
   },
 
+  // include layers for app include scope
   typescript: {
     tsConfig: {
       include: [

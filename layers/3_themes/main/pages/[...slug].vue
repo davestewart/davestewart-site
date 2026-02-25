@@ -9,7 +9,7 @@ import PageView from '../components/views/PageView.vue'
 import FolderView from '../components/views/FolderView.vue'
 import NotFound from '../components/views/404View.vue'
 
-const { data, error } = await usePage()
+const { data, error } = await usePage({ noTitle: true })
 
 const component = computed(() => {
   if (error.value || !data.value) {

@@ -174,7 +174,6 @@ onMounted(() => {
 
   #logo, #hello, #splash {
     pointer-events: bounding-box;
-    cursor: grab;
   }
 
   &.bounce {

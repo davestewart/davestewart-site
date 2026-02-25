@@ -31,12 +31,6 @@ function setType (file: ParsedContent) {
 
 const today = new Date().toISOString().replace(/T.+?Z/, 'T00:00:00.000Z')
 
-function setDate (file: any) {
-  if (!file.date) {
-    // file.date = today
-  }
-}
-
 /**
  * Set the visibility status so it can be omitted from production
  */
@@ -82,26 +76,13 @@ function setPermalink (file: ParsedContent) {
   }
 }
 
-/**
- * Modify file content
- */
-function setContent (file: ParsedContent) {
-  const elements = file.body?.children || []
-  const index = elements.findIndex((element: any) => element.tag === 'h1' && !element.props.className)
-  if (index > -1) {
-    elements.splice(index, 1)
-  }
-}
-
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('content:file:afterParse' as any, (file: any) => {
     if (file._extension === 'md') {
       setPath(file)
       setType(file)
       setStatus(file)
-      setDate(file)
       setPermalink(file)
-      setContent(file)
     }
   })
 })

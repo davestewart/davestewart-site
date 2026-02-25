@@ -30,7 +30,7 @@ $widthGap: 0px;
 $widthOuter: calc(#{$widthPage} + #{$widthAside * 2} + #{$widthGap * 2});
 
 // $font
-$titleFont: europa, sans;
+$titleFont: europa, sans-serif;
 
 $bodyFont: 'Noto Sans', 'Open Sans', Roboto, 'SF Pro', sans-serif;
 $bodySize: 15px;

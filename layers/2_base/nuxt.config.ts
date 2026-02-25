@@ -6,10 +6,17 @@ function resolve (path: string) {
   return fileURLToPath(new URL(path, import.meta.url))
 }
 
+const PATH = resolve('.')
+
 export default defineNuxtConfig({
-  alias: {
-    '@base': resolve('./'),
+  dir: {
+    app: PATH,
   },
+
+  alias: {
+    '@base': PATH,
+  },
+
   components: [
     { path: './components', pathPrefix: false },
   ],

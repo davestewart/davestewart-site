@@ -16,7 +16,7 @@ defineProps<{
 
   h1 {
     font-weight: normal;
-    margin-top: -.5rem;
+    margin-top: -.5rem !important;
   }
 
   h2 {

@@ -1,18 +1,21 @@
 import { fileURLToPath } from 'node:url'
 
-function resolve (path: string) {
+function resolve(path: string) {
   return fileURLToPath(new URL(path, import.meta.url))
 }
+
+const theme = process.env.THEME ?? 'main'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   extends: [
-    resolve('./main'),
+    resolve(theme),
   ],
 
+  // do we need to alias all layers to make sure that aliases always work?
   alias: {
     '@main': resolve('./main'),
-    '@grid': resolve('./grid'),
+    '@pico': resolve('./pico'),
   },
 
   typescript: {

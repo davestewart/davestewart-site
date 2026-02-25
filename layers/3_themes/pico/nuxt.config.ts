@@ -1,21 +1,25 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import { fileURLToPath } from 'node:url'
 
-function resolve (path: string) {
+function resolve(path: string) {
   // @ts-ignore
   return fileURLToPath(new URL(path, import.meta.url))
 }
 
+const PATH = resolve('.')
+
 export default defineNuxtConfig({
   dir: {
-    app: resolve('./'),
+    app: PATH
   },
 
-  components: {
-    dirs: [
-      { path: resolve('../main/components'), pathPrefix: false },
-    ],
+  alias: {
+    '#grid': PATH,
   },
+
+  components: [
+    { path: resolve('../main/components'), pathPrefix: false },
+  ],
 
   vite: {
     css: {

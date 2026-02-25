@@ -9,9 +9,9 @@
 import { watch } from 'vue'
 import { useRoute } from '#app'
 import { useWindowScroll } from '@vueuse/core'
-import { type PreviewComponent, registerPreview } from '~/composables/usePreview'
-import { useShortcuts } from '~/composables/useShortcuts'
-import { useSmoothScroll } from '~/composables/useSmoothScroll'
+import { type PreviewComponent, registerPreview } from '@base/composables/usePreview'
+import { useShortcuts } from '@base/composables/useShortcuts'
+import { useSmoothScroll } from '@base/composables/useSmoothScroll'
 import type { Preview } from '#components'
 
 const route = useRoute()

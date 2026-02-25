@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import SmartHeader from '~/components/wrappers/SmartHeader.vue'
+import SmartHeader from '@base/components/wrappers/SmartHeader.vue'
 </script>
 
 <style lang="scss">

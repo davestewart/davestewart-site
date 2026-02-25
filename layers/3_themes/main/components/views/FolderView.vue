@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from '#app'
-import useAnchor from '~/composables/useAnchor'
+import useAnchor from '@base/composables/useAnchor'
 
 defineProps<{
   page: PageContent

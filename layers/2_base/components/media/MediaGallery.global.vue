@@ -53,8 +53,8 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { usePreview } from '~/composables/usePreview'
-import { useActiveGallery } from '~/composables/useActiveGallery'
+import { usePreview } from '@base/composables/usePreview'
+import { useActiveGallery } from '@base/composables/useActiveGallery'
 import { getKeys, isNotModifier, stopEvent } from '~/utils/events'
 import { offset } from '~/utils/array'
 import { storage } from '~/utils/storage'

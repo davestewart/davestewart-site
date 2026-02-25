@@ -3,15 +3,18 @@ import { useMetaStore } from '../stores/meta'
 import { metaItemsToToc } from '../utils'
 import type { PageContent } from '../types'
 
+interface UsePageOptions {
+  path?: string
+  noTitle?: boolean
+}
+
 /**
  * Load content, provide it, and update seo
- *
- * @param path Optional page path (defaults to current route)
- * @returns Async data object
  */
-export function usePage(path?: string) {
+export function usePage (options: UsePageOptions = {}) {
   const route = useRoute()
-  const pagePath = path ?? route.path
+  const pagePath = options.path ?? route.path
+  const noTitle = options.noTitle ?? false
 
   const metaStore = useMetaStore()
 
@@ -49,6 +52,15 @@ export function usePage(path?: string) {
 
       if (content.body) {
         content.body.toc = metaItemsToToc(items)
+      }
+    }
+
+    // strip title
+    if (noTitle) {
+      const elements = content.body?.children || []
+      const index = elements.findIndex(element => element.tag === 'h1' && !element?.props?.className)
+      if (index > -1) {
+        elements.splice(index, 1)
       }
     }
 

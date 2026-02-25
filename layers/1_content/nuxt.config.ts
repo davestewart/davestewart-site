@@ -28,6 +28,7 @@ function source (name: string, dir = '') {
       dir,
     }
   }
+  // local repo copy for development
   return {
     driver: 'fs',
     base: resolve(`../../../${name}/${dir}`),

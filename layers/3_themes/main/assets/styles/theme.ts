@@ -34,7 +34,7 @@ const theme: Theme = {
   greyLightest: '#EAECEF',
   widthPage: '840px',
   widthHome: '940px',
-  titleFont: 'europa, sans',
+  titleFont: 'europa, sans-serif',
   bodyFont: '\'Open Sans\', Roboto, \'SF Pro\', sans-serif',
   codeFont: '\'Roboto Mono\', monospaced',
   quoteFont: 'Sanchez, Garamond, Times, serif',
