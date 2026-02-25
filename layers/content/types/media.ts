@@ -2,8 +2,7 @@
 // utilities
 // ---------------------------------------------------------------------------------------------------------------------
 
-import type { LooseUnion } from './index'
-
+export type LooseUnion<T extends string> = T | (string & {})
 /**
  * Utility type to create media props which allow either a media key or a set of attributes
  */
