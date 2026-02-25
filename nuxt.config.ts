@@ -21,28 +21,23 @@ export default defineNuxtConfig({
   // layers and folders
   // -------------------------------------------------------------------------------------------------------------------
 
-  extends: [
-    // resolve('layers/content'),
-    resolve('themes/main'),
-    resolve('themes/base'),
-  ],
-
   dir: {
     public: resolve('./public'),
   },
 
   alias: {
-    '@content': resolve('layers/content'),
+    '@content': resolve('layers/1_content'),
   },
 
   typescript: {
     tsConfig: {
       include: [
-        '../themes/*/*.d.ts',
-        '../themes/*/**/*',
-        // '../themes/*/app/**/*',
-        '../themes/*/shared/**/*.d.ts',
-        '../themes/*/modules/*/runtime/**/*',
+        '../layers/1_content/*.d.ts',
+        '../layers/1_content/**/*',
+        '../layers/2_base/*.d.ts',
+        '../layers/2_base/**/*',
+        '../layers/3_themes/*/*.d.ts',
+        '../layers/3_themes/*/**/*',
       ],
     },
   },
@@ -117,7 +112,7 @@ export default defineNuxtConfig({
     ],
     resolve: {
       alias: {
-        '@content': resolve('layers/content'),
+        '@content': resolve('layers/1_content'),
       },
     },
   },

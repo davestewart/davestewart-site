@@ -8,9 +8,8 @@ function resolve (path: string) {
 
 export default defineNuxtConfig({
   alias: {
-    // '@content': resolve('../../layers/content'),
+    '@base': resolve('./'),
   },
-
   components: [
     { path: './components', pathPrefix: false },
   ],
