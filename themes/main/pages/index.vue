@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import HomeView from '~/components/views/HomeView.vue'
+import HomeView from '../components/views/HomeView.vue'
 
 const { data } = await usePage('/')
 </script>

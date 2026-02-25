@@ -5,8 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { resolveMedia, useMedia } from '@content/composables/useMedia'
-import type { MediaBase, MediaItem, MediaKey } from '@content/types'
+import type { MediaBase, MediaKey, MediaItem } from '@content/types/media'
 
 // Either a media key, or base media properties
 type MediaEmbedProps =
@@ -15,13 +14,14 @@ type MediaEmbedProps =
 
 const props = defineProps<MediaEmbedProps>()
 
+
 const media = props.src
   ? { src: props.src!, width: props.width, height: props.height }
   : resolveMedia(props.media ?? 'embed')
 
 const source = useMedia(media) as MediaItem
 
-function onLoad (event: Event) {
+function onLoad(event: Event) {
   (event.target as HTMLElement).style.opacity = '1'
 }
 </script>

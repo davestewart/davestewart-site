@@ -4,21 +4,12 @@
     class="mediaGallery"
     :style="widthStyle"
     :data-type="images.length === 1 ? 'image' : 'gallery'"
-    :class="{ loading }"
-  >
+    :class="{ loading }">
     <!-- slides -->
     <div class="mediaGallery__slidesContainer" :style="containerStyle">
       <div class="mediaGallery__slides">
-        <div
-          v-for="(image, i) in images"
-          :key="image?.src"
-          class="mediaGallery__slide"
-        >
-          <MediaImage
-            v-if="renderImage(i)"
-            v-show="index === i"
-            :source="image"
-          />
+        <div v-for="(image, i) in images" :key="image?.src" class="mediaGallery__slide">
+          <MediaImage v-if="renderImage(i)" v-show="index === i" :source="image" />
         </div>
       </div>
       <div class="mediaGallery__slidesNav">
@@ -31,10 +22,7 @@
     <!-- navigation -->
     <div v-if="images.length > 1" class="mediaGallery__nav">
       <!-- prev -->
-      <span
-        class="mediaGallery__navButton mediaGallery__navPrev"
-        @click.prevent.stop="prev"
-      >{{ prevText }}</span>
+      <span class="mediaGallery__navButton mediaGallery__navPrev" @click.prevent.stop="prev">{{ prevText }}</span>
 
       <!-- dots -->
       <div class="mediaGallery__pagination">
@@ -50,10 +38,7 @@
       </div>
 
       <!-- next -->
-      <span
-        class="mediaGallery__navButton mediaGallery__navNext"
-        @click.prevent.stop="next"
-      >{{ nextText }}</span>
+      <span class="mediaGallery__navButton mediaGallery__navNext" @click.prevent.stop="next">{{ nextText }}</span>
     </div>
 
     <!-- caption -->
@@ -70,12 +55,11 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { usePreview } from '~/composables/usePreview'
 import { useActiveGallery } from '~/composables/useActiveGallery'
-import { resolveMedia, useMedia } from '@content/composables/useMedia'
 import { getKeys, isNotModifier, stopEvent } from '~/utils/events'
 import { offset } from '~/utils/array'
 import { storage } from '~/utils/storage'
 import MediaImage from './MediaImage.vue'
-import type { MediaItem } from '@content/types'
+import type { MediaItem, MediaSource } from '@content/types/media'
 
 interface Props {
   // media props
@@ -256,6 +240,7 @@ $colorHover: #888;
 
   .pageContent & {
     margin: 2rem auto 3rem;
+
     @include sm {
       margin: 1rem auto;
     }

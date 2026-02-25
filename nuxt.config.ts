@@ -22,31 +22,30 @@ export default defineNuxtConfig({
   // -------------------------------------------------------------------------------------------------------------------
 
   extends: [
-    // earlier priority wins;this setup allows themes to override base
-    resolve('layers/themes/main'),
-    resolve('layers/themes/base'),
     // resolve('layers/content'),
+    resolve('themes/main'),
+    resolve('themes/base'),
   ],
-
-  alias: {
-    '@content': resolve('layers/content'),
-    '@base': resolve('layers/themes/base/app'),
-    '@main': resolve('layers/themes/main/app'),
-  },
 
   dir: {
     public: resolve('./public'),
   },
 
-  components: {
-    dirs: [
-      { path: '~/components', pathPrefix: false },
-    ],
+  alias: {
+    '@content': resolve('layers/content'),
   },
 
-  css: [
-    '~/assets/styles/index.scss',
-  ],
+  typescript: {
+    tsConfig: {
+      include: [
+        '../themes/*/*.d.ts',
+        '../themes/*/**/*',
+        // '../themes/*/app/**/*',
+        '../themes/*/shared/**/*.d.ts',
+        '../themes/*/modules/*/runtime/**/*',
+      ],
+    },
+  },
 
   // -------------------------------------------------------------------------------------------------------------------
   // application
@@ -119,16 +118,6 @@ export default defineNuxtConfig({
     resolve: {
       alias: {
         '@content': resolve('layers/content'),
-      },
-    },
-    css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: `
-          @use "~/assets/styles/_variables.scss" as *;
-          @use "~/assets/styles/layout/_mixins.scss" as *;
-          `,
-        },
       },
     },
   },

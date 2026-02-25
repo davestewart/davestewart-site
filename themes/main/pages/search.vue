@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import SearchView from '~/components/views/SearchView.vue'
+import SearchView from '../components/views/SearchView.vue'
 
 definePageMeta({
   title: 'Search',

@@ -10,7 +10,7 @@
       ref="el"
       class="siteHeader"
       :style="{
-        ...style,
+        ...style ?? {},
         boxShadow: `0 0 calc(var(--value) * 20px) rgba(0, 0, 0, 1)`,
       }"
     >
@@ -27,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import SmartHeader from '~/components/wrappers/SmartHeader.vue'
 </script>
 
 <style lang="scss">

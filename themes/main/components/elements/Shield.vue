@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue'
-import { storage } from '../../utils/storage.js'
+import { storage } from '~/utils/storage.js'
 
 const props = defineProps<{
   github: string

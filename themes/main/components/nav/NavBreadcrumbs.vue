@@ -48,7 +48,7 @@ const links = computed(() => metaStore.getBreadcrumbs(route.path, ''))
     width: 18px;
     height: 16px;
     margin: 0 2px;
-    background: url('../../assets/icons/arrow-right.svg') no-repeat;
+    background: url('../../../../../../app/assets/icons/arrow-right.svg') no-repeat;
     background-position-y: -1px;
     vertical-align: middle;
     content: ' ';

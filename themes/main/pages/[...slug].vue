@@ -5,9 +5,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import PageView from '~/components/views/PageView.vue'
-import FolderView from '~/components/views/FolderView.vue'
-import NotFound from '~/components/views/404View.vue'
+import PageView from '../components/views/PageView.vue'
+import FolderView from '../components/views/FolderView.vue'
+import NotFound from '../components/views/404View.vue'
 
 const { data, error } = await usePage()
 
