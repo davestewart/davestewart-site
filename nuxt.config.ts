@@ -21,28 +21,27 @@ export default defineNuxtConfig({
   // layers and folders
   // -------------------------------------------------------------------------------------------------------------------
 
-  extends: [
-    resolve('content'),
-    resolve('layers/themes/core'),
-  ],
-
   dir: {
     public: resolve('./public'),
   },
 
   alias: {
-    '@content': resolve('content'),
+    '@content': resolve('layers/1_content'),
   },
 
-  components: {
-    dirs: [
-      { path: '~/components', pathPrefix: false },
-    ],
+  // include layers for app include scope
+  typescript: {
+    tsConfig: {
+      include: [
+        '../layers/1_content/*.d.ts',
+        '../layers/1_content/**/*',
+        '../layers/2_base/*.d.ts',
+        '../layers/2_base/**/*',
+        '../layers/3_themes/*/*.d.ts',
+        '../layers/3_themes/*/**/*',
+      ],
+    },
   },
-
-  css: [
-    '~/assets/styles/index.scss',
-  ],
 
   // -------------------------------------------------------------------------------------------------------------------
   // application
@@ -86,15 +85,6 @@ export default defineNuxtConfig({
     '/**': { prerender: true },
   },
 
-  nitro: {
-    prerender: {
-      crawlLinks: true,
-      routes: [
-        '/sitemap/',
-      ],
-    },
-  },
-
   // -------------------------------------------------------------------------------------------------------------------
   // build
   // -------------------------------------------------------------------------------------------------------------------
@@ -114,17 +104,7 @@ export default defineNuxtConfig({
     ],
     resolve: {
       alias: {
-        '@content': resolve('content'),
-      },
-    },
-    css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: `
-          @use "~/assets/styles/_variables.scss" as *;
-          @use "~/assets/styles/layout/_mixins.scss" as *;
-          `,
-        },
+        '@content': resolve('layers/1_content'),
       },
     },
   },
