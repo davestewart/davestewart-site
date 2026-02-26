@@ -60,7 +60,7 @@ export function usePageSeo (page?: Partial<PageContent>) {
     ],
   })
 
-  useSeoMeta({
+  return useSeoMeta({
     // basic
     title,
     description,

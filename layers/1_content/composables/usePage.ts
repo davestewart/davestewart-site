@@ -13,10 +13,11 @@ interface UsePageOptions {
  */
 export function usePage (options: UsePageOptions = {}) {
   const route = useRoute()
+  const metaStore = useMetaStore()
+  const nuxtApp = useNuxtApp()
+
   const pagePath = options.path ?? route.path
   const noTitle = options.noTitle ?? false
-
-  const metaStore = useMetaStore()
 
   // fetch page data
   const res = useAsyncData(`page-${pagePath}`, async () => {
@@ -64,6 +65,12 @@ export function usePage (options: UsePageOptions = {}) {
       }
     }
 
+    // update seo
+    await nuxtApp.runWithContext(() => {
+      return usePageSeo(content)
+    })
+
+    // return
     return content
   })
 
