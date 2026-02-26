@@ -9,42 +9,46 @@ The architecture supports arbitrary `themes` sub-folders which:
 - build on core functionality provided by Nuxt and Nuxt Content
 - allow for progressive overloading of the `base` theme logic and presentation
 
+See the [themes](./3_themes) folder for a list of planned themes.
+
 ## Structure
 
 ```text
-+ app                         1️⃣ Core functionality
++ app                           1️⃣ Core functionality
 |   +- assets
 |   +- plugins
 |   +- utils
 |
 +- layers
-		|
-    +- 1_content           		2️⃣ Nuxt Content functionality
-    |		+- composables
-    |		+- server
-    |		+- store
-    |		+- ...
-    |		+- nuxt.config.ts
     |
-    +- 2_base									3️⃣ Base theme functionality (content, media, icons, common)
-    |		+- components
-    |		+- composables
-    |		+- nuxt.config.ts
+    +- 1_content                2️⃣ Nuxt Content functionality
+    |    +- composables
+    |    +- server
+    |    +- store
+    |    +- types
+    |    +- utils
+    |    +- nuxt.config.ts
     |
-    +- 3_themes								4️⃣ Primary theme functionality (routes, styling, animation, etc)
+    +- 2_base                   3️⃣ Base theme functionality (content, media, icons, common)
+    |    +- components
+    |    +- composables
+    |    +- nuxt.config.ts
+    |
+    +- 3_themes                 4️⃣ Primary theme functionality (routes, styling, animation, etc)
         |
-        +- main								🔴 Main theme (core brand, whistles and bells)
-        |		+- assets
-        |		+- components
-        |		+- layouts
-        |		+- pages
+        +- main                 🔴 Main theme (core brand, whistles and bells)
+        |    +- assets
+        |    +- components
+        |    +- layouts
+        |    +- pages
+        |    +- ...
         |
-        +- pico								🟡 Pico theme (simple example, just a few files)
-        |		+- ...
+        +- pico                 🟡 Pico theme (simple example, just a few files)
+        |    +- ...
         |
-        +- ...								🟢 Other themes (grids, 3d animation, ai-designed, etc...)
+        +- ...                  🟢 Other themes (grids, 3d animation, ai-designed, etc...)
         |
-        +- nuxt.config.ts			⚙️ Build and theme orchestration
+        +- nuxt.config.ts       ⚙️ Build and theme orchestration
 ```
 
 
