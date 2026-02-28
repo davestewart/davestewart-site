@@ -28,7 +28,8 @@
     "shiki": "^1.22.0",
     "throttle-debounce": "^5.0.2",
     "vite-svg-loader": "^5.1.0",
-    "vue-slide-up-down": "^3.0.0"
+    "vue-slide-up-down": "^3.0.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@modyfi/vite-plugin-yaml": "^1.1.1",

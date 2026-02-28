@@ -6,7 +6,7 @@
     </p>
     <div class="pageContent">
       <ContentRenderer v-if="page.body?.children.length" :value="page" class="pageContent__intro" />
-      <PageTree :items="data.items" :format="options.format" />
+      <PageTree :items="items" :format="options.format" />
     </div>
   </div>
 </template>
@@ -31,13 +31,17 @@ const options = computed<Partial<SearchOptions>>(() => {
   }
 })
 
-const data = computed(() => {
+// extract child folders and pages
+const items = computed(() => {
   return metaStore.search({
     ...options.value,
     path: route.path,
     group: 'path',
-  })
+  }).items
 })
+
+// provide folders to any child components
+provide('folders', items.value)
 
 onMounted(() => {
   useAnchor()

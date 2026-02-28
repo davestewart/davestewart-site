@@ -1,71 +1,26 @@
-import { provide, queryContent, readonly, useAsyncData, useRoute } from '#imports'
-import { useMetaStore } from '../stores/meta'
-import { metaItemsToToc } from '../utils'
-import type { PageContent } from '../types'
+import { provide, readonly, useAsyncData, useRoute } from '#imports'
 
-interface UsePageOptions {
-  path?: string
-  noTitle?: boolean
-}
+import type { PageQuery as PageOptions } from '@content/server/api/content/page'
 
 /**
  * Load content, provide it, and update seo
  */
-export function usePage (options: UsePageOptions = {}) {
+export function usePage (options: PageOptions = {}) {
   const route = useRoute()
-  const metaStore = useMetaStore()
   const nuxtApp = useNuxtApp()
 
-  const pagePath = options.path ?? route.path
-  const noTitle = options.noTitle ?? false
+  const path = options.path ?? route.path
 
   // fetch page data
-  const res = useAsyncData(`page-${pagePath}`, async () => {
-    const skip = {
-      $not: {
-        $or: [
-          { status: 'draft' },
-          { status: 'scheduled' },
-        ],
-      },
-    }
+  const res = useAsyncData(`page-${path}`, async () => {
+    const content = await $fetch('/api/content/page', {
+      query: {
+        path,
+        ...options,
+      } satisfies PageOptions,
+    })
 
-    // page
-    const content = await queryContent<PageContent>()
-      .where({
-        $or: [
-          { _path: pagePath },
-          { permalink: pagePath },
-        ],
-        ...process.env.NODE_ENV === 'production'
-          ? skip
-          : {},
-      })
-      .findOne()
-
-    // update folders with child folder toc
-    if (content && content.type === 'folder') {
-      const items = metaStore.search({
-        ...route.query,
-        path: pagePath,
-        group: 'path',
-      }).items
-
-      if (content.body) {
-        content.body.toc = metaItemsToToc(items)
-      }
-    }
-
-    // strip title
-    if (noTitle) {
-      const elements = content.body?.children || []
-      const index = elements.findIndex(element => element.tag === 'h1' && !element?.props?.className)
-      if (index > -1) {
-        elements.splice(index, 1)
-      }
-    }
-
-    // update seo
+    // update seo on server
     await nuxtApp.runWithContext(() => {
       return usePageSeo(content)
     })
@@ -74,27 +29,11 @@ export function usePage (options: UsePageOptions = {}) {
     return content
   })
 
-  // provide reactive data to children synchronously before awaiting in callers
+  // update seo in client (not sure why we need to do this twice)
+  usePageSeo(res.data.value)
+
+  // provide reactive page data to children
   provide('page', readonly(res.data))
-
-  // update seo when loaded
-  watchEffect(() => {
-    const content = res.data.value
-    if (res.data.value) {
-      usePageSeo(res.data.value)
-      if (content && content.type === 'folder') {
-        const items = metaStore.search({
-          ...route.query,
-          path: pagePath,
-          group: 'path',
-        }).items
-
-        if (content.body) {
-          content.body.toc = metaItemsToToc(items)
-        }
-      }
-    }
-  })
 
   // return the async data object
   return res

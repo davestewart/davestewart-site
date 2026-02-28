@@ -53,10 +53,17 @@ const props = withDefaults(defineProps<Props>(), {
   type: 'auto',
 })
 
-const pageContext = inject<Ref<PageContent>>('page')
+// the page comes with its own toc
+const page = inject<Ref<PageContent>>('page')
 
+// folders are injected only from a parent folder view
+const folders = inject<MetaItem[]>('folders')
+
+// convert with the folders or page toc to our legacy (VuePress) headers format
 const items = computed(() => {
-  const toc = props.toc ?? pageContext?.value?.body?.toc
+  const toc = folders
+    ? metaItemsToToc(folders)
+    : props.toc ?? page?.value?.body?.toc
   return toc
     ? makeHeaders(toc)
     : []

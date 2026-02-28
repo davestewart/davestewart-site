@@ -1,6 +1,9 @@
 <template>
-  <component :is="component" v-if="data" :page="data" />
-  <NotFound v-else />
+  <pre v-if="error">{{ error.data.message }}</pre>
+  <template v-else>
+    <component :is="component" v-if="data" :page="data" />
+    <NotFound v-else />
+  </template>
 </template>
 
 <script setup lang="ts">

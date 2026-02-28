@@ -107,7 +107,7 @@ export const useMetaStore = defineStore('meta', () => {
   const products = createLink('/products/', 'Products')
   const projects = createLink('/projects/', 'Projects')
   const archive = createLink('/archive/', 'Archive')
-  const info = createLink('https://github.com/davestewart/davestewart-site', 'Site', 'Info and site source code')
+  const info = createLink('/projects/personal/dave-stewart/', 'Site', 'Info and site source code')
   const blog = createLink('/blog/', 'Blog')
 
   // main sections
