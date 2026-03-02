@@ -17,9 +17,9 @@ export function useShortcuts () {
 
   const isOnSearchPage = computed(() => route.path.startsWith(SEARCH_PATH))
 
-  const posts = computed(() => metaStore.getSurround(route.path))
-  const prev = computed(() => posts.value.at(0))
-  const next = computed(() => posts.value.at(1))
+  const items = computed(() => metaStore.getSurround(route.path))
+  const prev = computed(() => items.value.at(0))
+  const next = computed(() => items.value.at(1))
 
   onKeyStroke('k', (e: KeyboardEvent) => {
     // skip if modal is showing

@@ -47,6 +47,7 @@ const next = computed(() => posts.value.at(1))
   line-height: 1.4em;
   vertical-align: top;
   font-size: 14px;
+  margin-top: 8rem;
 
   &__link {
     display: flex;

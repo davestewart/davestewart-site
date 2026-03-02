@@ -8,6 +8,7 @@
       <ContentRenderer v-if="page.body?.children.length" :value="page" class="pageContent__intro" />
       <PageTree :items="items" :format="options.format" />
     </div>
+    <NavSurround />
   </div>
 </template>
 
@@ -49,17 +50,20 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
-.layout__folder > .pageContent {
-  .pageContent__intro {
-    @include introText;
+.layout__folder {
 
-    p {
-      margin: .75em 0;
+  & > .pageContent {
+    .pageContent__intro {
+      @include introText;
+
+      p {
+        margin: .75em 0;
+      }
     }
-  }
 
-  & > .pageTree {
-    margin-top: 2rem;
+    & > .pageTree {
+      margin-top: 2rem;
+    }
   }
 }
 </style>

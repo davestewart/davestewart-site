@@ -12,7 +12,9 @@ defineProps<{
 </script>
 
 <style lang="scss">
-.home {
+.layout__home {
+
+  margin-bottom: 8rem;
 
   h1 {
     font-weight: normal;

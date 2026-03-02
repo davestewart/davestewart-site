@@ -1,17 +1,21 @@
-import type { MetaFolder, MetaItem, MetaPost, TocLink } from '../types'
+import type { MetaFolder, MetaItem, TocLink } from '../types'
 
 /**
  * Get the correct title, resolving shortTitle if available
  */
-export function getTitle (page: MetaPost) {
-  return page.shortTitle || page.title
+export function getTitle (item: MetaItem) {
+  return item.type === 'post'
+    ? item.shortTitle || item.title
+    : item.title
 }
 
 /**
  * Get the correct path, resolving permalink if available
  */
-export function getPath (page: MetaPost) {
-  return page.permalink || page.path
+export function getPath (item: MetaItem) {
+  return item.type === 'post'
+    ? item.permalink || item.path
+    : item.path
 }
 
 /**

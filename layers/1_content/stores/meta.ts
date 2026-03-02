@@ -1,5 +1,5 @@
 import { computed, defineStore } from '#imports'
-import { getParentPath } from '../utils'
+import { getParentPath, getPath } from '../utils'
 import { queryItems } from '../utils/search'
 import type { MetaItem, MetaPost, SearchQuery, TagGroup } from '../types'
 
@@ -136,9 +136,11 @@ export const useMetaStore = defineStore('meta', () => {
   // ---------------------------------------------------------------------------------------------------------------------
 
   function getSurround (path: string) {
-    const posts = getPosts()
-      .filter(p => p.status !== 'draft' && p.status !== 'unlisted')
-    return getMetaSurround(posts, path)
+    const items = getItems()
+      .filter(p => p.type === 'post'
+        ? p.status !== 'draft' && p.status !== 'unlisted'
+        : true)
+    return getMetaSurround(items, path)
   }
 
   function getSiblings (path: string) {
@@ -221,12 +223,8 @@ export function getMetaParents (items: MetaItem[], path: string, fallbackTitle =
 
   // resolve any permalinks
   const candidatePath = items
-    .find((item) => {
-      const p = item.type === 'post'
-        ? item.permalink ?? item.path
-        : item.path
-      return p === path
-    })?.path ?? path
+    .find(item => getPath(item) === path)
+    ?.path ?? path
 
   // build segments
   const segments = candidatePath.split('/').filter(Boolean)
@@ -267,12 +265,12 @@ export function getMetaSiblings (items: MetaPost[], parentPath: string): MetaIte
 /**
  * Related items before and after the current page
  */
-export function getMetaSurround (posts: MetaPost[], path: string) {
-  const index = posts.findIndex(p => p.permalink === path || p.path === path)
+export function getMetaSurround (items: MetaItem[], path: string) {
+  const index = items.findIndex(p => getPath(p) === path)
   if (index > -1) {
     return [
-      posts[index - 1],
-      posts[index + 1],
+      items[index - 1],
+      items[index + 1],
     ] as const
   }
   return [undefined, undefined] as const

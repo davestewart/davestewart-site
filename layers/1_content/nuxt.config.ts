@@ -73,7 +73,7 @@ export default defineLayerConfig({
       theme: 'min-light',
       langs: [
         'ts', 'js',
-        'md', 'json', 'yaml',
+        'md', 'json', 'json5', 'yaml', 'mermaid',
         'html', 'css', 'scss',
         'vue', 'vue-html',
         'bash', 'http', 'xml', 'python', 'dotenv',
