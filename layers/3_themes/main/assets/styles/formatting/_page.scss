@@ -194,6 +194,17 @@ em strong {
   svg.siteIcon {
     margin-top: 0.5rem;
   }
+
+  kbd {
+    padding: 2px 6px 3px 6px;
+    margin: 0 2px;
+    border-radius: 4px;
+    outline: 1px solid $grey-lighter;
+    box-shadow: 0 3px 0 $grey-lighter;
+    color: $accentColor;
+    font-family: $codeFont, Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: .85em;
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -268,7 +279,8 @@ table {
   }
 
   th {
-    font-weight: 700;
+    font-size: 1.2em;
+    text-indent: -.1em;
     font-family: $titleFont;
     color: $accentColor;
     vertical-align: middle;

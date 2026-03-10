@@ -1,21 +1,32 @@
 <script lang="ts">
 export type Icon =
-  | 'alert'
+  // arrows
   | 'arrow-left'
   | 'arrow-right'
   | 'arrow-up'
+
+  // alerts
+  | 'alert'
   | 'caution'
-  | 'close'
-  | 'comment'
-  | 'fire'
-  | 'menu'
-  | 'note'
-  | 'search'
-  | 'share'
-  | 'smile'
-  | 'tag'
-  | 'tip'
   | 'warning'
+
+  // actions
+  | 'menu'
+  | 'close'
+  | 'search'
+  | 'tag'
+  | 'share'
+
+  // objects
+  | 'tip'
+  | 'fire'
+  | 'bolt'
+  | 'comment'
+  | 'book'
+  | 'box'
+  | 'tv'
+  | 'note'
+  | 'smile'
 </script>
 
 <script setup lang="ts">

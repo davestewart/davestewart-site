@@ -1,24 +1,2 @@
 @use "variables" as *;
 @use "layout/mixins" as *;
-
-#app[data-path="/"] .pageContent {
-
-  img[src*="/dave-wide.jpg"] {
-    margin: 0 0 1rem;
-  }
-
-  // make 2:1 image 1:1 on small screens
-  @include md-down {
-    p:has(img[src*="/dave-wide.jpg"]) {
-      overflow: hidden;
-    }
-
-    img[src*="/dave-wide.jpg"] {
-      display: block;
-      aspect-ratio:1/1 !important;
-      object-fit: cover;
-      object-position: center;
-      background: #333;
-    }
-  }
-}

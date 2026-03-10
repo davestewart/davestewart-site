@@ -1,7 +1,11 @@
 <script lang="ts" setup>
 type AlertType = 'tip' | 'info' | 'note' | 'warning' | 'important' | 'caution'
 
-type IconType = 'tip' | 'info' | 'note' | 'warning' | 'fire' | 'caution'
+type IconType = 'tip' | 'info' | 'note' | 'warning' | 'fire' | 'caution' | 'smile' | 'bolt'
+
+defineEmits<{
+  (e: 'close'): void
+}>()
 
 const props = withDefaults(defineProps<{
   type?: AlertType
@@ -46,7 +50,11 @@ const layout = computed(() => {
 </script>
 
 <template>
-  <div class="uiAlert" :data-type="type" :data-layout="layout">
+  <div
+    class="uiAlert"
+    :data-type="type"
+    :data-layout="layout"
+  >
     <UiIcon
       v-if="type"
       :icon="icon"
@@ -54,7 +62,14 @@ const layout = computed(() => {
       class="uiAlert__icon"
     />
     <div v-if="title && !inline" class="uiAlert__title">
-      {{ title }}
+      <div>{{ title }}</div>
+      <UiIcon
+        v-if="getCurrentInstance()?.vnode.props?.onClose"
+        size="20"
+        icon="close"
+        class="uiAlert__close"
+        @click="$emit('close')"
+      />
     </div>
     <div v-if="$slots.default || text" class="uiAlert__text">
       <slot>{{ text }}</slot>
@@ -93,6 +108,9 @@ const layout = computed(() => {
   }
 
   &__title {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
     font-family: $titleFont;
     align-self: center;
     font-size: 20px;
@@ -102,6 +120,15 @@ const layout = computed(() => {
     span {
       color: black;
       font-weight: 400;
+    }
+  }
+
+  &__close {
+    cursor: pointer;
+    color: $grey-lighter;
+    transition: color 0.2s ease;
+    &:hover {
+      color: black;
     }
   }
 
