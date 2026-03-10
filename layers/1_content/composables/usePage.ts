@@ -1,40 +1,34 @@
-import { provide, readonly, useAsyncData, useRoute } from '#imports'
+import { provide, readonly, shallowRef, useAsyncData, useRoute } from '#imports'
 
 import type { PageQuery as PageOptions } from '@content/server/api/content/page'
 
-/**
- * Load content, provide it, and update seo
- */
-export function usePage (options: PageOptions = {}) {
+export async function usePage (options: PageOptions = {}) {
   const route = useRoute()
   const nuxtApp = useNuxtApp()
-
   const path = options.path ?? route.path
+  const page = shallowRef()
 
-  // fetch page data
-  const res = useAsyncData(`page-${path}`, async () => {
-    const content = await $fetch('/api/content/page', {
-      query: {
-        path,
-        ...options,
-      } satisfies PageOptions,
-    })
+  // provide synchronously during setup so descendants can inject on SSR
+  provide('page', readonly(page))
 
-    // update seo on server
-    await nuxtApp.runWithContext(() => {
-      return usePageSeo(content)
-    })
+  // fetch raw page
+  const res = await fetchPage(path)
 
-    // return
-    return content
-  })
+  // optionally strip h1 tag from page
+  if (res.data.value && options.noTitle) {
+    const elements = res.data.value.body?.children || []
+    const index = elements.findIndex((element: any) => element.tag === 'h1' && !element.props.className)
+    if (index > -1) {
+      elements.splice(index, 1)
+    }
+  }
 
-  // update seo in client (not sure why we need to do this twice)
-  usePageSeo(res.data.value)
+  // set page
+  page.value = res.data.value
 
-  // provide reactive page data to children
-  provide('page', readonly(res.data))
+  // update seo
+  await nuxtApp.runWithContext(() => usePageSeo(res.data.value || undefined))
 
-  // return the async data object
+  // return response
   return res
 }

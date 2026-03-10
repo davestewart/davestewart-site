@@ -1,9 +1,10 @@
 import { serverQueryContent } from '#content/server'
-import { slugify } from '../../../utils'
+import { slugify, getPath } from '../../../utils'
 import type { MetaFolder, MetaItemRaw, MetaPost } from '../../../types'
 
 export default defineEventHandler(async (event) => {
-  const items = await serverQueryContent(event)
+  // content
+  const input = await serverQueryContent(event)
     .only([
       '_path',
       'permalink',
@@ -25,7 +26,7 @@ export default defineEventHandler(async (event) => {
 
   // build order map for hierarchical sorting
   const orderMap = new Map<string, number>()
-  items.forEach((page) => {
+  input.forEach((page) => {
     if (page.order !== undefined && page._path) {
       orderMap.set(page._path, page.order)
     }
@@ -35,7 +36,7 @@ export default defineEventHandler(async (event) => {
   const mode = process.env.NODE_ENV || 'production'
 
   // process final items array
-  return items
+  const output = input
     .filter((item) => {
       // never include hidden items
       if (item.status === 'hidden') {
@@ -101,6 +102,58 @@ export default defineEventHandler(async (event) => {
         tags: item.tags,
       }) as MetaPost
     })
+
+  // filter if showcase
+  const { showcase } = getQuery(event)
+
+  // showcase filter
+  if (showcase) {
+    // get pages
+    const paths = await $fetch('/api/content/showcase', { query: { path: `/${showcase}/` } })
+    if (paths) {
+      for (let i = 0; i < paths.length; i++) {
+        const path = paths[i]
+        const item = output.find(item => getPath(item) === path)
+
+        // skip missing items
+        if (!item) {
+          continue
+        }
+
+        // modify posts
+        if (item.type === 'post') {
+          // list unlisted
+          if (item.status === 'unlisted') {
+            item.status = ''
+          }
+
+          // expand permalinks to paths
+          if (item.permalink) {
+            paths[i] = item.path
+          }
+        }
+      }
+
+      // get ancestor paths (we need the complete tree for search to work)
+      const set = new Set(paths)
+      for (const path of paths) {
+        const parts = path.split('/')
+        for (let i = 0; i < parts.length - 1; i++) {
+          const parent = parts.slice(0, i + 1).join('/')
+          set.add(`${parent}/`)
+        }
+      }
+
+      // return all paths
+      const filtered = Array.from(set).sort()
+
+      // return filtered items
+      return output.filter(item => filtered.includes(item.path))
+    }
+  }
+
+  // return items
+  return output
 })
 
 // ---------------------------------------------------------------------------------------------------------------------
