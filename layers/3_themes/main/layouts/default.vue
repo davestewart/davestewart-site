@@ -1,3 +1,5 @@
+<script setup lang="ts">
+</script>
 <template>
   <div class="layout__default">
     <!-- header -->
@@ -32,7 +34,7 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
 .layout__left,
 .layout__right {
   //display: flex;

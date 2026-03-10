@@ -430,7 +430,7 @@ function makeTree (nodes: (MetaFolder | MetaPost)[], rootPath = '/', maxPathDept
     })
 
   // add root node if missing
-  if (!validNodes.find(item => item.path === rootPath)) {
+  if (validNodes && !validNodes.find(item => item.path === rootPath)) {
     validNodes.push({
       path: rootPath,
       type: 'folder',
@@ -451,6 +451,9 @@ function makeTree (nodes: (MetaFolder | MetaPost)[], rootPath = '/', maxPathDept
     const parentPath = getParentPath(node.path, maxPathDepth)
     const parent = map[parentPath] as MetaFolder | undefined
     if (parent && parent !== node) {
+      if (!parent.items) { // edge-case: some posts have sub-posts
+        parent.items = []
+      }
       parent.items.push(node)
     }
   })
