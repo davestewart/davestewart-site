@@ -20,6 +20,6 @@ export function fetchPage (path: string) {
   return useAsyncData(`page-${path}`, async () => {
     return await $fetch('/api/content/page', {
       query: { path },
-    })
+    }) ?? null
   })
 }

@@ -13,6 +13,7 @@
           :to="link.path"
           :target="link.path.startsWith('http') ? '_blank' : undefined"
           class="navSections__item"
+          :class="section.name !== 'Navigation' && !items.find(item => item.path === link.path) ? 'hidden' : ''"
           @click="$emit('click')"
         >
           <span class="navSections__text">{{ link.title }}</span>
@@ -32,7 +33,7 @@ defineEmits<{
   (e: 'click'): void
 }>()
 
-const { sections } = useMetaStore()
+const { items, sections } = storeToRefs(useMetaStore())
 </script>
 
 <style lang="scss">
@@ -116,6 +117,10 @@ const { sections } = useMetaStore()
       background: color.mix($grey-lightest, white, 75%);
       text-decoration: none;
     }
+
+    &.hidden {
+      display: none;
+    }
   }
 
   &__text {
@@ -123,6 +128,10 @@ const { sections } = useMetaStore()
     font-family: $titleFont;
     font-size: 1.1rem;
     letter-spacing: 0.05em;
+
+    @include sm {
+      font-size: 1.5rem;
+    }
   }
 
   &__desc {
@@ -133,7 +142,7 @@ const { sections } = useMetaStore()
     color: $grey;
 
     @include sm {
-      font-size: .9rem;
+      font-size: 1rem;
     }
   }
 

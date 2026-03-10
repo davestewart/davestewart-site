@@ -2,8 +2,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { onKeyStroke } from '@vueuse/core'
 import { isInput, isModifier } from '~/utils/events'
-import { getParentPath, getPath } from '@content/utils'
-import { useMetaStore } from '#imports'
+import { getPath } from '@content/utils'
 
 /**
  * Sets up global keyboard shortcuts for the whole site
@@ -14,12 +13,10 @@ export function useShortcuts () {
   const metaStore = useMetaStore()
 
   const SEARCH_PATH = '/search/'
-
   const isOnSearchPage = computed(() => route.path.startsWith(SEARCH_PATH))
 
-  const items = computed(() => metaStore.getSurround(route.path))
-  const prev = computed(() => items.value.at(0))
-  const next = computed(() => items.value.at(1))
+  const surround = computed(() => metaStore.getSurround(route.path))
+  const parent = computed(() => metaStore.getUp(route.path))
 
   onKeyStroke('k', (e: KeyboardEvent) => {
     // skip if modal is showing
@@ -44,20 +41,22 @@ export function useShortcuts () {
 
   // surround navigation
   onKeyStroke('ArrowLeft', (e: KeyboardEvent) => {
-    if (!isInput(e) && e.shiftKey && prev.value) {
-      router.push(getPath(prev.value))
+    const prev = surround.value.prev
+    if (!isInput(e) && e.shiftKey && prev) {
+      router.push(getPath(prev)!)
     }
   })
 
   onKeyStroke('ArrowRight', (e: KeyboardEvent) => {
-    if (!isInput(e) && e.shiftKey && next.value) {
-      router.push(getPath(next.value))
+    const next = surround.value.next
+    if (!isInput(e) && e.shiftKey && next) {
+      router.push(getPath(next)!)
     }
   })
 
   onKeyStroke('ArrowUp', (e: KeyboardEvent) => {
     if (!isInput(e) && e.shiftKey) {
-      router.push(getParentPath(route.path))
+      router.push(parent.value!.path)
     }
   })
 }

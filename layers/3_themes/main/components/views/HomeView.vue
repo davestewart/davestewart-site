@@ -1,6 +1,5 @@
 <template>
-  <div class="layout__home home">
-    <Splash />
+  <div class="home" :class="!metaStore.isShowcase ? 'layout__home' : ''">
     <ContentRenderer id="content" :value="page" class="pageContent" />
   </div>
 </template>
@@ -9,13 +8,12 @@
 defineProps<{
   page: PageContent
 }>()
+
+const metaStore = useMetaStore()
 </script>
 
 <style lang="scss">
 .layout__home {
-
-  margin-bottom: 8rem;
-
   h1 {
     font-weight: normal;
     margin-top: -.5rem !important;
@@ -48,5 +46,9 @@ defineProps<{
       font-size: .8em !important;
     }
   }
+}
+
+.home {
+  margin-bottom: 10rem;
 }
 </style>

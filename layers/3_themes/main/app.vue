@@ -2,6 +2,9 @@
   <div id="app" :data-path="route.path">
     <NuxtLayout />
     <Preview ref="preview" />
+    <ClientOnly v-if="!showcase">
+      <CsPromo />
+    </ClientOnly>
   </div>
 </template>
 
@@ -19,9 +22,19 @@ const metaStore = useMetaStore()
 const { y } = useWindowScroll()
 const preview = ref<PreviewComponent>()
 
+// check for showcase
+const showcase = useState('showcase', () => '')
+if (showcase.value) {
+  useHead(computed(() => ({
+    htmlAttrs: {
+      'data-showcase': showcase.value,
+    },
+  })))
+}
+
 // ensure meta store is initialized on server
 // @see https://pinia.vuejs.org/ssr/nuxt.html
-await callOnce('items', () => metaStore.loadItems())
+await callOnce('items', () => metaStore.loadItems(showcase.value))
 
 // setup keyboard shortcuts
 useShortcuts()
