@@ -21,7 +21,9 @@ body {
   position: relative;
 
   // room for header
-  padding-top: 56px;
+  .layout__inner {
+    padding-top: 56px;
+  }
 }
 
 // horizontal layout - header
@@ -45,8 +47,19 @@ body {
   }
 }
 
+.layout__error,
+.layout__search,
+.layout__folder,
+.layout__page {
+  padding-top: 1rem;
+  @include lg {
+    padding-top: 1.5rem;
+  }
+}
+
 .layout__outer {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr calc($widthPage + 2rem) 1fr;
   position: relative;
   margin: 0 auto;
   //max-width: $widthOuter;
@@ -58,11 +71,23 @@ body {
     flex-grow: 1;
   }
 
-  .layout__search,
-  .layout__folder,
-  .layout__page {
-    @include lg {
-      padding-top: 1rem;
+  .layout__left,
+  .layout__right {
+    flex-grow: 1;
+    padding: 0 1rem;
+
+    > * {
+      display: flex;
+      top: 0;
+    }
+  }
+
+  @include xl-down {
+    grid-template-columns: 1fr;
+
+    .layout__left,
+    .layout__right {
+      display: none;
     }
   }
 
@@ -72,25 +97,5 @@ body {
 
   .layout__navPage > * {
     justify-content: flex-start;
-  }
-
-  .layout__navSide,
-  .layout__navPage {
-    flex-grow: 1;
-    padding: 0 1rem;
-
-    @include xl-down {
-      display: none;
-    }
-
-    > * {
-      position: sticky;
-      display: flex;
-      top: 10rem;
-
-      > * {
-        width: $widthAside;
-      }
-    }
   }
 }

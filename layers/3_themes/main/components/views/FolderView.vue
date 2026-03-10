@@ -5,8 +5,14 @@
       {{ page.description }}
     </p>
     <div class="pageContent">
+      <!-- content -->
       <ContentRenderer v-if="page.body?.children.length" :value="page" class="pageContent__intro" />
-      <PageTree :items="items" :format="options.format" />
+
+      <!-- folders -->
+      <section class="folderContent">
+        <PageTree v-if="!metaStore.isShowcase" :items="items" :format="options.format" />
+        <ThumbnailWall :pages="items" />
+      </section>
     </div>
     <NavSurround />
   </div>
@@ -34,10 +40,11 @@ const options = computed<Partial<SearchOptions>>(() => {
 
 // extract child folders and pages
 const items = computed(() => {
+  const group = metaStore.isShowcase ? undefined : 'path'
   return metaStore.search({
     ...options.value,
     path: route.path,
-    group: 'path',
+    group,
   }).items
 })
 
@@ -53,6 +60,9 @@ onMounted(() => {
 .layout__folder {
 
   & > .pageContent {
+    // ensures bottom navigation appears close to the bottom of the page (roughly)
+    min-height: calc(100vh - 400px);
+
     .pageContent__intro {
       @include introText;
 
@@ -61,8 +71,8 @@ onMounted(() => {
       }
     }
 
-    & > .pageTree {
-      margin-top: 2rem;
+    .folderContent {
+      margin-top: 3rem;
     }
   }
 }

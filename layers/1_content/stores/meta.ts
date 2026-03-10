@@ -1,5 +1,5 @@
-import { computed, defineStore } from '#imports'
-import { getParentPath, getPath } from '../utils'
+import { computed, defineStore, getPath } from '#imports'
+import { getMetaParents, getMetaSiblings, getMetaSurround, getParentPath } from '../utils'
 import { queryItems } from '../utils/search'
 import type { MetaItem, MetaPost, SearchQuery, TagGroup } from '../types'
 
@@ -39,6 +39,9 @@ export const useMetaStore = defineStore('meta', () => {
       .sort()
   })
 
+  // whether we're filtering by showcase
+  const isShowcase = ref(false)
+
   // ---------------------------------------------------------------------------------------------------------------------
   // actions
   // ---------------------------------------------------------------------------------------------------------------------
@@ -59,6 +62,13 @@ export const useMetaStore = defineStore('meta', () => {
   }
 
   /**
+   * Get a single item by path
+   */
+  function getItem (path: string): MetaItem | undefined {
+    return items.value.find(item => getPath(item) === path)
+  }
+
+  /**
    * Search, sort, and structure all posts
    */
   function search (query: SearchQuery) {
@@ -69,15 +79,38 @@ export const useMetaStore = defineStore('meta', () => {
   // initialisation
   // ---------------------------------------------------------------------------------------------------------------------
 
-  async function loadItems () {
+  async function loadItems (showcase = '') {
+    // showcase
+    isShowcase.value = !!showcase
+
     // Can't have more than one await
     // @see https://www.youtube.com/watch?v=ofuKRZLtOdY
     const results = await Promise.all([
-      $fetch('/api/content/meta'),
+      $fetch('/api/content/meta', { query: { showcase } }),
       $fetch('/api/content/tags'),
     ])
-    items.value = results[0] || []
-    tagGroups.value = results[1] || []
+
+    // set items
+    const [_items, _tagGroups] = results
+    items.value = _items
+
+    // get used tags
+    const allTags = new Set<string>()
+    for (const item of items.value) {
+      if (item.type === 'post' && item.tags) {
+        for (const tag of item.tags) {
+          allTags.add(tag)
+        }
+      }
+    }
+
+    // filter tag groups
+    for (const tagGroup of _tagGroups) {
+      tagGroup.tags = tagGroup.tags.filter(tag => allTags.has(tag))
+    }
+
+    // assign filtered tags
+    tagGroups.value = _tagGroups.filter(tagGroup => tagGroup.tags.length > 0)
   }
 
   // ---------------------------------------------------------------------------------------------------------------------
@@ -136,7 +169,7 @@ export const useMetaStore = defineStore('meta', () => {
   // ---------------------------------------------------------------------------------------------------------------------
 
   function getSurround (path: string) {
-    const items = getItems()
+    const items = (isShowcase.value ? getPosts() : getItems())
       .filter(p => p.type === 'post'
         ? p.status !== 'draft' && p.status !== 'unlisted'
         : true)
@@ -155,13 +188,22 @@ export const useMetaStore = defineStore('meta', () => {
   }
 
   function getUp (path: string): Link {
-    const parents = getMetaParents(items.value, path, 'Up')
-    const parent = parents.at(-2) ?? parents.at(0)!
+    // the real path (path might be a permalink)
+    const realPath = getItem(path)?.path ?? '/'
+
+    // showcase posts are clipped to a depth of 1
+    const maxDepth = isShowcase.value ? 1 : undefined
+
+    // get parent
+    const parentPath = getParentPath(realPath, maxDepth)
+    const parent = getItem(parentPath)
+
+    // return something the UI can use
     return {
       title: 'Up',
-      path: parent.path,
+      path: parent?.path ?? '/',
       description: `Go up to ${parent?.title}`,
-      class: `up ${parents.length > 1 ? '' : 'hidden'}`,
+      class: `up ${parent?.path === realPath ? 'hidden' : ''}`,
     } satisfies Link
   }
 
@@ -190,7 +232,11 @@ export const useMetaStore = defineStore('meta', () => {
     items,
     getItems,
     getPosts,
+    getItem,
     search,
+
+    // showcase
+    isShowcase,
 
     // tags
     tagGroups,
@@ -208,70 +254,3 @@ export const useMetaStore = defineStore('meta', () => {
     loadItems,
   }
 })
-
-// ---------------------------------------------------------------------------------------------------------------------
-// helpers
-// ---------------------------------------------------------------------------------------------------------------------
-
-/**
- * Ancestor items from the root to the current page
- */
-export function getMetaParents (items: MetaItem[], path: string, fallbackTitle = '404'): Link[] {
-  // variables
-  const parents: Link[] = [{ path: '/', title: 'Home' }]
-  let currentPath = '/'
-
-  // resolve any permalinks
-  const candidatePath = items
-    .find(item => getPath(item) === path)
-    ?.path ?? path
-
-  // build segments
-  const segments = candidatePath.split('/').filter(Boolean)
-  for (const segment of segments) {
-    // variables
-    currentPath += segment + '/'
-    const item = items.find(p => p.path === currentPath)
-
-    // page found
-    if (item) {
-      parents.push({
-        path: item.path,
-        title: (('shortTitle' in item) && item.shortTitle) || item.title,
-        description: item.description,
-      })
-    }
-
-    // 404
-    else {
-      return [
-        parents[0] as Link,
-        { title: fallbackTitle } as Link,
-      ]
-    }
-  }
-
-  // return
-  return parents
-}
-
-/**
- * Sibling items in the same folder level as the current page
- */
-export function getMetaSiblings (items: MetaPost[], parentPath: string): MetaItem[] {
-  return items.filter(p => getParentPath(p.path) === parentPath)
-}
-
-/**
- * Related items before and after the current page
- */
-export function getMetaSurround (items: MetaItem[], path: string) {
-  const index = items.findIndex(p => getPath(p) === path)
-  if (index > -1) {
-    return [
-      items[index - 1],
-      items[index + 1],
-    ] as const
-  }
-  return [undefined, undefined] as const
-}

@@ -7,5 +7,8 @@
 <script setup lang="ts">
 import HomeView from '../components/views/HomeView.vue'
 
-const { data } = await usePage('/')
+const showcase = useState('showcase', () => '')
+const path = showcase.value ? `/${showcase.value}/` : '/'
+
+const { data } = await usePage({ path })
 </script>

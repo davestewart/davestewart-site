@@ -1,7 +1,7 @@
 <template>
   <li class="pageItem">
     <span class="pageItem__title" :data-status="page.status ? page.status : undefined">
-      <NuxtLink :to="page.path">{{ page.title }}</NuxtLink>
+      <NuxtLink :to="page.path" :target="page.path?.startsWith('http') ? '_blank' : undefined">{{ page.title }}</NuxtLink>
     </span>
     <span v-if="page.description" class="pageItem__desc">{{ page.description }}</span>
   </li>

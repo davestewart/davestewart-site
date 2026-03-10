@@ -1,7 +1,7 @@
 <template>
-  <div v-if="filtered.length" class="tagList" :class="{ showValid }">
+  <div v-if="tags.length" class="tagList" :class="{ showValid }">
     <TagItem
-      v-for="tag in filtered"
+      v-for="tag in tags"
       :key="tag"
       :tag="tag"
       :selected="selected?.includes(tag)"
@@ -22,8 +22,6 @@ const props = withDefaults(defineProps<{
   selected: () => [],
 })
 
-const filtered = computed(() => props.tags.filter(tag => tag !== 'featured'))
-
 const showValid = computed(() => Array.isArray(props.valid))
 </script>
 
@@ -31,5 +29,9 @@ const showValid = computed(() => Array.isArray(props.valid))
 .tagList {
   word-break: keep-all;
   display: flex;
+}
+
+.pageInfo .tagList a[href="/search/?tags=featured"] {
+  display: none;
 }
 </style>

@@ -199,9 +199,10 @@ const searchTitle = computed(() => {
 })
 
 const pageDescription = computed(() => {
+  const text = plural(results.value.total, 'post')
   return isFiltered.value
-    ? plural(results.value.total, 'item')
-    : 'Everything on the site'
+    ? text
+    : `Everything (${text})`
 })
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -215,6 +216,8 @@ const searchQuery = computed<SearchOptions>(() => {
     includeDrafts: process.env.NODE_ENV === 'development',
     // include unlisted if filtering
     includeUnlisted: !!query.text || query.tags?.length > 0,
+    // clip paths if in showcase mode
+    maxPathDepth: store.isShowcase ? 1 : undefined,
   }
 })
 

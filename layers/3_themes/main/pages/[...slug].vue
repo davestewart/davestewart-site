@@ -1,9 +1,8 @@
 <template>
-  <pre v-if="error">{{ error.data.message }}</pre>
-  <template v-else>
+  <div>
     <component :is="component" v-if="data" :page="data" />
     <NotFound v-else />
-  </template>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -12,10 +11,13 @@ import PageView from '../components/views/PageView.vue'
 import FolderView from '../components/views/FolderView.vue'
 import NotFound from '../components/views/404View.vue'
 
+const route = useRoute()
+const metaStore = useMetaStore()
+
 const { data, error } = await usePage({ noTitle: true })
 
 const component = computed(() => {
-  if (error.value || !data.value) {
+  if (error.value || !data.value || !metaStore.getItem(route.path)) {
     console.warn('Not Found', {
       error: error.value,
       data: data.value,

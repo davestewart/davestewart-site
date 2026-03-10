@@ -1,0 +1,44 @@
+html[data-showcase] {
+  .pageInfo,
+  //.navSurround,
+  .pageFeedback,
+  //.ht-comments-wrap,
+  //.reactions-wrap,
+  //.editor-wrap,
+  .siteFooter {
+    display: none;
+  }
+
+  @media print {
+    html {
+      width: 100%;
+      margin: 0;
+    }
+
+    body {
+      margin: 2rem;
+    }
+
+    .siteMain {
+      margin: 0;
+    }
+
+    .layout__navSide,
+    .layout__navPage {
+      display: none;
+    }
+
+    .layout__inner {
+      max-width: unset !important;
+      padding: 0 !important;
+    }
+
+    h1 {
+      margin-top: 0 !important;
+    }
+
+    img {
+      //display: none;
+    }
+  }
+}

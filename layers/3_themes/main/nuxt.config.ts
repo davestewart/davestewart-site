@@ -15,6 +15,8 @@ export default defineNuxtConfig({
 
   components: [
     { path: './components', pathPrefix: false },
+    { path: './components/home', pathPrefix: false, global: true },
+    { path: './layers/showcase/components', pathPrefix: false, global: true },
   ],
 
   css: [

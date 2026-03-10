@@ -29,13 +29,13 @@ const route = useRoute()
 const page = inject<Ref<PageContent>>('page')
 const metaStore = useMetaStore()
 
-const posts = computed(() => {
-  const path = page?.value?._path ?? route.path
+const surround = computed(() => {
+  const path = getPath(page?.value) ?? route.path
   return metaStore.getSurround(path)
 })
 
-const prev = computed(() => posts.value.at(0))
-const next = computed(() => posts.value.at(1))
+const prev = computed(() => surround.value.prev)
+const next = computed(() => surround.value.next)
 </script>
 
 <style lang="scss">

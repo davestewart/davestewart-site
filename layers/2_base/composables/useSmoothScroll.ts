@@ -17,7 +17,7 @@ export function useSmoothScroll () {
 
       // check if link is internal
       const path = link.getAttribute('href')!
-      if (path.startsWith('#')) {
+      if (path?.startsWith('#')) {
         if (path !== '#') {
           const element = document.querySelector(path) as HTMLElement
           if (element) {

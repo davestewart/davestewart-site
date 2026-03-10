@@ -19,7 +19,8 @@
 
   table {
     @include md-down {
-      min-width: 1000px; // factor in larger font size
+      min-width: 0 !important;
+      //min-width: 1000px; // factor in larger font size
       margin: 1rem 0;
     }
 
