@@ -42,6 +42,8 @@ export interface SearchOptions {
   tagsFilter?: 'list' | 'groups'
   // format to display results in - image (default) or text
   format?: 'image' | 'text'
+  // an optional depth to clip parent paths
+  maxPathDepth?: number
 }
 
 /**

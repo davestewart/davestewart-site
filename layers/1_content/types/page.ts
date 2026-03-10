@@ -95,7 +95,7 @@ export interface PageContent extends ParsedContent {
   description?: string
 
   /** Content type classification */
-  type?: 'folder' | 'post'
+  type?: 'folder' | 'post' | 'showcase' | 'home'
 
   /** View file to use */
   view?: 'folder' | 'post'

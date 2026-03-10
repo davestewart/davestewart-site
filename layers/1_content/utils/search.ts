@@ -41,6 +41,7 @@ const DEFAULT_OPTIONS: SearchOptions = {
   hasThumbnail: false,
   tagsFilter: undefined,
   format: 'image',
+  maxPathDepth: 0,
 }
 
 /**
@@ -310,7 +311,7 @@ export function queryItems (items: MetaItem[], query: SearchQuery = {}) {
       }
     }
     const nested = items.filter(item => paths.has(item.path))
-    results = makeTree(nested, query.path || '/')
+    results = makeTree(nested, query.path || '/', query.maxPathDepth)?.items ?? []
   }
 
   return {
@@ -408,50 +409,52 @@ function groupPosts<T extends MetaPost, K extends keyof T> (
  *
  * Note that parent folders must be pre-filtered for the function to work!
  *
- * @param nodes
- * @param rootPath
+ * @param nodes           The filtered nodes to group into a tree
+ * @param rootPath        The optional root path of the tree, defaults to '/'
+ * @param maxPathDepth    An optional depth at which to clip parent paths, defaults to 0 (no clipping)
  */
-function makeTree (nodes: (MetaFolder | MetaPost)[], rootPath: string): MetaItem[] {
+function makeTree (nodes: (MetaFolder | MetaPost)[], rootPath = '/', maxPathDepth = 0): MetaFolder | undefined {
   // Filter and clone so we don't affect originals
   const validNodes = nodes
-    .filter(n => n.path !== rootPath && n.path.startsWith(rootPath))
+    .filter(n => n.path.startsWith(rootPath))
     .map((p) => {
       if (p.type === 'folder') {
-        const { items: _items, ...rest } = p
+        // eslint-disable-next-line
+        const { items, ...rest } = p
         return {
           ...rest,
           items: [],
-        }
+        } as MetaFolder
       }
-      return p
+      return { ...p }
     })
 
-  // Create a map for lookup
+  // add root node if missing
+  if (!validNodes.find(item => item.path === rootPath)) {
+    validNodes.push({
+      path: rootPath,
+      type: 'folder',
+      title: 'Home',
+      slug: 'folder-home',
+      items: [],
+    } as MetaFolder)
+  }
+
+  // create a map for lookup
   const map: Record<string, MetaItem> = {}
   for (const n of validNodes) {
     map[n.path] = n
   }
 
-  const tree: MetaItem[] = []
-
+  // add nodes to parents
   validNodes.forEach((node: MetaItem) => {
-    // Find parent logic
-    const parentPath = getParentPath(node.path)
-
-    // Check if directly under root path
-    if (parentPath === rootPath) {
-      tree.push(node)
-    }
-    else {
-      if (map[parentPath]) {
-        const parent = map[parentPath] as MetaFolder
-        if (!parent.items) {
-          parent.items = []
-        }
-        parent.items.push(node)
-      }
+    const parentPath = getParentPath(node.path, maxPathDepth)
+    const parent = map[parentPath] as MetaFolder | undefined
+    if (parent && parent !== node) {
+      parent.items.push(node)
     }
   })
 
-  return tree
+  // root node
+  return validNodes.find(item => item.type === 'folder' && item.path === rootPath) as MetaFolder | undefined
 }

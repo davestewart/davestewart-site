@@ -1,21 +1,39 @@
-import type { MetaFolder, MetaItem, TocLink } from '../types'
+import type { MetaItem, MetaPost } from '../types'
+import type { Link } from '@content/stores/meta'
 
 /**
  * Get the correct title, resolving shortTitle if available
  */
-export function getTitle (item: MetaItem) {
-  return item.type === 'post'
-    ? item.shortTitle || item.title
-    : item.title
+export function getTitle (item: { title: string, shortTitle?: string }) {
+  return item.shortTitle ?? item.title
 }
 
 /**
  * Get the correct path, resolving permalink if available
  */
-export function getPath (item: MetaItem) {
-  return item.type === 'post'
-    ? item.permalink || item.path
-    : item.path
+export function getPath (item?: { _path?: string, path?: string, permalink?: string }) {
+  return item?.permalink ?? item?.path ?? item?._path
+}
+
+/**
+ * Take a path and slice it to a maximum depth
+ */
+function slicePath (path: string, maxDepth = 0) {
+  if (maxDepth > 0) {
+    return path.split('/').slice(0, maxDepth + 1).join('/').replace(/\/?$/, '/')
+  }
+  return path
+}
+
+/**
+ * Get parent path by removing last segment
+ */
+export function getParentPath (path: string, maxDepth = 0) {
+  const parentPath = path.replace(/[^/]+\/?$/, '')
+  const slicedPath = slicePath(path, maxDepth)
+  return slicedPath.length < parentPath.length
+    ? slicedPath
+    : parentPath
 }
 
 /**
@@ -26,44 +44,64 @@ export function normalizePath (path: string) {
 }
 
 /**
- * Get parent path by removing last segment
+ * Ancestor items from the root to the current page
  */
-export function getParentPath (path: string) {
-  return path.replace(/[^/]+\/?$/, '')
+export function getMetaParents (items: MetaItem[], path: string, fallbackTitle = '404'): Link[] {
+  // variables
+  const parents: Link[] = [{ path: '/', title: 'Home' }]
+  let currentPath = '/'
+
+  // resolve any permalinks
+  const candidatePath = items
+    .find(item => getPath(item) === path)
+    ?.path ?? path
+
+  // build segments
+  const segments = candidatePath.split('/').filter(Boolean)
+  for (const segment of segments) {
+    // variables
+    currentPath += segment + '/'
+    const item = items.find(p => p.path === currentPath)
+
+    // page found
+    if (item) {
+      parents.push({
+        path: item.path,
+        title: (('shortTitle' in item) && item.shortTitle) || item.title,
+        description: item.description,
+      })
+    }
+
+    // 404
+    else {
+      return [
+        parents[0] as Link,
+        { title: fallbackTitle } as Link,
+      ]
+    }
+  }
+
+  // return
+  return parents
 }
 
 /**
- * Convert MetaItems to TocLinks
+ * Sibling items in the same folder level as the current page
  */
-export function metaItemsToToc (items: MetaItem[]) {
-  function makeLinks (items: MetaFolder[], depth: number = 1): TocLink[] {
-    if (depth > searchDepth) {
-      searchDepth = depth
+export function getMetaSiblings (items: MetaPost[], parentPath: string): MetaItem[] {
+  return items.filter(p => getParentPath(p.path) === parentPath)
+}
+
+/**
+ * Related items before and after the current page
+ */
+export function getMetaSurround (items: MetaItem[], path: string) {
+  const index = items.findIndex(p => getPath(p) === path)
+  if (index > -1) {
+    return {
+      prev: items[index - 1],
+      next: items[index + 1],
     }
-    return items.map((item) => {
-      const link: TocLink = {
-        id: item.slug,
-        depth,
-        text: item.title || '',
-      }
-
-      const folders = item.items?.filter(item => item.type === 'folder')
-      if (folders?.length) {
-        link.children = makeLinks(folders, depth + 1)
-      }
-
-      return link
-    })
   }
-
-  let searchDepth = 2
-  const folders = items.filter(item => item.type === 'folder')
-  const links = makeLinks(folders, 2)
-
-  return {
-    depth: searchDepth,
-    searchDepth,
-    title: 'On this page',
-    links,
-  }
+  return { prev: undefined, next: undefined }
 }
