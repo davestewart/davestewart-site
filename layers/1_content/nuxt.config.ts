@@ -1,14 +1,25 @@
 import { defineNuxtConfig } from 'nuxt/config'
-import { fileURLToPath } from 'node:url'
 import type { ModuleOptions as NuxtContentOptions } from '@nuxt/content'
 import type { ModuleOptions as NuxtContentAssetsOptions } from 'nuxt-content-assets'
 import type { NuxtConfig } from '@nuxt/schema'
+import { createResolver } from '@nuxt/kit'
 
-function resolve (path: string) {
-  // @ts-ignore
-  return fileURLToPath(new URL(path, import.meta.url))
-}
+const { resolve } = createResolver(import.meta.url)
 
+// env
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN
+const IS_DEV = process.env.NODE_ENV === 'development'
+const LOCAL = process.env.LOCAL === 'true'
+
+// console.log('IS_DEV', IS_DEV)
+// console.log('LOCAL', LOCAL)
+
+/**
+ * Definition helper
+ *
+ * For some reason, the types are not working in layers, so we've
+ * created this helper to allow us to use the types and properties
+ */
 function defineLayerConfig (config: NuxtConfig & {
   content?: Partial<NuxtContentOptions>
   contentAssets?: Partial<NuxtContentAssetsOptions>
@@ -17,21 +28,25 @@ function defineLayerConfig (config: NuxtConfig & {
 }
 
 function source (name: string, dir = '') {
-  if (process.env.NODE_ENV === 'production') {
-    if (!process.env.GITHUB_TOKEN) {
-      throw new Error('GITHUB_TOKEN is required in production')
-    }
+  // local repo copy for development
+  if (IS_DEV || LOCAL) {
+    const path = dir
+      ? `${name}/${dir}`
+      : name
     return {
-      driver: 'github',
-      repo: `davestewart/${name}`,
-      token: process.env.GITHUB_TOKEN,
-      dir,
+      driver: 'fs',
+      base: resolve(`../../../${path}`),
     }
   }
-  // local repo copy for development
+
+  if (!GITHUB_TOKEN) {
+    throw new Error('GITHUB_TOKEN is required in production')
+  }
   return {
-    driver: 'fs',
-    base: resolve(`../../../${name}/${dir}`),
+    driver: 'github',
+    repo: `davestewart/${name}`,
+    token: GITHUB_TOKEN,
+    dir,
   }
 }
 

@@ -10,8 +10,7 @@
 
       <!-- folders -->
       <section class="folderContent">
-        <PageTree v-if="!metaStore.isShowcase" :items="items" :format="options.format" />
-        <ThumbnailWall :pages="items" />
+        <PageTree :items="items" :format="options.format" />
       </section>
     </div>
     <NavSurround />

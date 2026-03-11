@@ -6,27 +6,27 @@ export type Icon =
   | 'arrow-up'
 
   // alerts
-  | 'alert'
+  | 'info'
   | 'caution'
-  | 'warning'
+  | 'warning' // alert
+  | 'note'
 
   // actions
   | 'menu'
   | 'close'
   | 'search'
-  | 'tag'
   | 'share'
+  | 'tag'
 
   // objects
-  | 'tip'
-  | 'fire'
   | 'bolt'
-  | 'comment'
   | 'book'
   | 'box'
-  | 'tv'
-  | 'note'
+  | 'comment'
+  | 'fire'
   | 'smile'
+  | 'tip'
+  | 'tv'
 </script>
 
 <script setup lang="ts">

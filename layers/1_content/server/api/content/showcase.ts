@@ -20,6 +20,7 @@ export default defineEventHandler<{ query: PageQuery }>(async (event) => {
       .where({
         $or: [
           { _path: path },
+          { permalink: path },
         ],
       })
       .findOne() as PageContent

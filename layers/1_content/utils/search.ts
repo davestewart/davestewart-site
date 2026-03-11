@@ -417,27 +417,19 @@ function makeTree (nodes: (MetaFolder | MetaPost)[], rootPath = '/', maxPathDept
   // Filter and clone so we don't affect originals
   const validNodes = nodes
     .filter(n => n.path.startsWith(rootPath))
-    .map((p) => {
-      if (p.type === 'folder') {
-        // eslint-disable-next-line
-        const { items, ...rest } = p
-        return {
-          ...rest,
-          items: [],
-        } as MetaFolder
-      }
-      return { ...p }
-    })
+    .map(p => clone(p))
 
   // add root node if missing
-  if (validNodes && !validNodes.find(item => item.path === rootPath)) {
-    validNodes.push({
+  let rootNode = validNodes.find(item => item.path === rootPath)
+  if (!rootNode) {
+    rootNode = {
       path: rootPath,
       type: 'folder',
       title: 'Home',
       slug: 'folder-home',
       items: [],
-    } as MetaFolder)
+    } as MetaFolder
+    validNodes.push(rootNode)
   }
 
   // create a map for lookup
@@ -450,8 +442,9 @@ function makeTree (nodes: (MetaFolder | MetaPost)[], rootPath = '/', maxPathDept
   validNodes.forEach((node: MetaItem) => {
     const parentPath = getParentPath(node.path, maxPathDepth)
     const parent = map[parentPath] as MetaFolder | undefined
-    if (parent && parent !== node) {
-      if (!parent.items) { // edge-case: some posts have sub-posts
+    if (parent && parent.type === 'folder' && parent !== node) {
+      // edge-case: some posts have sub-posts
+      if (!parent.items) {
         parent.items = []
       }
       parent.items.push(node)
@@ -459,5 +452,5 @@ function makeTree (nodes: (MetaFolder | MetaPost)[], rootPath = '/', maxPathDept
   })
 
   // root node
-  return validNodes.find(item => item.type === 'folder' && item.path === rootPath) as MetaFolder | undefined
+  return rootNode as MetaFolder
 }

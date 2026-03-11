@@ -7,16 +7,18 @@ export default defineEventHandler(async (event) => {
     .findOne()
 
   // filter tag data only
-  const keys = Object.keys(data)
-  const tags = keys.reduce((acc, key) => {
-    if (!/^_/.test(key) && Array.isArray(data[key])) {
-      acc[key] = data[key]
-    }
-    return acc
-  }, {} as Record<string, string[]>)
+  if (data) {
+    const keys = Object.keys(data)
+    const tags = keys.reduce((acc, key) => {
+      if (!/^_/.test(key) && Array.isArray(data[key])) {
+        acc[key] = data[key]
+      }
+      return acc
+    }, {} as Record<string, string[]>)
 
-  // return tags with titles, etc
-  return Object
-    .entries(tags)
-    .map(([title, tags]) => ({ title, tags }))
+    // return tags with titles, etc
+    return Object
+      .entries(tags)
+      .map(([title, tags]) => ({ title, tags }))
+  }
 })

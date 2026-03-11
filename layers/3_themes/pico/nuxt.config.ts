@@ -1,12 +1,7 @@
 import { defineNuxtConfig } from 'nuxt/config'
-import { fileURLToPath } from 'node:url'
+import { createResolver } from '@nuxt/kit'
 
-function resolve (path: string) {
-  // @ts-ignore
-  return fileURLToPath(new URL(path, import.meta.url))
-}
-
-const PATH = resolve('.')
+const { resolve } = createResolver(import.meta.url)
 
 export default defineNuxtConfig({
   dir: {
@@ -29,15 +24,6 @@ export default defineNuxtConfig({
   css: [
     resolve('assets/styles.scss'),
   ],
-
-  nitro: {
-    prerender: {
-      crawlLinks: true,
-      routes: [
-        '/',
-      ],
-    },
-  },
 
   vite: {
     css: {
