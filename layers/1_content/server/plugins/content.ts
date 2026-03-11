@@ -6,25 +6,39 @@ import { isWithinDays } from '../../utils/time'
 // helpers
 // ---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * Ensure trailing slash on paths, so they match what is in the URL
+ */
 function setPath (file: any) {
-  if (file._path) {
-    file._path = file._path.replace(/\/*$/, '/')
+  const { _path } = file
+  if (_path) {
+    file._path = _path.replace(/\/*$/, '/')
   }
 }
 
 /**
- * Set the type of the file so it can be filtered in search, etc
+ * Set the type of the file so it can be filtered and structured in search
  */
 function setType (file: ParsedContent) {
-  if (!file.type) {
-    if (file.layout === 'folder') {
+  // variables
+  const { type, layout, _source } = file
+
+  // only markdown files have a type
+  if (!type) {
+    // showcase content are special
+    if (_source === 'showcase ') {
+      file.type = 'showcase'
+    }
+
+    // everything else is portfolio content
+    else if (layout === 'folder') {
       file.type = 'folder'
     }
-    else if (file.layout === 'file') {
+    else if (layout === 'file') {
       file.type = 'file'
     }
-    else if (file._extension === 'md') {
-      file.type = 'post' // Default to post
+    else {
+      file.type = 'post' // default to post
     }
   }
 }
@@ -32,10 +46,11 @@ function setType (file: ParsedContent) {
 const today = new Date().toISOString().replace(/T.+?Z/, 'T00:00:00.000Z')
 
 /**
- * Set the visibility status so it can be omitted from production
+ * Set content visibility status so it can be omitted from production
  */
 function setStatus (file: ParsedContent) {
-  const { layout, date, navigation, searchable, draft } = file // hidden, preview
+  // variables
+  const { layout, date, navigation, searchable, draft } = file
 
   // default status
   file.status = ''
@@ -63,7 +78,7 @@ function setStatus (file: ParsedContent) {
 }
 
 /**
- * Optionally set permalinks
+ * Set permalinks on blog posts
  */
 function setPermalink (file: ParsedContent) {
   // permalink blog articles to a flat hierarchy
@@ -78,11 +93,20 @@ function setPermalink (file: ParsedContent) {
 
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('content:file:afterParse' as any, (file: any) => {
-    if (file._extension === 'md') {
+    // variables
+    const { _extension, _source } = file
+
+    // only markdown files get processed
+    if (_extension === 'md') {
+      // core properties apply to all sources
       setPath(file)
       setType(file)
-      setStatus(file)
-      setPermalink(file)
+
+      // status and permalink for content source only
+      if (_source === 'content') {
+        setStatus(file)
+        setPermalink(file)
+      }
     }
   })
 })

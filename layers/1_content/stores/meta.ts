@@ -65,7 +65,7 @@ export const useMetaStore = defineStore('meta', () => {
    * Get a single item by path
    */
   function getItem (path: string): MetaItem | undefined {
-    return items.value.find(item => getPath(item) === path)
+    return items.value.find(item => getPath(item) === path || item.path === path)
   }
 
   /**
@@ -105,12 +105,14 @@ export const useMetaStore = defineStore('meta', () => {
     }
 
     // filter tag groups
-    for (const tagGroup of _tagGroups) {
-      tagGroup.tags = tagGroup.tags.filter(tag => allTags.has(tag))
-    }
+    if (_tagGroups) {
+      for (const tagGroup of _tagGroups) {
+        tagGroup.tags = tagGroup.tags.filter(tag => allTags.has(tag))
+      }
 
-    // assign filtered tags
-    tagGroups.value = _tagGroups.filter(tagGroup => tagGroup.tags.length > 0)
+      // assign filtered tags
+      tagGroups.value = _tagGroups.filter(tagGroup => tagGroup.tags.length > 0)
+    }
   }
 
   // ---------------------------------------------------------------------------------------------------------------------
@@ -215,7 +217,10 @@ export const useMetaStore = defineStore('meta', () => {
       { ...archive, class: path.startsWith('/archive/') ? '' : 'hidden' },
     ]
 
-    const right: Link[] = [getUp(path), siteSearch]
+    const right: Link[] = [
+      getUp(path),
+      siteSearch,
+    ]
 
     return [
       createSection('Content', left),

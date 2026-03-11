@@ -1,10 +1,16 @@
-import { fileURLToPath } from 'node:url'
+import { createResolver } from '@nuxt/kit'
 import ViteYaml from '@modyfi/vite-plugin-yaml'
 import SvgLoader from 'vite-svg-loader'
 
-function resolve (path: string) {
-  return fileURLToPath(new URL(path, import.meta.url))
-}
+const { resolve } = createResolver(import.meta.url)
+
+// flags
+const NPM_SCRIPT = process.env.npm_lifecycle_event
+const prerender = process.env.PRERENDER !== 'false'
+
+// debug
+// console.info('NPM_SCRIPT:', NPM_SCRIPT)
+// console.info('PRERENDER:', prerender)
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -83,6 +89,15 @@ export default defineNuxtConfig({
     '/': { prerender: false, ssr: true },
     '/404': { prerender: false, ssr: true },
     '/**': { prerender: true },
+  },
+
+  nitro: {
+    prerender: {
+      crawlLinks: true,
+      routes: [
+        '/',
+      ],
+    },
   },
 
   // -------------------------------------------------------------------------------------------------------------------

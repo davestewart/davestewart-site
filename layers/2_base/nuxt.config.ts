@@ -1,10 +1,7 @@
 import { defineNuxtConfig } from 'nuxt/config'
-import { fileURLToPath } from 'node:url'
+import { createResolver } from '@nuxt/kit'
 
-function resolve (path: string) {
-  // @ts-ignore
-  return fileURLToPath(new URL(path, import.meta.url))
-}
+const { resolve } = createResolver(import.meta.url)
 
 const PATH = resolve('.')
 
