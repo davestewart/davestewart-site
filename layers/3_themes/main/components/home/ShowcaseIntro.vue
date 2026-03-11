@@ -1,11 +1,14 @@
 <script lang="ts" setup>
-const route = useRoute()
-const state = useState('showcase-intro', () => true)
+const state = useState('showcase-intro', () => false)
 
 withDefaults(defineProps<{
-  links?: string,
+  links?: string
 }>(), {
-  links: '#commercial-work'
+  links: '#commercial-work',
+})
+
+onMounted(() => {
+  state.value = true
 })
 
 function print () {
@@ -14,22 +17,49 @@ function print () {
 </script>
 
 <template>
-  <alert v-if="state" icon="book" title="What am I looking at?" closable class="showcaseIntro" @close="state = false">
-    <p>This is a shortlist of relevant jobs, projects and resources, filtered from my <a href="https://davestewart.co.uk" target="_blank">full portfolio</a>.</p>
-    <p>It reads as a short CV with links to and descriptions of the content on the other pages.</p>
-    <p>You can:</p>
-    <ul>
-      <li><a :href="links">scroll down</a> to continue</li>
-      <li>click above to <NuxtLink to="/work">navigate</NuxtLink> or <NuxtLink to="/search?tagsFilter=list">search</NuxtLink> the projects like a normal website</li>
-      <li class="only-md-up">use <kbd>shift</kbd> + <kbd>cursor</kbd> keys to quickly navigate the pages </li>
-      <li><a href="#print" @click.prevent="print">print</a> this page as a CV</li>
-    </ul>
-  </alert>
+  <div class="showcaseIntro">
+    <transition name="fade">
+      <Alert
+        v-if="state"
+        icon="book"
+        title="Project Showcase"
+        closable
+        class="showcaseIntro"
+        @close="state = false"
+      >
+        <p>This page is a shortlist of relevant jobs, projects and resources, filtered from my <a href="https://davestewart.co.uk" target="_blank">full portfolio</a>.</p>
+        <p>Feel free to:</p>
+        <ul>
+          <li>use the <NuxtLink to="/work">navigation</NuxtLink> or <NuxtLink to="/search?tagsFilter=list">search</NuxtLink> as normal</li>
+          <li class="only-md-up">use <kbd>shift</kbd> + <kbd>cursor</kbd> to jump around</li>
+          <li>or <a href="#print" @click.prevent="print">print</a> this page to PDF for your records</li>
+        </ul>
+      </Alert>
+    </transition>
+  </div>
 </template>
 
 <style lang="scss">
-@media print {
-  .showcaseIntro {
+.showcaseIntro {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 500;
+  max-width: 50ch;
+
+  .uiAlert {
+    margin: 1.5rem;
+    //border-top: 1px solid #EEE;
+    //border-right: 1px solid #EEE;
+    //border-bottom: 1px solid #EEE;
+    border-radius: 4px;
+    padding: 2rem;
+    background: white;
+    box-shadow: 0 .2rem .5rem #0002, 0 1rem 2rem #0002;
+    row-gap: 1.2rem;
+  }
+
+  @media print {
     display: none !important;
   }
 }

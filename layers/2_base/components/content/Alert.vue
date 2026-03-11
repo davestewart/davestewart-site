@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-type AlertType = 'tip' | 'info' | 'note' | 'warning' | 'important' | 'caution'
+import type { Icon } from '../ui/UiIcon.vue'
 
-type IconType = 'tip' | 'info' | 'note' | 'warning' | 'fire' | 'caution' | 'smile' | 'bolt'
+type AlertType = 'tip' | 'info' | 'note' | 'warning' | 'important' | 'caution'
 
 defineEmits<{
   (e: 'close'): void
@@ -9,7 +9,7 @@ defineEmits<{
 
 const props = withDefaults(defineProps<{
   type?: AlertType
-  icon?: IconType
+  icon?: Icon
   title?: string
   text?: string
   inline?: boolean
@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<{
   type: 'note',
 })
 
-const icons: Record<AlertType, IconType> = {
+const icons: Record<AlertType, Icon> = {
   tip: 'tip',
   note: 'note',
   info: 'info',
