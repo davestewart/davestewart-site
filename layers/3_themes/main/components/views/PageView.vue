@@ -9,7 +9,7 @@
     <ContentRendererMarkdown :value="page" class="pageContent" />
 
     <!-- comments -->
-    <PageFeedback v-if="isPost" />
+    <PageFeedback v-if="isPost && !store.isShowcase" />
 
     <!-- prev / next -->
     <NavSurround />
@@ -24,6 +24,8 @@ const props = defineProps<{
   page: PageContent
   info?: boolean
 }>()
+
+const store = useMetaStore()
 
 const isPost = computed(() => {
   const ignore = [
