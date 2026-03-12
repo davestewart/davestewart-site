@@ -3,6 +3,7 @@ import type { ModuleOptions as NuxtContentOptions } from '@nuxt/content'
 import type { ModuleOptions as NuxtContentAssetsOptions } from 'nuxt-content-assets'
 import type { NuxtConfig } from '@nuxt/schema'
 import { createResolver } from '@nuxt/kit'
+import { createCssVariablesTheme } from 'shiki/core'
 
 const { resolve } = createResolver(import.meta.url)
 
@@ -85,7 +86,15 @@ export default defineLayerConfig({
       ],
     },
     highlight: {
-      theme: 'min-light',
+      theme: {
+        // @ts-expect-error: Custom theme object works at runtime
+        default: createCssVariablesTheme({
+          name: 'css-variables',
+          variablePrefix: '--shiki-',
+          variableDefaults: {},
+          fontStyle: true,
+        }),
+      },
       langs: [
         'ts', 'js',
         'md', 'json', 'json5', 'yaml', 'mermaid',

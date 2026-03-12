@@ -2,6 +2,53 @@
 @use 'sass:color';
 
 // ---------------------------------------------------------------------------------------------------------------------
+// shiki syntax highlighting
+// ---------------------------------------------------------------------------------------------------------------------
+
+:root {
+  /* base **/
+  --shiki-default-font-style: normal !important;
+  --shiki-foreground: #0a3069;
+  --shiki-background: #f5f5f8;
+
+  /* comments, prolog, doctype, cdata */
+  --shiki-token-comment: #93a1a1;
+
+  /* atrule, attr-value, keyword */
+  --shiki-token-keyword: #07a;
+
+  /* punctuation */
+  --shiki-token-punctuation: var(--shiki-foreground);
+
+  /* property, tag, boolean, number, constant, symbol, deleted */
+  --shiki-token-constant: var(--theme);
+
+  /* string expressions (operators, entities, etc) */
+  --shiki-token-string-expression: var(--theme);
+
+  /* selector, attr-name, string, char, builtin, inserted */
+  --shiki-token-string: var(--theme);
+
+  /* function */
+  --shiki-token-function: #dd4a68;
+
+  /* regex, important, variable (closest match is parameter) */
+  --shiki-token-parameter: #ee9900;
+
+  /* links */
+  --shiki-token-link: #0077aa;
+}
+
+.language-css {
+  --shiki-token-constant: var(--shiki-foreground);
+}
+
+.language-md {
+  --shiki-token-keyword: var(--theme);
+  --shiki-token-link: var(--theme);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 // code
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -47,4 +94,38 @@ blockquote code {
 pre::selection,
 pre code::selection {
   background: #b3d4fc;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// prose pre wrapper
+// ---------------------------------------------------------------------------------------------------------------------
+
+.prose-pre {
+  position: relative;
+  margin: 1.5rem 0;
+  cursor: default;
+
+  & + & {
+    margin-top: -.5rem !important;
+  }
+
+  &__label {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    font-size: 0.75rem;
+    opacity: 0.25;
+    transition: opacity 0.2s ease-in-out;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  &:hover &__label {
+    opacity: 1;
+    color: var(--theme);
+  }
+
+  &[data-lang="text"] code {
+    line-height: 1.4;
+  }
 }
