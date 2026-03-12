@@ -97,9 +97,13 @@ const layout = computed(() => {
   &[data-layout="inline"] {
     display: flex;
     gap: 8px;
-    align-items: center;
+    align-items: flex-start;
     padding: 0.5rem .75rem;
     margin: 1rem .25rem;
+
+    .uiAlert__icon {
+      margin-top: 2.5px;
+    }
   }
 
   .uiAlert__icon,

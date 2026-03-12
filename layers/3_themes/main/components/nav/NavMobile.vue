@@ -37,7 +37,7 @@
 
           <!-- close -->
           <div class="navMobile__close only-sm">
-            <UiIcon icon="close" :size="32" @click="hide" />
+            <UiIcon icon="close" :size="24" @click="hide" />
           </div>
         </div>
       </div>
