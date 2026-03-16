@@ -5,11 +5,11 @@ const showcase = useState('showcase', () => '')
 
 <template>
   <header class="showcaseHeader">
-    <h1>
+    <h1 class="showcaseHeader__title animate-block">
       <span class="showcaseHeader__name">Dave Stewart</span>
       <span class="showcaseHeader__role">{{ page.title }}</span>
     </h1>
-    <div class="showcaseHeader__links">
+    <div class="showcaseHeader__links animate-block">
       <span class="showcaseHeader__domain"><a :href="`https://${showcase}.davestewart.io`" target="_blank">{{ showcase }}.davestewart.io</a> | </span>
       <a href="mailto: dave@davestewart.co.uk" target="_blank">dave@davestewart.co.uk</a> |
       <a href="tel:+447976944805">+44 7976 944 805</a>
@@ -21,7 +21,8 @@ const showcase = useState('showcase', () => '')
 .showcaseHeader {
   text-align: center;
 
-  h1 {
+  &__title {
+    margin-top: 2rem !important;
     font-size: 3.2rem;
     line-height: 1.2;
   }

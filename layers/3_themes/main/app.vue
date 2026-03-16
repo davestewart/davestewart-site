@@ -24,12 +24,18 @@ const preview = ref<PreviewComponent>()
 
 // check for showcase
 const showcase = useState('showcase', () => '')
+
+// set intro values once only
 if (showcase.value) {
-  useHead(computed(() => ({
-    htmlAttrs: {
-      'data-showcase': showcase.value,
-    },
-  })))
+  callOnce('showcase', () => {
+    useState('showcase-intro', () => route.path === '/')
+    useHead({
+      htmlAttrs: {
+        'data-showcase': showcase.value,
+        'data-intro': route.path === '/' ? '1' : undefined,
+      },
+    })
+  })
 }
 
 // ensure meta store is initialized on server

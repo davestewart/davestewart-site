@@ -37,7 +37,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   mode: 'slide',
-  scrollDownThreshold: 0,
+  scrollDownThreshold: 10,
   scrollUpThreshold: 0,
   scrollDownScalar: 1,
   scrollUpScalar: 1,
@@ -89,7 +89,7 @@ const style = computed(() => {
     if (mode === 'slide-trigger') {
       return {
         transform: `translateY(-${isVisible.value ? 0 : height.value}px)`,
-        transition: `transform ${duration}ms ease`,
+        transition: `all ${duration}ms ease`,
         pointerEvents: isVisible.value ? 'auto' : 'none',
       }
     }
@@ -97,7 +97,7 @@ const style = computed(() => {
     if (mode === 'fade-trigger') {
       return {
         opacity: isVisible.value ? 1 : 0,
-        transition: `opacity ${duration}ms ease`,
+        transition: `all ${duration}ms ease`,
         pointerEvents: isVisible.value ? 'auto' : 'none',
       }
     }
@@ -107,7 +107,7 @@ const style = computed(() => {
       const down = props.heightDown ?? 30
       return {
         height: isVisible.value ? `${up}px` : `${down}px`,
-        transition: `height ${duration}ms ease`,
+        transition: `all ${duration}ms ease`,
       }
     }
   }

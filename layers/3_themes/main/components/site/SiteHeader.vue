@@ -11,7 +11,6 @@
       class="siteHeader"
       :style="{
         ...style ?? {},
-        opacity: state ? 0 : 1,
         boxShadow: `0 0 calc(var(--value) * 20px) rgba(0, 0, 0, 1)`,
       }"
     >
@@ -29,24 +28,16 @@
 
 <script setup lang="ts">
 import SmartHeader from '@base/components/wrappers/SmartHeader.vue'
-
-const route = useRoute()
-const state = useState('showcase-intro', () => route.path === '/')
 </script>
 
 <style lang="scss">
-// header and footer
 .siteHeader {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-}
-
-.siteHeader {
   user-select: none;
-  transition: 1s opacity;
 
   &__el {
     border-bottom: 1px solid $borderColor;
@@ -118,13 +109,19 @@ const state = useState('showcase-intro', () => route.path === '/')
   }
 }
 
+// intro animation
+html[data-intro] .siteHeader {
+  opacity: 0;
+  transition-delay: 0s !important;
+}
+
 // animation
 .siteHeader {
-  // opacity for preview modal
   &__el {
+    // opacity for intro and preview
     opacity: 1;
     transition: .5s opacity;
-    transition-delay: 0.25s;
+    transition-delay: 0.3s;
   }
 
   body.preview-raised &__el {
