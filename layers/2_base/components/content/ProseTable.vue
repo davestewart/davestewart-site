@@ -8,20 +8,22 @@
 
 <style lang="scss">
 .table-wrapper {
-  margin: 2rem 0;
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 
+  margin: 1rem 0 2rem 0;
   @include lg {
-    margin: 2rem 0 2rem 1rem;
+    margin: 1rem 0 2rem 1rem;
   }
 
   table {
+    margin:0;
+    margin-left: -.5rem;
+
     @include md-down {
       min-width: 0 !important;
       //min-width: 1000px; // factor in larger font size
-      margin: 1rem 0;
     }
 
     @include md {

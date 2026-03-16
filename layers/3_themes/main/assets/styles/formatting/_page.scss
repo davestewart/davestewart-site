@@ -197,13 +197,15 @@ em strong {
 
   kbd {
     padding: 2px 6px 3px 6px;
-    margin: 0 2px;
+    margin: 0 .3em;
     border-radius: 4px;
-    outline: 1px solid $grey-lighter;
-    box-shadow: 0 3px 0 $grey-lighter;
+    outline: 1.75px solid $grey-lighter;
+    box-shadow: 0 3px 0 1.75px $grey-lighter;
     color: $accentColor;
     font-family: $codeFont, Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-    font-size: .85em;
+    font-size: .8em;
+    font-weight: 600;
+    vertical-align: 3%;
   }
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="home" :class="!metaStore.isShowcase ? 'layout__home' : ''">
+  <div class="home layout__home">
     <ContentRenderer id="content" :value="page" class="pageContent" />
   </div>
 </template>
@@ -8,8 +8,6 @@
 defineProps<{
   page: PageContent
 }>()
-
-const metaStore = useMetaStore()
 </script>
 
 <style lang="scss">

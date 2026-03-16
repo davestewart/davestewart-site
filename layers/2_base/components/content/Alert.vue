@@ -145,8 +145,9 @@ const layout = computed(() => {
       font-size: 0.9em;
     }
 
+    // override .pageContent p styles
     p {
-      margin: 0.4rem 0;
+      margin: 0.4rem 0 !important;
     }
 
     *:first-child {

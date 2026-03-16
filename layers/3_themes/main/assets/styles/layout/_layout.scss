@@ -42,28 +42,27 @@ body {
   min-width: 0;
   margin: 0 auto;
   padding: 1rem;
-  @include xl {
+  @include lg {
     min-width: $widthPage;
   }
 }
 
+.layout__showcase,
 .layout__error,
 .layout__search,
 .layout__folder,
 .layout__page {
   padding-top: 1rem;
+
   @include lg {
     padding-top: 1.5rem;
   }
 }
 
 .layout__outer {
-  display: grid;
-  grid-template-columns: 1fr calc($widthPage + 2rem) 1fr;
+  display: flex;
   position: relative;
   margin: 0 auto;
-  //max-width: $widthOuter;
-  gap: $widthGap;
   height: 100%;
   min-height: 700px;
 
@@ -73,21 +72,23 @@ body {
 
   .layout__left,
   .layout__right {
-    flex-grow: 1;
-    padding: 0 1rem;
-
-    > * {
-      display: flex;
-      top: 0;
-    }
+    display: none;
   }
 
-  @include xl-down {
-    grid-template-columns: 1fr;
+  @include xl {
+    grid-template-columns: 1fr calc($widthPage + 2rem) 1fr;
+    gap: $widthGap;
 
     .layout__left,
     .layout__right {
-      display: none;
+      display: block;
+      flex-grow: 1;
+      padding: 0 1rem;
+
+      > * {
+        display: flex;
+        top: 0;
+      }
     }
   }
 
@@ -97,5 +98,17 @@ body {
 
   .layout__navPage > * {
     justify-content: flex-start;
+  }
+}
+
+.layout__left,
+.layout__right {
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+
+  @include sm {
+    display: none;
   }
 }

@@ -6,7 +6,7 @@
     </p>
     <div class="pageContent">
       <!-- content -->
-      <ContentRenderer v-if="page.body?.children.length" :value="page" class="pageContent__intro" />
+      <ContentRenderer v-if="page.body?.children.length" :value="filteredPage" class="pageContent__intro" />
 
       <!-- folders -->
       <section class="folderContent">
@@ -22,12 +22,25 @@ import { computed } from 'vue'
 import { useRoute } from '#app'
 import useAnchor from '@base/composables/useAnchor'
 
-defineProps<{
+const props = defineProps<{
   page: PageContent
 }>()
 
 const route = useRoute()
 const metaStore = useMetaStore()
+
+// showcase items should only show the first paragraph
+const filteredPage = computed(() => {
+  return !metaStore.isShowcase
+    ? props.page
+    : {
+        ...props.page,
+        body: {
+          ...props.page.body,
+          children: props.page.body?.children.slice(0, 1)
+        },
+      }
+})
 
 const options = computed<Partial<SearchOptions>>(() => {
   return {

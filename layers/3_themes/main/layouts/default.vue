@@ -1,5 +1,3 @@
-<script setup lang="ts">
-</script>
 <template>
   <div class="layout__default">
     <!-- header -->
@@ -10,7 +8,7 @@
       <!-- content -->
       <div class="layout__outer">
         <div class="layout__left">
-          <NavSide />
+          <span />
         </div>
         <div class="layout__inner">
           <NuxtPage />
@@ -35,20 +33,6 @@
 </template>
 
 <style lang="scss">
-.layout__left,
-.layout__right {
-  //display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  align-items: center;
-  justify-content: center;
-  //height: 90%;
-
-  @include sm {
-    display: none;
-  }
-}
-
 .page-enter-active,
 .page-leave-active {
   transition: opacity 0.05s ease;
