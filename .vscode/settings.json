@@ -1,0 +1,39 @@
+{
+    // Tell the built-in TypeScript/JavaScript formatter to add a space before function parentheses
+    "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+    "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
+    // Disable the built-in VS Code "Format on Save" system.
+    // We only want ESLint to run its --fix auto-formatting, otherwise the editors fight each other.
+    "editor.formatOnSave": false,
+    // Tell ESLint to automatically fix issues on save (including formatting rules)
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    // Ensure the new flat config is supported
+    "eslint.useFlatConfig": true,
+    "eslint.validate": [
+        "javascript",
+        "typescript",
+        "vue"
+    ],
+    // Stop the default HTML formatter from collapsing attributes to a single line
+    "html.format.wrapAttributes": "preserve",
+    // Configure Vue-specific formatting to match your ESLint
+    "vue.features.codeActions.enable": true,
+    "[vue]": {
+        "editor.defaultFormatter": "Vue.volar",
+        "editor.formatOnSave": false,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit"
+        }
+    },
+    "[scss]": {
+        "editor.formatOnSave": false,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit"
+        }
+    },
+    // DIE PRETTIER DIE
+    "prettier.enable": false,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+}
