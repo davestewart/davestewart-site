@@ -9,7 +9,7 @@
 import { computed } from 'vue'
 import PageView from '../components/views/PageView.vue'
 import FolderView from '../components/views/FolderView.vue'
-import NotFound from '../components/views/404View.vue'
+import NotFound from '../components/views/NotFoundView.vue'
 
 const route = useRoute()
 const metaStore = useMetaStore()

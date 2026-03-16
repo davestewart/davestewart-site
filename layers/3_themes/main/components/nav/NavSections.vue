@@ -7,18 +7,19 @@
       :data-name="section.name.toLowerCase()"
     >
       <div class="navSections__items">
-        <NuxtLink
-          v-for="link in section.links"
-          :key="link.path"
-          :to="link.path"
-          :target="link.path.startsWith('http') ? '_blank' : undefined"
-          class="navSections__item"
-          :class="section.name !== 'Navigation' && !items.find(item => item.path === link.path) ? 'hidden' : ''"
-          @click="$emit('click')"
-        >
-          <span class="navSections__text">{{ link.title }}</span>
-          <span class="navSections__desc">{{ link.description }}</span>
-        </NuxtLink>
+        <template v-for="link in section.links" :key="link.path">
+          <NuxtLink
+            v-if="visibility[link.title] !== false"
+            :to="link.path"
+            :target="link.path.startsWith('http') ? '_blank' : undefined"
+            class="navSections__item"
+            :class="section.name !== 'Navigation' && !items.find(item => item.path === link.path) ? 'hidden' : ''"
+            @click="$emit('click')"
+          >
+            <span class="navSections__text">{{ link.title }}</span>
+            <span class="navSections__desc">{{ link.description }}</span>
+          </NuxtLink>
+        </template>
       </div>
     </div>
   </nav>
@@ -33,7 +34,10 @@ defineEmits<{
   (e: 'click'): void
 }>()
 
-const { items, sections } = storeToRefs(useMetaStore())
+const store = useMetaStore()
+const { items, sections } = storeToRefs(store)
+
+const visibility = computed(() => store.getLinkVisibility())
 </script>
 
 <style lang="scss">

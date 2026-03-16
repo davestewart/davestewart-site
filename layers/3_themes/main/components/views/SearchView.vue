@@ -1,18 +1,13 @@
 <template>
   <div class="layout__search">
     <ClientOnly>
-      <h1 class="search__title">
-        <span v-if="!isFiltered">Search...</span>
-        <component :is="searchTitle" v-else />
-      </h1>
+      <div class="search__header">
+        <!-- title -->
+        <h1 class="search__title">
+          <span v-if="!isFiltered">Search...</span>
+          <component :is="searchTitle" v-else />
+        </h1>
 
-      <!-- description -->
-      <p class="description" style="display: flex">
-        <span>{{ pageDescription }}</span>
-      </p>
-
-      <!-- parameters -->
-      <div class="search__parameters" @submit.prevent="onSubmit">
         <!-- clear -->
         <button
           v-if="isFiltered"
@@ -23,7 +18,15 @@
         >
           <UiIcon icon="close" :size="24" />
         </button>
+      </div>
 
+      <!-- description -->
+      <p class="description" style="display: flex">
+        <span>{{ pageDescription }}</span>
+      </p>
+
+      <!-- parameters -->
+      <div class="search__parameters" @submit.prevent="onSubmit">
         <form class="searchControls">
           <UiControls class="only-md-down">
             <!-- search input -->
@@ -90,7 +93,7 @@
         </SlideUpDown>
       </div>
 
-      <div class="layout__folder">
+      <div class="layout__folder pageContent">
         <div v-if="results.items.length" class="search__results">
           <PageTree :format="query.format" :items="results.items" />
         </div>
@@ -286,15 +289,19 @@ function onSubmit () {
 
 .search {
 
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
   &__title {
-    margin-top: 0;
-    padding-right: 3rem;
+    margin: 0;
+    position: relative;
   }
 
   &__clear {
-    position: absolute;
-    top: 22px;
-    right: 20px;
     padding: .6rem;
     font-size: 35px;
     line-height: 1rem;
@@ -309,10 +316,6 @@ function onSubmit () {
     cursor: default;
     font-weight: 400;
     user-select: none;
-
-    @include md-down {
-      top: 15px;
-    }
 
     span {
       height: 0;

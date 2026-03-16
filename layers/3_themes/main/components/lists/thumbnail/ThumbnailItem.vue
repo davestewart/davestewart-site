@@ -2,7 +2,7 @@
   <article class="thumbnailItem">
     <!-- image -->
     <div class="thumbnailItem__image">
-      <NuxtLink :to="page.permalink ?? page.path" draggable="false">
+      <NuxtLink :to="page.path" draggable="false">
         <MediaImage :source="source" />
       </NuxtLink>
     </div>
@@ -62,6 +62,7 @@ const description = computed(() => {
 
     @include md {
       background-image: linear-gradient(0deg, #f2f6f8 0%, #FFF 35%);
+
       a {
         @include striped(transparent, white);
       }

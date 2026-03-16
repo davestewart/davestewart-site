@@ -7,16 +7,6 @@ import { isWithinDays } from '../../utils/time'
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
- * Ensure trailing slash on paths, so they match what is in the URL
- */
-function setPath (file: any) {
-  const { _path } = file
-  if (_path) {
-    file._path = _path.replace(/\/*$/, '/')
-  }
-}
-
-/**
  * Set the type of the file so it can be filtered and structured in search
  */
 function setType (file: ParsedContent) {
@@ -43,12 +33,39 @@ function setType (file: ParsedContent) {
   }
 }
 
-const today = new Date().toISOString().replace(/T.+?Z/, 'T00:00:00.000Z')
+/**
+ * Set url paths on blog posts and other content
+ */
+function setPaths (file: ParsedContent) {
+  const { _path, path, type } = file
+
+  // Ensure trailing slash on paths, so they match what is in the URL
+  if (_path) {
+    file._path = _path.replace(/\/*$/, '/')
+  }
+
+  // if no path is set in frontmatter
+  if (!path) {
+    // flatten blog posts to a single list
+    if (_path?.startsWith('/blog/') && type === 'post') {
+      const slug = _path
+        .replace('index/', '')
+        .replace(/\/$/, '')
+        .split('/').pop()
+      file.path = `/blog/${slug}/`
+    }
+
+    // naturally fallback to the structural `_path` if no frontmatter path or blog override
+    else {
+      file.path = file._path
+    }
+  }
+}
 
 /**
  * Set content visibility status so it can be omitted from production
  */
-function setStatus (file: ParsedContent) {
+function setStatus (file: ParsedContent, today: string) {
   // variables
   const { layout, date, navigation, searchable, draft } = file
 
@@ -77,35 +94,20 @@ function setStatus (file: ParsedContent) {
   }
 }
 
-/**
- * Set permalinks on blog posts
- */
-function setPermalink (file: ParsedContent) {
-  // permalink blog articles to a flat hierarchy
-  if (file._path?.startsWith('/blog/') && file.type === 'post' && !file.permalink) {
-    const slug = file._path
-      .replace('index/', '')
-      .replace(/\/$/, '')
-      .split('/').pop()
-    file.permalink = `/blog/${slug}/`
-  }
-}
-
 export default defineNitroPlugin((nitroApp) => {
-  nitroApp.hooks.hook('content:file:afterParse' as any, (file: any) => {
+  nitroApp.hooks.hook('content:file:afterParse' as any, (file: ParsedContent) => {
     // variables
     const { _extension, _source } = file
 
     // only markdown files get processed
     if (_extension === 'md') {
       // core properties apply to all sources
-      setPath(file)
       setType(file)
+      setPaths(file)
 
-      // status and permalink for content source only
+      // status for content source only
       if (_source === 'content') {
-        setStatus(file)
-        setPermalink(file)
+        setStatus(file, new Date().toISOString().replace(/T.+?Z/, 'T00:00:00.000Z'))
       }
     }
   })

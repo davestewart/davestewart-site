@@ -2,7 +2,6 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { onKeyStroke } from '@vueuse/core'
 import { isInput, isModifier } from '~/utils/events'
-import { getPath } from '@content/utils'
 
 /**
  * Sets up global keyboard shortcuts for the whole site
@@ -43,14 +42,14 @@ export function useShortcuts () {
   onKeyStroke('ArrowLeft', (e: KeyboardEvent) => {
     const prev = surround.value.prev
     if (!isInput(e) && e.shiftKey && prev) {
-      router.push(getPath(prev)!)
+      router.push(prev.path)
     }
   })
 
   onKeyStroke('ArrowRight', (e: KeyboardEvent) => {
     const next = surround.value.next
     if (!isInput(e) && e.shiftKey && next) {
-      router.push(getPath(next)!)
+      router.push(next.path)
     }
   })
 

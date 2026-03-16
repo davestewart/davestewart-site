@@ -1,5 +1,5 @@
 import { serverQueryContent } from '#content/server'
-import { slugify, getPath } from '../../../utils'
+import { slugify } from '../../../utils'
 import type { MetaFolder, MetaItemRaw, MetaPost } from '../../../types'
 
 export default defineEventHandler(async (event) => {
@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const input = await serverQueryContent(event)
     .only([
       '_path',
-      'permalink',
+      'path',
       'type',
       'title',
       'shortTitle',
@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
     .where({
       _extension: 'md',
     })
-    .find() satisfies MetaItemRaw[]
+    .find()
 
   // build order map for hierarchical sorting
   const orderMap = new Map<string, number>()
@@ -78,8 +78,9 @@ export default defineEventHandler(async (event) => {
     .map((item) => {
       if (item.type === 'folder') {
         return clean({
-          slug: `folder-${slugify(item._path!)}`,
+          _path: item._path!,
           path: item._path!,
+          slug: `folder-${slugify(item._path!)}`,
           type: item.type,
           title: item.title ?? '',
           description: item.description ?? '',
@@ -87,9 +88,9 @@ export default defineEventHandler(async (event) => {
         }) as MetaFolder
       }
       return clean({
-        path: item._path!,
+        _path: item._path!,
+        path: item.path ?? item._path!,
         type: item.type,
-        permalink: item.permalink,
         title: item.title ?? '',
         shortTitle: item.shortTitle,
         description: item.description ?? '',
@@ -113,43 +114,35 @@ export default defineEventHandler(async (event) => {
     if (paths) {
       for (let i = 0; i < paths.length; i++) {
         const path = paths[i]
-        const item = output.find(item => getPath(item) === path)
+        const item = output.find(item => item.path === path || item._path === path)
 
         // skip missing items
         if (!item) {
           continue
         }
 
-        // modify posts
-        if (item.type === 'post') {
-          // list unlisted
-          if (item.status === 'unlisted') {
-            item.status = ''
-          }
-
-          // expand permalinks to paths
-          if (item.permalink) {
-            paths[i] = item.path
-          }
+        // ensure no badges in showcase
+        if (item.type === 'post' && ['unlisted', 'new'].includes(item.status ?? '')) {
+          item.status = ''
         }
       }
 
       // get ancestor paths (we need the complete tree for search to work)
-      const set = new Set(paths)
+      const parents = new Set()
       for (const path of paths) {
         const parts = path.split('/')
-        for (let i = 0; i < parts.length - 1; i++) {
+        for (let i = 0; i < parts.length - 2; i++) {
           const parent = parts.slice(0, i + 1).join('/')
-          set.add(`${parent}/`)
+          parents.add(`${parent}/`)
         }
       }
 
-      // return all paths
-      const filtered = Array.from(set).sort()
-
-      // return filtered items
-      return output.filter(item => filtered.includes(item.path))
+      // return final items, ordered by the paths in the showcase file
+      return [...parents, ...paths]
+        .map(path => output.find(item => item.path === path || item._path === path)!)
+        .filter(Boolean)
     }
+    return []
   }
 
   // return items
@@ -160,13 +153,18 @@ export default defineEventHandler(async (event) => {
 // helpers
 // ---------------------------------------------------------------------------------------------------------------------
 
+type Orderable = {
+  _path?: string
+  date?: string
+}
+
 /**
  * Hierarchical sort that respects parent ordering at each level
  *
  * 1. Check explicit order property at each path level
  * 2. Fall back to date ordering within same directory
  */
-function sortHierarchical (a: MetaItemRaw, b: MetaItemRaw, orderMap: Map<string, number>) {
+function sortHierarchical (a: Orderable, b: Orderable, orderMap: Map<string, number>) {
   const aPath = a._path || ''
   const bPath = b._path || ''
 

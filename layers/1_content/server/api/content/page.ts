@@ -23,8 +23,8 @@ export default defineEventHandler<{ query: PageQuery }>(async (event): Promise<P
   return await serverQueryContent(event)
     .where({
       $or: [
+        { path: path },
         { _path: path },
-        { permalink: path },
       ],
       ...process.env.NODE_ENV === 'production'
         ? skip

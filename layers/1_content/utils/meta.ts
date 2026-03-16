@@ -9,13 +9,6 @@ export function getTitle (item: { title: string, shortTitle?: string }) {
 }
 
 /**
- * Get the correct path, resolving permalink if available
- */
-export function getPath (item?: { _path?: string, path?: string, permalink?: string }) {
-  return item?.permalink ?? item?.path ?? item?._path
-}
-
-/**
  * Take a path and slice it to a maximum depth
  */
 function slicePath (path: string, maxDepth = 0) {
@@ -51,9 +44,9 @@ export function getMetaParents (items: MetaItem[], path: string, fallbackTitle =
   const parents: Link[] = [{ path: '/', title: 'Home' }]
   let currentPath = '/'
 
-  // resolve any permalinks
+  // resolve candidate path
   const candidatePath = items
-    .find(item => getPath(item) === path)
+    .find(item => item.path === path || item._path === path)
     ?.path ?? path
 
   // build segments
@@ -96,7 +89,7 @@ export function getMetaSiblings (items: MetaPost[], parentPath: string): MetaIte
  * Related items before and after the current page
  */
 export function getMetaSurround (items: MetaItem[], path: string) {
-  const index = items.findIndex(p => getPath(p) === path)
+  const index = items.findIndex(p => p.path === path || p._path === path)
   if (index > -1) {
     return {
       prev: items[index - 1],

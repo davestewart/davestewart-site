@@ -11,6 +11,7 @@
       class="siteHeader"
       :style="{
         ...style ?? {},
+        opacity: state ? 0 : 1,
         boxShadow: `0 0 calc(var(--value) * 20px) rgba(0, 0, 0, 1)`,
       }"
     >
@@ -28,6 +29,9 @@
 
 <script setup lang="ts">
 import SmartHeader from '@base/components/wrappers/SmartHeader.vue'
+
+const route = useRoute()
+const state = useState('showcase-intro', () => route.path === '/')
 </script>
 
 <style lang="scss">
@@ -42,6 +46,7 @@ import SmartHeader from '@base/components/wrappers/SmartHeader.vue'
 
 .siteHeader {
   user-select: none;
+  transition: 1s opacity;
 
   &__el {
     border-bottom: 1px solid $borderColor;

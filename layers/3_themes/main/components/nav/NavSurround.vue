@@ -1,7 +1,7 @@
 <template>
   <nav v-if="prev || next" class="navSurround">
     <!-- prev -->
-    <NuxtLink v-if="prev" :to="getPath(prev)" class="navSurround__link navSurround__prev">
+    <NuxtLink v-if="prev" :to="prev.path" class="navSurround__link navSurround__prev">
       <span class="navSurround__arrow" />
       <div class="navSurround__text">
         {{ getTitle(prev) }}
@@ -10,7 +10,7 @@
     <span v-else />
 
     <!-- next -->
-    <NuxtLink v-if="next" :to="getPath(next)" class="navSurround__link navSurround__next">
+    <NuxtLink v-if="next" :to="next.path" class="navSurround__link navSurround__next">
       <div class="navSurround__text">
         {{ getTitle(next) }}
       </div>
@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { computed, inject, type Ref } from 'vue'
 import { useRoute } from '#app'
-import { getPath, getTitle } from '@content/utils'
+import { getTitle } from '@content/utils'
 import type { PageContent } from '@content/types'
 
 const route = useRoute()
@@ -30,7 +30,7 @@ const page = inject<Ref<PageContent>>('page')
 const metaStore = useMetaStore()
 
 const surround = computed(() => {
-  const path = getPath(page?.value) ?? route.path
+  const path = page?.value?.path ?? route.path
   return metaStore.getSurround(path)
 })
 

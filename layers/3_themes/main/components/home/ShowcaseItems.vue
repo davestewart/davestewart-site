@@ -1,10 +1,6 @@
 <template>
-  <!--
-  <PageTree :items="pages" :format="type === 'links' ? 'text' : 'image'" />
-  -->
-<!--  <pre>{{ page }}</pre>-->
   <ul class="pageList">
-    <ThumbnailWall v-if="type === 'thumbnails'" :pages="pages" />
+    <ThumbnailWall v-if="thumbnails" :pages="pages" />
     <template v-for="page in pages" v-else :key="page?.path">
       <PageItem v-if="page" :page="page" />
     </template>
@@ -22,12 +18,10 @@ interface ShowcaseItem {
   image?: string
 }
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   items: string
-  type?: 'links' | 'thumbnails'
-}>(), {
-  type: 'links',
-})
+  thumbnails?: boolean
+}>()
 
 const page = inject<Ref<PageContent>>('page')?.value
 const store = useMetaStore()
@@ -49,14 +43,11 @@ const pages = computed<MetaPost[]>(() => {
         : item
 
       // convert absolute links to routes
-      if (href.startsWith('https://davestewart.co.uk/')) {
+      if (href.startsWith('https://davestewart.co.uk/') || href.startsWith('/')) {
         const path = href.replace('https://davestewart.co.uk', '')
         const post = store.getItem(path)
         if (post) {
-          return {
-            ...post,
-            path: getPath(post),
-          }
+          return post
         }
         return { title: 'Missing post', description: path, path }
       }

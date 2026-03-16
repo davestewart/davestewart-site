@@ -1,13 +1,11 @@
-import { computed, defineStore, getPath } from '#imports'
-import { getMetaParents, getMetaSiblings, getMetaSurround, getParentPath } from '../utils'
-import { queryItems } from '../utils/search'
+import { getMetaParents, getMetaSiblings, getMetaSurround, getParentPath, normalizePath } from '../utils'
+import { queryItems, SEARCH_PATHS } from '../utils/search'
 import type { MetaItem, MetaPost, SearchQuery, TagGroup } from '../types'
 
 export type Link = {
   path: string
   title: string
   description?: string
-  class?: string
 }
 
 /**
@@ -42,6 +40,9 @@ export const useMetaStore = defineStore('meta', () => {
   // whether we're filtering by showcase
   const isShowcase = ref(false)
 
+  // route
+  const route = useRoute()
+
   // ---------------------------------------------------------------------------------------------------------------------
   // actions
   // ---------------------------------------------------------------------------------------------------------------------
@@ -65,7 +66,7 @@ export const useMetaStore = defineStore('meta', () => {
    * Get a single item by path
    */
   function getItem (path: string): MetaItem | undefined {
-    return items.value.find(item => getPath(item) === path || item.path === path)
+    return items.value.find(item => item._path === path || item.path === path)
   }
 
   /**
@@ -119,14 +120,13 @@ export const useMetaStore = defineStore('meta', () => {
   // navigation computed
   // ---------------------------------------------------------------------------------------------------------------------
 
-  function createLink (path: string, title: string, description = '', cssClass = ''): Link {
+  function createLink (path: string, title: string, description = ''): Link {
     return {
       path,
       title,
       get description () {
         return description || items.value.find(item => item.path === path)?.description || '...'
       },
-      class: cssClass,
     }
   }
 
@@ -137,7 +137,7 @@ export const useMetaStore = defineStore('meta', () => {
   // entries
   const home = createLink('/', 'Home', 'Home page')
   const sitemap = createLink('/sitemap/', 'Sitemap', 'Full list of everything on the site')
-  const siteSearch = createLink('/search/', 'Search', 'Search portfolio')
+  const siteSearch = createLink(isShowcase.value ? '/search/' : '/search/?tagsFilter=list', 'Search', 'Search portfolio')
   const work = createLink('/work/', 'Work')
   const products = createLink('/products/', 'Products')
   const projects = createLink('/projects/', 'Projects')
@@ -166,6 +166,23 @@ export const useMetaStore = defineStore('meta', () => {
     ]
   })
 
+  // manage link visibility independently of link creation
+  function getLinkVisibility (isTop = false): Record<string, boolean> {
+    return {
+      Work: getItems('/work/').length > 0,
+      Products: getItems('/products/').length > 0,
+      Projects: getItems('/projects/').length > 0,
+      Blog: getItems('/blog/').length > 0,
+      Archive: getItems('/archive/').length > 0
+        ? isTop
+          ? route.path.startsWith('/archive/')
+          : true
+        : false,
+      Up: route.path !== '/',
+      Exit: isShowcase.value,
+    }
+  }
+
   // ---------------------------------------------------------------------------------------------------------------------
   // navigation actions
   // ---------------------------------------------------------------------------------------------------------------------
@@ -190,14 +207,14 @@ export const useMetaStore = defineStore('meta', () => {
   }
 
   function getUp (path: string): Link {
-    // the real path (path might be a permalink)
-    const realPath = getItem(path)?.path ?? '/'
+    // use physical folder path
+    const _path = getItem(path)?._path ?? '/'
 
     // showcase posts are clipped to a depth of 1
     const maxDepth = isShowcase.value ? 1 : undefined
 
     // get parent
-    const parentPath = getParentPath(realPath, maxDepth)
+    const parentPath = getParentPath(_path, maxDepth)
     const parent = getItem(parentPath)
 
     // return something the UI can use
@@ -205,22 +222,27 @@ export const useMetaStore = defineStore('meta', () => {
       title: 'Up',
       path: parent?.path ?? '/',
       description: `Go up to ${parent?.title}`,
-      class: `up ${parent?.path === realPath ? 'hidden' : ''}`,
-    } satisfies Link
+    }
   }
 
   function getTop (path: string) {
     const left: Link[] = [
-      // main entries
-      work, products, projects, blog,
-      // only show archive if in archive path
-      { ...archive, class: path.startsWith('/archive/') ? '' : 'hidden' },
+      work,
+      products,
+      projects,
+      blog,
+      archive,
     ]
 
     const right: Link[] = [
       getUp(path),
       siteSearch,
     ]
+
+    if (isShowcase.value) {
+      const exit = createLink('https://davestewart.co.uk', 'Exit', 'Exit to main site')
+      right.push(exit)
+    }
 
     return [
       createSection('Content', left),
@@ -247,8 +269,11 @@ export const useMetaStore = defineStore('meta', () => {
     tagGroups,
     tagList,
 
-    // navigation
+    // links
     sections,
+    getLinkVisibility,
+
+    // navigation
     getSurround,
     getSiblings,
     getBreadcrumbs,

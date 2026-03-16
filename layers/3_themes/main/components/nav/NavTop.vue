@@ -7,16 +7,23 @@
       <section v-for="section in top" :key="section.name" class="navTop__section">
         <template v-for="link in section.links" :key="link.title">
           <transition name="fade">
-            <div v-if="!link.class?.includes('hidden')">
+            <div v-if="visibility[link.title] !== false">
               <NuxtLink
                 :to="link.path"
                 class="navTop__link"
                 :class="[
-                  link.class,
                   route.path.startsWith(link.path) ? 'router-link-active' : '',
                 ]"
                 :title="link.description"
-              >{{ link.title }}</NuxtLink>
+              >
+                <UiIcon
+                  v-if="link.title === 'x'"
+                  icon="close"
+                  size="14"
+                  style="margin-left: -.5rem; transform: translateY(1px);"
+                />
+                <span v-else>{{ link.title }}</span>
+              </NuxtLink>
             </div>
           </transition>
         </template>
@@ -33,6 +40,7 @@ const route = useRoute()
 const metaStore = useMetaStore()
 
 const top = computed(() => metaStore.getTop(route.path))
+const visibility = computed(() => metaStore.getLinkVisibility(true))
 </script>
 
 <style lang="scss">
@@ -61,7 +69,7 @@ const top = computed(() => metaStore.getTop(route.path))
 
   &__link {
     display: inline-block;
-    padding: 1.2rem 1rem;
+    padding: 1.2rem .9rem;
     font-family: $titleFont;
     font-size: 1.1rem;
     letter-spacing: 0.05em;

@@ -2,19 +2,32 @@
  * Raw data from Content API
  */
 export interface MetaItemRaw {
-  _path?: string
+  // the disk path of the item
+  _path: string
+  // the permalink path of the item (different for blog posts)
+  path: string
+  // the type of the item, based on the layout property
+  // also different from the built-in "file" type property
   type: 'folder' | 'post' | 'home' | 'showcase'
+  // the post's title
   title?: string
+  // an optional short title, to be shown in navigation
   shortTitle?: string
+  // an optional description
   description?: string
-  permalink?: string
+  // an optional media item hash
   media?: {
     thumbnail?: string
   }
+  // an optional order for sorting
   order?: number
+  // an optional date for sorting
   date?: string
-  status?: string
+  // an optional status for sorting
+  status?: 'new' | 'scheduled' | 'preview' | 'draft' | 'unlisted' | 'hidden'
+  // an optional github path (username/repo)
   github?: string
+  // an optional list of tags
   tags?: string[]
 }
 
@@ -27,11 +40,13 @@ export type MetaItem = MetaFolder | MetaPost
  * Filtered data for folder item
  */
 export interface MetaFolder {
-  type: 'folder'
-  slug: string
+  // the physical folder path of the item on disk
+  _path: string
   path: string
+  type: 'folder'
   title: string
   description?: string
+  slug: string
   items: MetaItem[]
 }
 
@@ -39,13 +54,14 @@ export interface MetaFolder {
  * Filtered data for post item
  */
 export interface MetaPost {
-  type: 'post'
-  date: string
+  // the physical folder path of the item on disk
+  _path: string
   path: string
-  permalink?: string
+  type: 'post'
   title: string
-  shortTitle?: string
   description?: string
+  shortTitle?: string
+  date: string
   status?: string
   github?: string
   tags: string[]

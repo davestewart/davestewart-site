@@ -8,12 +8,12 @@ import type { MetaFolder, MetaItem, MetaPost, SearchFilters, SearchOptions, Sear
 /**
  * Default searchable paths across the site
  */
-export const DEFAULT_SEARCH_PATHS = [
+export const SEARCH_PATHS = [
   '/work/',
   '/products/',
   '/projects/',
-  '/archive/',
   '/blog/',
+  '/archive/',
 ]
 
 /**
@@ -35,7 +35,7 @@ const DEFAULT_FILTERS: Required<SearchFilters> = {
  * Default search options
  */
 const DEFAULT_OPTIONS: SearchOptions = {
-  searchPaths: DEFAULT_SEARCH_PATHS,
+  searchPaths: SEARCH_PATHS,
   includeUnlisted: false,
   includeDrafts: false,
   hasThumbnail: false,
@@ -200,7 +200,7 @@ export function cleanQuery (query: Partial<SearchQuery>): Partial<SearchQuery> {
  */
 export function queryItems (items: MetaItem[], query: SearchQuery = {}) {
   const {
-    searchPaths = DEFAULT_SEARCH_PATHS,
+    searchPaths = SEARCH_PATHS,
     includeUnlisted = false,
     includeDrafts = false,
     hasThumbnail = false,
@@ -223,7 +223,7 @@ export function queryItems (items: MetaItem[], query: SearchQuery = {}) {
   const pathsToSearch = query.path ? [query.path] : searchPaths
   if (pathsToSearch.length > 0) {
     posts = posts.filter((item) => {
-      return pathsToSearch.some(p => item.path === p || item.path.startsWith(p))
+      return pathsToSearch.some(p => item._path === p || item._path.startsWith(p))
     })
   }
 
@@ -287,11 +287,12 @@ export function queryItems (items: MetaItem[], query: SearchQuery = {}) {
     results = Object.values(grouped).map((folder) => {
       const { key, items } = folder
       return {
+        _path: '',
+        path: '',
+        slug: `year-${key}`,
         type: 'folder',
         title: key === 'none' ? 'No Date' : key,
         description: '',
-        slug: `year-${key}`,
-        path: '',
         items,
       }
     })
@@ -303,14 +304,14 @@ export function queryItems (items: MetaItem[], query: SearchQuery = {}) {
     const paths = new Set<string>()
     for (const item of posts) {
       // traverse up parent path
-      const segments = item.path.split('/').filter(Boolean)
+      const segments = item._path.split('/').filter(Boolean)
       let currentPath = '/'
       for (const segment of segments) {
         currentPath = `${currentPath}${segment}/`
         paths.add(currentPath)
       }
     }
-    const nested = items.filter(item => paths.has(item.path))
+    const nested = items.filter(item => paths.has(item._path))
     results = makeTree(nested, query.path || '/', query.maxPathDepth)?.items ?? []
   }
 
@@ -416,13 +417,14 @@ function groupPosts<T extends MetaPost, K extends keyof T> (
 function makeTree (nodes: (MetaFolder | MetaPost)[], rootPath = '/', maxPathDepth = 0): MetaFolder | undefined {
   // Filter and clone so we don't affect originals
   const validNodes = nodes
-    .filter(n => n.path.startsWith(rootPath))
+    .filter(n => n._path.startsWith(rootPath))
     .map(p => clone(p))
 
   // add root node if missing
-  let rootNode = validNodes.find(item => item.path === rootPath)
+  let rootNode = validNodes.find(item => item._path === rootPath)
   if (!rootNode) {
     rootNode = {
+      _path: rootPath,
       path: rootPath,
       type: 'folder',
       title: 'Home',
@@ -435,12 +437,12 @@ function makeTree (nodes: (MetaFolder | MetaPost)[], rootPath = '/', maxPathDept
   // create a map for lookup
   const map: Record<string, MetaItem> = {}
   for (const n of validNodes) {
-    map[n.path] = n
+    map[n._path] = n
   }
 
   // add nodes to parents
   validNodes.forEach((node: MetaItem) => {
-    const parentPath = getParentPath(node.path, maxPathDepth)
+    const parentPath = getParentPath(node._path, maxPathDepth)
     const parent = map[parentPath] as MetaFolder | undefined
     if (parent && parent.type === 'folder' && parent !== node) {
       // edge-case: some posts have sub-posts

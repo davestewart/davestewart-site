@@ -19,15 +19,15 @@ export default defineEventHandler<{ query: PageQuery }>(async (event) => {
     const page = await serverQueryContent(event)
       .where({
         $or: [
+          { path: path },
           { _path: path },
-          { permalink: path },
         ],
       })
       .findOne() as PageContent
     if (page) {
       // get page paths
       return Object
-        .values(page.pages ?? {})
+        .values(page.showcase ?? {})
         .flat()
         .filter(item => typeof item === 'string')
         .map(item => item.replace('https://davestewart.co.uk', ''))

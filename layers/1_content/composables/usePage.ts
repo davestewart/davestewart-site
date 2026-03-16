@@ -1,4 +1,4 @@
-import { provide, readonly, shallowRef, useAsyncData, useRoute } from '#imports'
+import { provide, readonly, shallowRef, useRoute } from '#imports'
 
 import type { PageQuery as PageOptions } from '@content/server/api/content/page'
 
