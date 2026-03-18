@@ -10,7 +10,7 @@
 
         <!-- clear -->
         <button
-          v-if="isFiltered"
+          v-show="isFiltered"
           type="button"
           class="search__clear"
           :class="{ active: canReset }"
@@ -302,7 +302,7 @@ function onSubmit () {
   }
 
   &__clear {
-    padding: .6rem;
+    padding: .2rem;
     font-size: 35px;
     line-height: 1rem;
 

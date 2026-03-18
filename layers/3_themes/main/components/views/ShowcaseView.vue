@@ -51,6 +51,9 @@ function onClose () {
   // start intro leave animation
   isLeaving.value = true
 
+  // scroll to top for smaller displays or zoomed devices
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+
   // after leave animation completes, hide intro and show content
   setTimeout(() => {
     showIntro.value = false

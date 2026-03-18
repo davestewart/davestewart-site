@@ -10,13 +10,15 @@
     </div>
 
     <div class="navMobile__links">
-      <NuxtLink :to="up.path" class="navMobile__link navMobile__up" :class="up.class">
-        <UiIcon icon="arrow-up" :size="32" />
-      </NuxtLink>
+      <transition name="fade">
+        <NuxtLink v-if="visibility[up.title] !== false" :to="up.path" class="navMobile__link navMobile__up">
+          <UiIcon icon="arrow-up" :size="30" />
+        </NuxtLink>
+      </transition>
 
       <!-- search -->
       <NuxtLink to="/search/" class="navMobile__link navMobile__search">
-        <UiIcon icon="search" :size="32" />
+        <UiIcon icon="search" :size="28" />
       </NuxtLink>
     </div>
 
@@ -55,6 +57,7 @@ const visible = ref(false)
 const metaStore = useMetaStore()
 
 const up = computed(() => metaStore.getUp(route.path))
+const visibility = computed(() => metaStore.getLinkVisibility(true))
 
 watch(() => route.path, () => {
   visible.value = false
@@ -113,6 +116,14 @@ function hide () {
     &.router-link-active svg {
       color: $accentColor !important;
     }
+  }
+
+  &__up {
+    padding-right: .5rem;
+  }
+
+  &__search {
+    padding-left: .5rem;
   }
 
   &__button {

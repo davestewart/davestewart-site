@@ -1,17 +1,7 @@
 <template>
   <div ref="el" class="scrollTop" @click="onClick">
     <span class="scrollTop__inner">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        height="21"
-        viewBox="0 0 34 21"
-      >
-        <path
-          fill="current"
-          fill-rule="nonzero"
-          d="M.976 16.848c0-.892.356-1.747.986-2.372l12.59-12.613a3.346 3.346 0 014.886 0L32.02 14.468c.64.626 1 1.481 1.004 2.385a3.342 3.342 0 01-.998 2.37 3.336 3.336 0 01-2.36.973 3.338 3.338 0 01-2.36-.975L17.046 8.963 6.683 19.223a3.336 3.336 0 01-2.36.973 3.346 3.346 0 01-3.348-3.348z"
-        />
-      </svg>
+      <UiIcon icon="arrow-up" size="50" />
     </span>
   </div>
 </template>
@@ -68,8 +58,8 @@ function update () {
     // y value of scroll
     const y = window.scrollY + window.innerHeight
 
-    // y value of footer
-    const b = elements.footerOuter.offsetTop
+    // y value of footer (will be 0 when hidden in showcase mode)
+    const b = elements.footerOuter.offsetTop || document.body.offsetHeight
 
     // height of the footer navigation
     const h = elements.footerInner?.offsetHeight ?? 40
@@ -135,6 +125,7 @@ onUnmounted(() => {
   cursor: default;
   font-size: 12px;
   opacity: 0;
+  z-index: 100;
 
   &__inner {
     position: relative;

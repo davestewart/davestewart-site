@@ -4,7 +4,7 @@ export type Icon =
   | 'arrow-left'
   | 'arrow-right'
   | 'arrow-up'
-  | 'cursor-right'
+  | 'angle-up'
 
   // alerts
   | 'info'
@@ -19,6 +19,12 @@ export type Icon =
   | 'share'
   | 'tag'
 
+  // interactions
+  | 'mouse'
+  | 'keyboard'
+  | 'printer'
+  | 'cursor-right'
+
   // objects
   | 'bolt'
   | 'book'
@@ -27,9 +33,6 @@ export type Icon =
   | 'file'
   | 'file-alt'
   | 'fire'
-  | 'keyboard'
-  | 'mouse'
-  | 'printer'
   | 'smile'
   | 'tip'
   | 'tv'
