@@ -358,7 +358,7 @@ a:hover {
 
 .pageContent {
   p, li, td {
-    a[href^="http"]:not([class]):not(:has(img)) {
+    a[href^="http"]:not([class]):not(:has(img)):not([href*="tally.so"]) {
       //text-decoration: underline;
       &::after {
         content: url('/assets/img/external-link.svg');

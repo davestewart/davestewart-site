@@ -5,8 +5,14 @@ html[data-showcase] {
   //.ht-comments-wrap,
   //.reactions-wrap,
   //.editor-wrap,
+  .scrollTop,
+  .pageItem__title[data-status]:after,
   .siteFooter {
     display: none;
+  }
+
+  .pageContent {
+    margin-bottom: 8rem;
   }
 
   @media print {
@@ -16,7 +22,7 @@ html[data-showcase] {
     }
 
     body {
-      margin: 2rem;
+      margin: 2rem 2rem;
     }
 
     .siteMain {
@@ -35,6 +41,16 @@ html[data-showcase] {
 
     h1 {
       margin-top: 0 !important;
+    }
+
+    h2, h3 {
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .pageItem {
+      break-inside: avoid;
+      page-break-inside: avoid;
     }
 
     img {
