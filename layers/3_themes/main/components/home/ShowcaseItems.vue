@@ -10,10 +10,12 @@
 <script setup lang="ts">
 import type { Ref } from 'vue'
 import type { PageContent } from '@content/types'
+import { formatDate } from 'date-fns'
 
 interface ShowcaseItem {
   title: string
   description: string
+  date: string
   href: string
   image?: string
 }
@@ -25,7 +27,6 @@ const props = defineProps<{
 
 const page = inject<Ref<PageContent>>('page')?.value
 const store = useMetaStore()
-const route = useRoute()
 
 const items: ShowcaseItem[] | string[] | undefined = getValue(page, props.items) ?? []
 
@@ -45,9 +46,13 @@ const pages = computed<MetaPost[]>(() => {
       // convert absolute links to routes
       if (href.startsWith('https://davestewart.co.uk/') || href.startsWith('/')) {
         const path = href.replace('https://davestewart.co.uk', '')
-        const post = store.getItem(path)
+        const post = store.getItem(path) as MetaPost
         if (post) {
-          return post
+          const date = formatDate(new Date(post.date), 'MMM yyyy')
+          return {
+            ...post,
+            description: `${date} | ${post.description}`,
+          }
         }
         return { title: 'Missing post', description: path, path }
       }
@@ -67,8 +72,6 @@ const pages = computed<MetaPost[]>(() => {
   }
   return []
 })
-
-const type = computed(() => route.query.type ?? props.type)
 </script>
 
 <style lang="scss">
