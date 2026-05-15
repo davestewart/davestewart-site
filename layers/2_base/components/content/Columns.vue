@@ -1,5 +1,5 @@
 <template>
-  <div class="columns" :class="{ equal }" :style="{ gap }">
+  <div class="columns" :class="{ equal, loose }" :style="{ gap }">
     <slot />
   </div>
 </template>
@@ -8,14 +8,16 @@
 withDefaults(defineProps<{
   gap?: string
   equal?: boolean | string | number
+  loose?: boolean | string | number
 }>(), {
-  gap: '1rem',
+  gap: '2rem',
 })
 </script>
 
 <style lang="scss">
 .columns {
   display: flex;
+  margin: 1rem 0;
 }
 
 .columns.equal > .columns__column {
@@ -25,6 +27,14 @@ withDefaults(defineProps<{
 @media (max-width: 600px) {
   .columns {
     flex-direction: column;
+  }
+}
+
+@media print {
+  .columns.loose > .columns__column {
+    p {
+      line-height: 1.6;
+    }
   }
 }
 </style>

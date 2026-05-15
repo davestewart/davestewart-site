@@ -39,10 +39,10 @@ defineProps<{
 
   &__content {
     p:first-child {
-      //margin-top: 0;
+      margin-top: 0;
     }
     p:last-child {
-      //margin-bottom: 0;
+      margin-bottom: 0;
     }
   }
 }

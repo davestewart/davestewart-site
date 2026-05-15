@@ -55,7 +55,7 @@ const attrs = computed(() => {
     width: size,
     height: size,
     viewBox: '0 0 24 24',
-    style: { color },
+    style: { color, fill: color },
   }
 })
 </script>

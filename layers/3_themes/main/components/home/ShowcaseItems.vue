@@ -31,7 +31,7 @@ const props = withDefaults(defineProps<{
   format?: 'bullets' | 'paragraphs' | 'table' | 'showcase'
   text?: 'summary' | 'description' | 'none'
 }>(), {
-  format: 'bullets',
+  format: 'table',
 })
 
 const page = inject<Ref<PageContent>>('page')?.value
@@ -80,9 +80,7 @@ const pages = computed<ShowcaseInfo[]>(() => {
         ? ''
         : props.text
           ? post[props.text] ?? text
-          : props.format === 'showcase'
-            ? post.summary || post.description || text
-            : post.description || post.summary || text,
+          : post.summary || text,
     } satisfies ShowcaseInfo
   })
     // TODO fix TS undefined date error

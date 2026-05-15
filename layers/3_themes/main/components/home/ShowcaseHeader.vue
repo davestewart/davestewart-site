@@ -26,7 +26,7 @@ const showcase = useState('showcase', () => '')
   text-align: center;
 
   &__title {
-    margin-top: 2rem !important;
+    margin-top: 1.75rem !important;
     font-size: 3.8rem;
     line-height: 1.2;
   }
@@ -58,7 +58,7 @@ const showcase = useState('showcase', () => '')
 
   @media print {
     // name (3.2rem × 1.2lh) + role (1.92rem × 1.2lh) + 0.5rem gap + links (1rem × 1.2lh) ≈ 7.8rem
-    --bio-size: 8.9rem;
+    --bio-size: 7.9rem;
 
     display: flex;
     flex-direction: row;
@@ -71,7 +71,8 @@ const showcase = useState('showcase', () => '')
     }
 
     &__title {
-      margin-top: 0 !important;
+      margin-top: -.15em !important;
+      margin-bottom: .1em !important;
     }
 
     p {

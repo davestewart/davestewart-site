@@ -92,7 +92,7 @@ export interface ShowcaseInfo {
   &__title {
     @include md-down {
       font-size: 1.1em;
-      font-weight: 600;
+      font-weight: 500;
       margin-bottom: .5em;
     }
   }
@@ -121,7 +121,7 @@ export interface ShowcaseInfo {
 
   &[data-format="table"] {
     display: grid;
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: 1fr 4fr;
     gap: .5rem 1.5rem;
     margin-bottom: .6rem;
 
