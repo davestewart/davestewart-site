@@ -85,6 +85,9 @@ export interface PageContent extends ParsedContent {
   /** Publication date */
   date?: string
 
+  /** Project duration */
+  duration?: string
+
   /** Full title of the content */
   title: string
 
@@ -93,6 +96,12 @@ export interface PageContent extends ParsedContent {
 
   /** Content description */
   description?: string
+
+  /** Longer project summary */
+  summary?: string
+
+  /** Technologies used in project */
+  tech?: string[]
 
   /** Content type classification */
   type?: 'folder' | 'post' | 'showcase' | 'home'

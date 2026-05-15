@@ -59,11 +59,15 @@ export interface MetaPost {
   path: string
   type: 'post'
   title: string
-  description?: string
   shortTitle?: string
+  description?: string
+  summary?: string
   date: string
+  duration?: string
+  role?: string
   status?: string
   github?: string
+  tech?: string
   tags: string[]
   media: {
     thumbnail?: string

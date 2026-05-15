@@ -1,5 +1,5 @@
 import { getMetaParents, getMetaSiblings, getMetaSurround, getParentPath, normalizePath } from '../utils'
-import { queryItems, SEARCH_PATHS } from '../utils/search'
+import { queryItems } from '../utils/search'
 import type { MetaItem, MetaPost, SearchQuery, TagGroup } from '../types'
 
 export type Link = {

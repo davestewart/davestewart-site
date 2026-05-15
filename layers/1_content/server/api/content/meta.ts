@@ -1,6 +1,6 @@
 import { serverQueryContent } from '#content/server'
 import { slugify } from '../../../utils'
-import type { MetaFolder, MetaItemRaw, MetaPost } from '../../../types'
+import type { MetaFolder, MetaPost } from '../../../types'
 
 export default defineEventHandler(async (event) => {
   // content
@@ -12,10 +12,14 @@ export default defineEventHandler(async (event) => {
       'title',
       'shortTitle',
       'description',
+      'summary',
+      'role',
       'order',
       'date',
+      'duration',
       'status',
       'github',
+      'tech',
       'tags',
       'media',
     ])
@@ -94,12 +98,16 @@ export default defineEventHandler(async (event) => {
         title: item.title ?? '',
         shortTitle: item.shortTitle,
         description: item.description ?? '',
+        summary: item.summary ?? '',
         media: {
           thumbnail: item.media?.thumbnail,
         },
         github: item.github,
         date: item.date,
+        duration: item.duration ?? '',
         status: item.status,
+        role: item.role,
+        tech: item.tech,
         tags: item.tags,
       }) as MetaPost
     })
