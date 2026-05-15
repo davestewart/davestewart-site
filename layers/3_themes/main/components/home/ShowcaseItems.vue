@@ -18,7 +18,7 @@ import type { Ref } from 'vue'
 import type { PageContent } from '@content/types'
 import type { ShowcaseInfo } from '../lists/showcase/ShowcaseItem.vue'
 
-interface ShowcaseItem {
+interface ShowcaseFrontmatter {
   title: string
   text: string
   date: string
@@ -37,7 +37,7 @@ const props = withDefaults(defineProps<{
 const page = inject<Ref<PageContent>>('page')?.value
 const store = useMetaStore()
 
-const items: ShowcaseItem[] | string[] | undefined = getValue(page, props.path) ?? []
+const items: ShowcaseFrontmatter[] | string[] | undefined = getValue(page, props.path) ?? []
 
 const pages = computed<ShowcaseInfo[]>(() => {
   if (!items) return []
@@ -59,7 +59,8 @@ const pages = computed<ShowcaseInfo[]>(() => {
       const path = href.replace('https://davestewart.co.uk', '')
       const found = store.getItem(path) as MetaPost
       if (!found) {
-        throw new Error(`Post not found for path: ${path}`)
+        console.warn(`Post not found for path: ${path}`)
+        return
       }
       post = found
     }
@@ -82,9 +83,10 @@ const pages = computed<ShowcaseInfo[]>(() => {
           : props.format === 'showcase'
             ? post.summary || post.description || text
             : post.description || post.summary || text,
-    }
+    } satisfies ShowcaseInfo
   })
-    .filter(Boolean)
+    // TODO fix TS undefined date error
+    .filter(Boolean) as ShowcaseInfo[]
 })
 </script>
 

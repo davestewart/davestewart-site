@@ -69,10 +69,11 @@ export interface ShowcaseInfo {
   path: string
   title: string
   text?: string
-  date?: string
+  date?: string | undefined
   duration?: string
   role?: string
   tech?: string
+  image?: string
 }
 </script>
 
