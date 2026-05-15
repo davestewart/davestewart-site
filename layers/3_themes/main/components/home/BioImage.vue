@@ -1,7 +1,7 @@
 <template>
   <div class="bioImage">
     <img
-      src="/assets/img/dave-wide.jpg"
+      src="/assets/img/dave-bio.jpg"
       alt="Dave Stewart's profile picture"
       width="1600"
       height="800"
@@ -11,13 +11,8 @@
 
 <style lang="scss">
 .bioImage {
-
-  margin: 0;
+  margin: 1rem 0;
   font-size: 0;
-
-  @media print {
-    display: none;
-  }
 
   // make 2:1 image 1:1 on small screens
   @include md-down {

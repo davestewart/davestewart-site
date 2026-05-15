@@ -1,6 +1,6 @@
 <template>
   <div class="columns__column">
-    <div class="columns__label">
+    <div v-if="label" class="columns__label">
       {{ label }}
     </div>
     <div class="columns__content">
@@ -11,11 +11,11 @@
 
 <script lang="ts" setup>
 defineProps<{
-  label: string
+  label?: string
 }>()
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .columns {
   &__column {
     display: flex;
@@ -33,8 +33,17 @@ defineProps<{
     border-bottom: 1px solid $grey-lightest;
   }
 
-  &__content {
+  &__label + &__content {
     margin: 0.6rem 0.4rem;
+  }
+
+  &__content {
+    p:first-child {
+      //margin-top: 0;
+    }
+    p:last-child {
+      //margin-bottom: 0;
+    }
   }
 }
 </style>
